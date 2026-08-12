@@ -1,0 +1,3 @@
+@extends('layouts.app')
+@section('title','Sertifikat | '.$learningPath->title)
+@section('content')<section class="certificate-section"><div class="container"><div class="certificate-card"><div class="brand"><span class="brand-mark">S</span><span>SKILLPATH</span></div><span class="certificate-kicker">SERTIFIKAT PENYELESAIAN</span><h1>{{ $child->name }}</h1><p>telah menyelesaikan course</p><h2>{{ $learningPath->title }}</h2><p>Pengajar: {{ $learningPath->instructor?->name ?? 'Tim SKILLPATH' }}</p><div class="certificate-meta"><span>{{ $certificate->certificate_number }}</span><span>{{ $certificate->issued_at->format('d M Y') }}</span></div></div></div></section>@endsection

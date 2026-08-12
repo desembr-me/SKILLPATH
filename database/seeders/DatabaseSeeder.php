@@ -3,252 +3,115 @@
 namespace Database\Seeders;
 
 use App\Models\Activity;
+use App\Models\Category;
+use App\Models\ChildProfile;
+use App\Models\InstructorProfile;
 use App\Models\Interest;
 use App\Models\LearningPath;
+use App\Models\LiveSession;
 use App\Models\Module;
 use App\Models\Skill;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $interestData = [
-            ['name' => 'Teknologi', 'icon' => '⌨', 'description' => 'Coding, perangkat digital, dan kreasi teknologi.'],
-            ['name' => 'Seni', 'icon' => '✎', 'description' => 'Menggambar, bercerita, desain, dan ekspresi kreatif.'],
-            ['name' => 'Sains', 'icon' => '⚗', 'description' => 'Eksperimen, observasi, dan rasa ingin tahu.'],
-            ['name' => 'Komunikasi', 'icon' => '☏', 'description' => 'Berbicara, mendengar, dan menyampaikan ide.'],
-            ['name' => 'Kewirausahaan', 'icon' => '◎', 'description' => 'Ide usaha, nilai, perencanaan, dan tanggung jawab.'],
-            ['name' => 'Kehidupan Sehari-hari', 'icon' => '⌂', 'description' => 'Kemandirian, kebiasaan baik, dan keterampilan praktis.'],
+        $interests = collect([
+            ['name'=>'Teknologi','icon'=>'⌨','description'=>'Coding, perangkat digital, dan kreasi teknologi.'],
+            ['name'=>'Seni','icon'=>'✎','description'=>'Menggambar, bercerita, desain, dan ekspresi kreatif.'],
+            ['name'=>'Sains','icon'=>'⚗','description'=>'Eksperimen, observasi, dan rasa ingin tahu.'],
+            ['name'=>'Komunikasi','icon'=>'☏','description'=>'Berbicara, mendengar, dan menyampaikan ide.'],
+            ['name'=>'Kewirausahaan','icon'=>'◎','description'=>'Ide usaha, nilai, perencanaan, dan tanggung jawab.'],
+            ['name'=>'Kehidupan Sehari-hari','icon'=>'⌂','description'=>'Kemandirian, kebiasaan baik, dan keterampilan praktis.'],
+        ])->mapWithKeys(function($item){$m=Interest::updateOrCreate(['slug'=>Str::slug($item['name'])],$item+['slug'=>Str::slug($item['name'])]);return[$m->slug=>$m];});
+
+        $skills = collect([
+            ['name'=>'Kreativitas','icon'=>'✦','description'=>'Mengembangkan ide dan membuat karya.'],
+            ['name'=>'Literasi Digital','icon'=>'▣','description'=>'Menggunakan teknologi secara produktif dan bertanggung jawab.'],
+            ['name'=>'Komunikasi','icon'=>'●','description'=>'Menyampaikan gagasan secara jelas dan percaya diri.'],
+            ['name'=>'Problem Solving','icon'=>'◇','description'=>'Menganalisis masalah dan memilih solusi.'],
+            ['name'=>'Kemandirian','icon'=>'✓','description'=>'Mengatur tugas dan kebiasaan sehari-hari.'],
+        ])->mapWithKeys(function($item){$m=Skill::updateOrCreate(['slug'=>Str::slug($item['name'])],$item+['slug'=>Str::slug($item['name'])]);return[$m->slug=>$m];});
+
+        $categories=collect([
+            ['name'=>'Arts','slug'=>'arts','icon'=>'✦','description'=>'Mengembangkan kreativitas melalui gambar, cerita, desain, dan karya visual.'],
+            ['name'=>'Languages','slug'=>'languages','icon'=>'Aa','description'=>'Melatih kemampuan berbicara, mendengar, kosakata, dan menyampaikan gagasan.'],
+            ['name'=>'Music','slug'=>'music','icon'=>'♫','description'=>'Mengenal ritme, bunyi, tempo, dan ekspresi melalui aktivitas musik sederhana.'],
+            ['name'=>'Sports','slug'=>'sports','icon'=>'●','description'=>'Mengembangkan koordinasi gerak, kebugaran, disiplin, dan sportivitas.'],
+            ['name'=>'Technology','slug'=>'technology','icon'=>'</>','description'=>'Mengenal logika digital, coding, teknologi, dan pemecahan masalah secara bertahap.'],
+        ])->mapWithKeys(function($item){$m=Category::updateOrCreate(['slug'=>$item['slug']],$item);return[$m->slug=>$m];});
+
+        $instructorData=[
+            ['name'=>'Naila Prameswari','email'=>'naila@skillpath.test','headline'=>'Pengajar seni visual dan creative storytelling anak','expertise'=>'Drawing, storytelling, visual creativity','years'=>6,'education'=>'S1 Pendidikan Seni','rating'=>4.9],
+            ['name'=>'Arif Nugraha','email'=>'arif@skillpath.test','headline'=>'Mentor coding visual dan computational thinking','expertise'=>'Scratch, coding visual, problem solving','years'=>7,'education'=>'S1 Pendidikan Teknologi Informasi','rating'=>4.8],
+            ['name'=>'Maya Lestari','email'=>'maya@skillpath.test','headline'=>'Coach komunikasi, bahasa, dan public speaking anak','expertise'=>'Public speaking, English conversation, communication','years'=>8,'education'=>'S1 Pendidikan Bahasa','rating'=>4.9],
+            ['name'=>'Raka Aditya','email'=>'raka@skillpath.test','headline'=>'Coach aktivitas fisik dan sportivitas anak','expertise'=>'Motor skills, physical literacy, sportsmanship','years'=>6,'education'=>'S1 Pendidikan Jasmani','rating'=>4.8],
+            ['name'=>'Dinda Maharani','email'=>'dinda@skillpath.test','headline'=>'Pengajar musik dasar dan eksplorasi ritme','expertise'=>'Rhythm, basic music, creative sound','years'=>5,'education'=>'S1 Pendidikan Musik','rating'=>4.9],
         ];
-
-        $interests = collect($interestData)->mapWithKeys(function ($item) {
-            $model = Interest::updateOrCreate(
-                ['slug' => Str::slug($item['name'])],
-                $item + ['slug' => Str::slug($item['name'])]
-            );
-
-            return [$model->slug => $model];
+        $instructors=collect($instructorData)->mapWithKeys(function($d){
+            $u=User::updateOrCreate(['email'=>$d['email']],['name'=>$d['name'],'password'=>Hash::make('password'),'role'=>'instructor']);
+            InstructorProfile::updateOrCreate(['user_id'=>$u->id],[
+                'headline'=>$d['headline'],'bio'=>$d['headline'].'. Pembelajaran menekankan praktik bertahap, instruksi sederhana, dan umpan balik positif yang sesuai usia anak.',
+                'expertise'=>$d['expertise'],'years_experience'=>$d['years'],'education'=>$d['education'],'is_verified'=>true,'rating'=>$d['rating'],'students_count'=>120,
+            ]);
+            return[$u->email=>$u];
         });
 
-        $skillData = [
-            ['name' => 'Kreativitas', 'icon' => '✦', 'description' => 'Mengembangkan ide dan membuat karya.'],
-            ['name' => 'Literasi Digital', 'icon' => '▣', 'description' => 'Menggunakan teknologi secara produktif dan bertanggung jawab.'],
-            ['name' => 'Komunikasi', 'icon' => '●', 'description' => 'Menyampaikan gagasan secara jelas dan percaya diri.'],
-            ['name' => 'Problem Solving', 'icon' => '◇', 'description' => 'Menganalisis masalah dan memilih solusi.'],
-            ['name' => 'Kemandirian', 'icon' => '✓', 'description' => 'Mengatur tugas dan kebiasaan sehari-hari.'],
+        $paths=[
+            ['title'=>'Studio Cerita Kreatif','category'=>'arts','skill'=>'kreativitas','instructor'=>'naila@skillpath.test','min'=>5,'max'=>10,'duration'=>180,'icon'=>'✎','price'=>179000,'sale'=>129000,'type'=>'hybrid','interests'=>['seni','komunikasi'],'description'=>'Membuat tokoh, alur, ilustrasi, dan cerita pendek melalui project kreatif.','outcomes'=>'Anak mampu membuat tokoh, menyusun cerita tiga bagian, dan mempresentasikan karya sederhana.','requirements'=>'Kertas gambar, pensil warna, dan pendampingan orang tua untuk anak usia 5–7 tahun.'],
+            ['title'=>'Penjelajah Coding Visual','category'=>'technology','skill'=>'literasi-digital','instructor'=>'arif@skillpath.test','min'=>8,'max'=>14,'duration'=>240,'icon'=>'⌨','price'=>249000,'sale'=>189000,'type'=>'hybrid','interests'=>['teknologi'],'description'=>'Belajar logika urutan, event, loop, dan project coding visual tanpa sintaks rumit.','outcomes'=>'Anak memahami algoritma sederhana, pola, loop, dan dapat membuat project interaktif dasar.','requirements'=>'Laptop atau komputer dengan browser modern.'],
+            ['title'=>'Eksperimen Sains Mini','category'=>'technology','skill'=>'problem-solving','instructor'=>'arif@skillpath.test','min'=>7,'max'=>12,'duration'=>160,'icon'=>'⚗','price'=>149000,'sale'=>null,'type'=>'self_paced','interests'=>['sains'],'description'=>'Melatih observasi, prediksi, dan kesimpulan melalui eksperimen sederhana.','outcomes'=>'Anak dapat membuat prediksi, mencatat hasil, dan menjelaskan kesimpulan sederhana.','requirements'=>'Pendampingan orang dewasa untuk kegiatan eksperimen.'],
+            ['title'=>'Berani Bicara','category'=>'languages','skill'=>'komunikasi','instructor'=>'maya@skillpath.test','min'=>6,'max'=>14,'duration'=>200,'icon'=>'●','price'=>199000,'sale'=>159000,'type'=>'hybrid','interests'=>['komunikasi'],'description'=>'Melatih struktur bicara, volume suara, mendengar aktif, dan presentasi singkat.','outcomes'=>'Anak mampu menyampaikan ide singkat secara terstruktur dan percaya diri.','requirements'=>'Perangkat dengan mikrofon untuk latihan live.'],
+            ['title'=>'English Fun Conversation','category'=>'languages','skill'=>'komunikasi','instructor'=>'maya@skillpath.test','min'=>7,'max'=>12,'duration'=>220,'icon'=>'Aa','price'=>229000,'sale'=>179000,'type'=>'live','interests'=>['komunikasi'],'description'=>'Kelas percakapan bahasa Inggris berbasis permainan, topik sehari-hari, dan role play.','outcomes'=>'Anak mampu menggunakan ungkapan dasar untuk memperkenalkan diri, bertanya, dan merespons percakapan sederhana.','requirements'=>'Mikrofon dan koneksi internet stabil.'],
+            ['title'=>'Ritme dan Musik Dasar','category'=>'music','skill'=>'kreativitas','instructor'=>'dinda@skillpath.test','min'=>5,'max'=>11,'duration'=>180,'icon'=>'♫','price'=>169000,'sale'=>129000,'type'=>'hybrid','interests'=>['seni'],'description'=>'Mengenal ritme, tempo, pola bunyi, dan ekspresi musik melalui permainan sederhana.','outcomes'=>'Anak mengenali tempo, menirukan pola ketukan, dan membuat pola bunyi sendiri.','requirements'=>'Tidak wajib memiliki alat musik. Gunakan benda aman di rumah.'],
+            ['title'=>'Gerak Aktif dan Sportivitas','category'=>'sports','skill'=>'kemandirian','instructor'=>'raka@skillpath.test','min'=>6,'max'=>14,'duration'=>150,'icon'=>'●','price'=>129000,'sale'=>99000,'type'=>'live','interests'=>['kehidupan-sehari-hari'],'description'=>'Melatih koordinasi gerak, kebiasaan aktif, disiplin, dan sportivitas.','outcomes'=>'Anak mampu mengikuti rangkaian gerak sederhana dan menunjukkan sikap sportif.','requirements'=>'Area aman untuk bergerak, pakaian nyaman, dan pendampingan orang tua untuk anak kecil.'],
+            ['title'=>'Creative Starter Gratis','category'=>'arts','skill'=>'kreativitas','instructor'=>'naila@skillpath.test','min'=>5,'max'=>14,'duration'=>45,'icon'=>'✦','price'=>0,'sale'=>null,'type'=>'self_paced','interests'=>['seni'],'description'=>'Course pengenalan gratis untuk mencoba pengalaman belajar SKILLPATH.','outcomes'=>'Anak menyelesaikan satu project kreatif singkat dan mengenal alur belajar SKILLPATH.','requirements'=>'Kertas dan alat tulis.'],
         ];
 
-        $skills = collect($skillData)->mapWithKeys(function ($item) {
-            $model = Skill::updateOrCreate(
-                ['slug' => Str::slug($item['name'])],
-                $item + ['slug' => Str::slug($item['name'])]
-            );
+        foreach($paths as $d){
+            $path=LearningPath::updateOrCreate(['slug'=>Str::slug($d['title'])],[
+                'skill_id'=>$skills[$d['skill']]->id,'instructor_id'=>$instructors[$d['instructor']]->id,'title'=>$d['title'],'slug'=>Str::slug($d['title']),
+                'description'=>$d['description'],'price'=>$d['price'],'sale_price'=>$d['sale'],'is_free'=>$d['price']==0,'course_type'=>$d['type'],
+                'min_age'=>$d['min'],'max_age'=>$d['max'],'level'=>'Pemula','duration_minutes'=>$d['duration'],'icon'=>$d['icon'],
+                'certificate_enabled'=>true,'live_class_enabled'=>in_array($d['type'],['live','hybrid']),'access_days'=>365,'learning_outcomes'=>$d['outcomes'],'requirements'=>$d['requirements'],
+                'is_published'=>true,'published_at'=>now()->subDays(rand(1,30)),
+            ]);
+            $path->categories()->sync([$categories[$d['category']]->id]);
+            $path->interests()->sync(collect($d['interests'])->map(fn($slug)=>$interests[$slug]->id)->all());
 
-            return [$model->slug => $model];
-        });
+            $moduleDefs=[
+                ['title'=>'Mulai dan Kenali Dasar','summary'=>'Mengenal konsep utama melalui contoh sederhana.','acts'=>[['Kenali konsep utama','reflection',10],['Coba tantangan pertama','project',20]]],
+                ['title'=>'Praktik Terarah','summary'=>'Menerapkan konsep melalui aktivitas yang lebih menantang.','acts'=>[['Latihan bertahap','quiz',15],['Project mini','project',25]]],
+                ['title'=>'Project dan Refleksi','summary'=>'Membuat karya atau performa akhir lalu melakukan refleksi.','acts'=>[['Project akhir','project',30],['Refleksi belajar','reflection',15]]],
+            ];
+            foreach($moduleDefs as $mi=>$md){
+                $slug=Str::slug($d['title'].'-'.$md['title']);
+                $m=Module::updateOrCreate(['slug'=>$slug],[
+                    'learning_path_id'=>$path->id,'title'=>$md['title'],'slug'=>$slug,'summary'=>$md['summary'],'order_index'=>$mi+1,'estimated_minutes'=>max(15,intdiv($d['duration'],3)),
+                ]);
+                foreach($md['acts'] as $ai=>$a){
+                    Activity::updateOrCreate(['module_id'=>$m->id,'title'=>$a[0]],[
+                        'type'=>$a[1],'instructions'=>'Ikuti instruksi pengajar pada materi, selesaikan tugas dengan aman, lalu tandai aktivitas sebagai selesai.','points'=>$a[2],'order_index'=>$ai+1,
+                    ]);
+                }
+            }
 
-        $paths = [
-            [
-                'title' => 'Studio Cerita Kreatif',
-                'skill' => 'kreativitas',
-                'min_age' => 5,
-                'max_age' => 10,
-                'level' => 'Pemula',
-                'duration_minutes' => 75,
-                'icon' => '✎',
-                'interests' => ['seni', 'komunikasi'],
-                'description' => 'Belajar menyusun tokoh, alur sederhana, dan menyampaikan cerita melalui gambar serta suara.',
-                'modules' => [
-                    [
-                        'title' => 'Kenali Tokoh Ceritamu',
-                        'summary' => 'Membuat tokoh dengan ciri, tujuan, dan emosi yang mudah dipahami.',
-                        'activities' => [
-                            ['title' => 'Pilih 3 ciri tokoh', 'type' => 'reflection', 'instructions' => 'Pilih tiga ciri untuk tokohmu. Contoh: berani, suka menolong, dan lucu.', 'points' => 10],
-                            ['title' => 'Gambar tokoh utama', 'type' => 'project', 'instructions' => 'Gambar tokoh utama. Tambahkan nama dan satu benda favoritnya.', 'points' => 20],
-                        ],
-                    ],
-                    [
-                        'title' => 'Buat Cerita 3 Bagian',
-                        'summary' => 'Menyusun awal, masalah, dan penyelesaian.',
-                        'activities' => [
-                            ['title' => 'Susun awal cerita', 'type' => 'project', 'instructions' => 'Tulis atau ceritakan siapa tokohnya dan di mana cerita dimulai.', 'points' => 15],
-                            ['title' => 'Ceritakan hasil akhir', 'type' => 'project', 'instructions' => 'Ceritakan bagaimana tokoh menyelesaikan masalahnya.', 'points' => 20],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Penjelajah Coding Visual',
-                'skill' => 'literasi-digital',
-                'min_age' => 8,
-                'max_age' => 14,
-                'level' => 'Pemula',
-                'duration_minutes' => 90,
-                'icon' => '⌨',
-                'interests' => ['teknologi'],
-                'description' => 'Mengenal logika urutan, pola, dan instruksi melalui tantangan coding visual tanpa sintaks yang rumit.',
-                'modules' => [
-                    [
-                        'title' => 'Urutan dan Instruksi',
-                        'summary' => 'Memahami bahwa komputer menjalankan instruksi secara berurutan.',
-                        'activities' => [
-                            ['title' => 'Susun langkah membuat minuman', 'type' => 'quiz', 'instructions' => 'Urutkan langkah dari menyiapkan gelas sampai minuman siap.', 'points' => 10],
-                            ['title' => 'Buat algoritma 5 langkah', 'type' => 'project', 'instructions' => 'Pilih satu kegiatan harian dan tulis lima langkah yang berurutan.', 'points' => 20],
-                        ],
-                    ],
-                    [
-                        'title' => 'Pola dan Perulangan',
-                        'summary' => 'Mengenali tindakan yang berulang dan menyederhanakannya.',
-                        'activities' => [
-                            ['title' => 'Temukan pola', 'type' => 'quiz', 'instructions' => 'Cari bagian yang berulang pada contoh gerakan atau bentuk.', 'points' => 10],
-                            ['title' => 'Rancang loop gerakan', 'type' => 'project', 'instructions' => 'Buat rangkaian tiga gerakan dan tentukan berapa kali diulang.', 'points' => 20],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Eksperimen Sains Mini',
-                'skill' => 'problem-solving',
-                'min_age' => 7,
-                'max_age' => 12,
-                'level' => 'Pemula',
-                'duration_minutes' => 80,
-                'icon' => '⚗',
-                'interests' => ['sains'],
-                'description' => 'Melatih observasi, membuat prediksi, dan menarik kesimpulan melalui eksperimen sederhana dan aman.',
-                'modules' => [
-                    [
-                        'title' => 'Lihat, Tebak, Uji',
-                        'summary' => 'Membandingkan prediksi dengan hasil pengamatan.',
-                        'activities' => [
-                            ['title' => 'Buat prediksi', 'type' => 'reflection', 'instructions' => 'Pilih dua benda. Tebak benda mana yang lebih cepat jatuh dan jelaskan alasanmu.', 'points' => 10],
-                            ['title' => 'Catat hasil pengamatan', 'type' => 'project', 'instructions' => 'Lakukan pengamatan bersama orang dewasa lalu tulis hasilnya dalam tiga kalimat.', 'points' => 20],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Berani Bicara',
-                'skill' => 'komunikasi',
-                'min_age' => 6,
-                'max_age' => 14,
-                'level' => 'Pemula',
-                'duration_minutes' => 60,
-                'icon' => '●',
-                'interests' => ['komunikasi'],
-                'description' => 'Melatih struktur bicara, volume suara, kontak mata, dan cara menjelaskan ide dengan percaya diri.',
-                'modules' => [
-                    [
-                        'title' => 'Bicara 30 Detik',
-                        'summary' => 'Berlatih menyampaikan satu topik secara singkat.',
-                        'activities' => [
-                            ['title' => 'Pilih topik favorit', 'type' => 'reflection', 'instructions' => 'Pilih satu hal yang kamu sukai dan tulis tiga poin yang ingin disampaikan.', 'points' => 10],
-                            ['title' => 'Presentasi 30 detik', 'type' => 'project', 'instructions' => 'Ceritakan topikmu selama sekitar 30 detik kepada keluarga atau teman.', 'points' => 20],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Keterampilan Mandiri',
-                'skill' => 'kemandirian',
-                'min_age' => 5,
-                'max_age' => 10,
-                'level' => 'Pemula',
-                'duration_minutes' => 55,
-                'icon' => '✓',
-                'interests' => ['kehidupan-sehari-hari'],
-                'description' => 'Membangun kebiasaan sederhana seperti merapikan barang, menyiapkan kebutuhan, dan menyelesaikan tugas kecil.',
-                'modules' => [
-                    [
-                        'title' => 'Aku Bisa Menyiapkan Sendiri',
-                        'summary' => 'Melatih perencanaan kecil dan tanggung jawab.',
-                        'activities' => [
-                            ['title' => 'Checklist tas harian', 'type' => 'project', 'instructions' => 'Buat daftar barang yang perlu disiapkan untuk kegiatan besok.', 'points' => 15],
-                            ['title' => 'Rapikan satu area', 'type' => 'project', 'instructions' => 'Pilih meja atau rak kecil, rapikan, lalu cek apakah semua benda mudah ditemukan.', 'points' => 20],
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Wirausaha Cilik',
-                'skill' => 'problem-solving',
-                'min_age' => 10,
-                'max_age' => 14,
-                'level' => 'Pemula',
-                'duration_minutes' => 100,
-                'icon' => '◎',
-                'interests' => ['kewirausahaan', 'komunikasi'],
-                'description' => 'Mengenal masalah pelanggan, ide produk sederhana, harga, dan cara menjelaskan nilai suatu produk.',
-                'modules' => [
-                    [
-                        'title' => 'Temukan Masalah Kecil',
-                        'summary' => 'Belajar melihat kebutuhan di sekitar.',
-                        'activities' => [
-                            ['title' => 'Wawancara mini', 'type' => 'project', 'instructions' => 'Tanya satu anggota keluarga tentang masalah kecil yang sering mereka alami.', 'points' => 20],
-                            ['title' => 'Buat satu ide solusi', 'type' => 'project', 'instructions' => 'Tulis satu solusi sederhana dan jelaskan siapa yang akan terbantu.', 'points' => 20],
-                        ],
-                    ],
-                ],
-            ],
-        ];
-
-        foreach ($paths as $pathData) {
-            $skill = $skills[$pathData['skill']];
-
-            $path = LearningPath::updateOrCreate(
-                ['slug' => Str::slug($pathData['title'])],
-                [
-                    'skill_id' => $skill->id,
-                    'title' => $pathData['title'],
-                    'slug' => Str::slug($pathData['title']),
-                    'description' => $pathData['description'],
-                    'min_age' => $pathData['min_age'],
-                    'max_age' => $pathData['max_age'],
-                    'level' => $pathData['level'],
-                    'duration_minutes' => $pathData['duration_minutes'],
-                    'icon' => $pathData['icon'],
-                    'is_published' => true,
-                ]
-            );
-
-            $path->interests()->sync(
-                collect($pathData['interests'])
-                    ->map(fn ($slug) => $interests[$slug]->id)
-                    ->all()
-            );
-
-            foreach ($pathData['modules'] as $moduleIndex => $moduleData) {
-                $moduleSlug = Str::slug($pathData['title'].'-'.$moduleData['title']);
-
-                $module = Module::updateOrCreate(
-                    ['slug' => $moduleSlug],
-                    [
-                        'learning_path_id' => $path->id,
-                        'title' => $moduleData['title'],
-                        'slug' => $moduleSlug,
-                        'summary' => $moduleData['summary'],
-                        'order_index' => $moduleIndex + 1,
-                        'estimated_minutes' => 20,
-                    ]
-                );
-
-                foreach ($moduleData['activities'] as $activityIndex => $activityData) {
-                    Activity::updateOrCreate(
-                        [
-                            'module_id' => $module->id,
-                            'title' => $activityData['title'],
-                        ],
-                        [
-                            'type' => $activityData['type'],
-                            'instructions' => $activityData['instructions'],
-                            'points' => $activityData['points'],
-                            'order_index' => $activityIndex + 1,
-                        ]
+            if($path->live_class_enabled){
+                for($n=1;$n<=2;$n++){
+                    LiveSession::updateOrCreate(
+                        ['learning_path_id'=>$path->id,'title'=>'Live Class '.$n.' - '.$path->title],
+                        ['instructor_id'=>$path->instructor_id,'description'=>'Sesi interaktif bersama pengajar untuk praktik, tanya jawab, dan umpan balik.','starts_at'=>now()->addDays(3+$n*4)->setTime(16,0),'ends_at'=>now()->addDays(3+$n*4)->setTime(17,0),'meeting_url'=>'https://meet.google.com/','capacity'=>20,'status'=>'scheduled']
                     );
                 }
             }
         }
+
+        $parent=User::updateOrCreate(['email'=>'parent@skillpath.test'],['name'=>'Orang Tua Demo','password'=>Hash::make('password'),'role'=>'parent']);
+        $child=ChildProfile::updateOrCreate(['user_id'=>$parent->id],['name'=>'Alya','age'=>10,'avatar'=>'spark']);
+        $child->interests()->sync([$interests['teknologi']->id,$interests['seni']->id,$interests['komunikasi']->id]);
     }
 }

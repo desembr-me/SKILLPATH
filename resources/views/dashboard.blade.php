@@ -69,8 +69,8 @@
                         </div>
                     </div>
 
-                    <a class="btn btn-dark btn-full" href="{{ route('learning.path', $path) }}">
-                        {{ $item['progress_percent'] > 0 ? 'Lanjutkan Jalur' : 'Mulai Jalur' }}
+                    <a class="btn btn-dark btn-full" href="{{ $item['progress_percent'] > 0 ? route('learning.path', $path) : route('courses.show', $path) }}">
+                        {{ $item['progress_percent'] > 0 ? 'Lanjutkan Course' : 'Lihat Course' }}
                     </a>
                 </article>
             @empty

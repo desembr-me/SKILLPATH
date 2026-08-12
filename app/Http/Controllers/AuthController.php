@@ -31,6 +31,10 @@ class AuthController extends Controller
 
         $user = $request->user();
 
+        if ($user->role === 'instructor') {
+            return redirect()->intended(route('instructor.dashboard'));
+        }
+
         return redirect()->intended(
             $user->childProfile ? route('dashboard') : route('onboarding.edit')
         );

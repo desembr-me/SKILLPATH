@@ -1,120 +1,139 @@
-skillpath/
-├── app/
-│   ├── Http/
-│   │   └── Controllers/
-│   │       ├── AuthController.php
-│   │       ├── Controller.php
-│   │       ├── DashboardController.php
-│   │       ├── HomeController.php
-│   │       ├── LearningController.php
-│   │       └── OnboardingController.php
-│   ├── Models/
-│   │   ├── Activity.php
-│   │   ├── ChildProfile.php
-│   │   ├── Interest.php
-│   │   ├── LearningPath.php
-│   │   ├── Module.php
-│   │   ├── Progress.php
-│   │   ├── Skill.php
-│   │   └── User.php
-│   ├── Providers/
-│   │   └── AppServiceProvider.php
-│   └── Services/
-│       └── AdaptiveLearningService.php
-├── bootstrap/
-│   ├── cache/
-│   │   └── .gitignore
-│   ├── app.php
-│   └── providers.php
-├── config/
-│   ├── app.php
-│   ├── auth.php
-│   ├── cache.php
-│   ├── database.php
-│   ├── filesystems.php
-│   ├── logging.php
-│   ├── mail.php
-│   ├── queue.php
-│   ├── services.php
-│   └── session.php
-├── database/
-│   ├── factories/
-│   │   └── UserFactory.php
-│   ├── migrations/
-│   │   ├── 0001_01_01_000000_create_users_table.php
-│   │   ├── 0001_01_01_000001_create_cache_table.php
-│   │   ├── 0001_01_01_000002_create_jobs_table.php
-│   │   ├── 2026_08_13_000001_add_role_to_users_table.php
-│   │   ├── 2026_08_13_000002_create_child_profiles_table.php
-│   │   ├── 2026_08_13_000003_create_interests_table.php
-│   │   ├── 2026_08_13_000004_create_skills_table.php
-│   │   ├── 2026_08_13_000005_create_learning_paths_table.php
-│   │   ├── 2026_08_13_000006_create_modules_table.php
-│   │   ├── 2026_08_13_000007_create_activities_table.php
-│   │   └── 2026_08_13_000008_create_progress_table.php
-│   └── seeders/
-│       └── DatabaseSeeder.php
-├── public/
-│   ├── css/
-│   │   └── skillpath.css
-│   ├── js/
-│   │   └── skillpath.js
-│   ├── .htaccess
-│   ├── index.php
-│   └── robots.txt
-├── resources/
-│   ├── css/
-│   │   └── app.css
-│   ├── js/
-│   │   ├── app.js
-│   │   └── bootstrap.js
-│   └── views/
-│       ├── auth/
-│       │   ├── login.blade.php
-│       │   └── register.blade.php
-│       ├── layouts/
-│       │   └── app.blade.php
-│       ├── learning/
-│       │   ├── module.blade.php
-│       │   └── path.blade.php
-│       ├── onboarding/
-│       │   └── edit.blade.php
-│       ├── dashboard.blade.php
-│       └── home.blade.php
-├── routes/
-│   ├── console.php
-│   └── web.php
-├── storage/
-│   ├── app/
-│   │   ├── private/
-│   │   │   └── .gitignore
-│   │   └── public/
-│   │       └── .gitignore
-│   ├── framework/
-│   │   ├── cache/
-│   │   │   └── data/
-│   │   │       └── .gitignore
-│   │   ├── sessions/
-│   │   │   └── .gitignore
-│   │   ├── testing/
-│   │   │   └── .gitignore
-│   │   └── views/
-│   │       └── .gitignore
-│   └── logs/
-│       └── .gitignore
-├── tests/
-│   ├── Feature/
-│   │   └── HomePageTest.php
-│   ├── Unit/
-│   │   └── ExampleTest.php
-│   └── TestCase.php
-├── .editorconfig
-├── .env.example
-├── .gitattributes
-├── .gitignore
-├── artisan
-├── composer.json
-├── package.json
-├── phpunit.xml
-├── README.md
-└── vite.config.js
+skillpath_ruangguru_style/
+.editorconfig
+.env.example
+.gitattributes
+.gitignore
+README.md
+STRUKTUR_PROJECT.txt
+app/Http/Controllers/AuthController.php
+app/Http/Controllers/CartController.php
+app/Http/Controllers/CategoryController.php
+app/Http/Controllers/CertificateController.php
+app/Http/Controllers/CheckoutController.php
+app/Http/Controllers/Controller.php
+app/Http/Controllers/CourseController.php
+app/Http/Controllers/CourseQuestionController.php
+app/Http/Controllers/DashboardController.php
+app/Http/Controllers/ExploreController.php
+app/Http/Controllers/HomeController.php
+app/Http/Controllers/HowItWorksController.php
+app/Http/Controllers/InstructorController.php
+app/Http/Controllers/InstructorCourseController.php
+app/Http/Controllers/InstructorDashboardController.php
+app/Http/Controllers/InstructorLiveSessionController.php
+app/Http/Controllers/LearningController.php
+app/Http/Controllers/LiveClassController.php
+app/Http/Controllers/MyCourseController.php
+app/Http/Controllers/OnboardingController.php
+app/Http/Controllers/OrderController.php
+app/Http/Controllers/ParentController.php
+app/Http/Controllers/ReviewController.php
+app/Http/Controllers/WishlistController.php
+app/Models/Activity.php
+app/Models/Category.php
+app/Models/Certificate.php
+app/Models/ChildProfile.php
+app/Models/CourseAnswer.php
+app/Models/CourseQuestion.php
+app/Models/CourseReview.php
+app/Models/Enrollment.php
+app/Models/InstructorProfile.php
+app/Models/Interest.php
+app/Models/LearningPath.php
+app/Models/LiveSession.php
+app/Models/Module.php
+app/Models/Order.php
+app/Models/OrderItem.php
+app/Models/Progress.php
+app/Models/SessionBooking.php
+app/Models/Skill.php
+app/Models/User.php
+app/Models/Wishlist.php
+app/Providers/AppServiceProvider.php
+app/Services/AdaptiveLearningService.php
+artisan
+bootstrap/app.php
+bootstrap/cache/.gitignore
+bootstrap/providers.php
+composer.json
+config/app.php
+config/auth.php
+config/cache.php
+config/database.php
+config/filesystems.php
+config/logging.php
+config/mail.php
+config/queue.php
+config/services.php
+config/session.php
+database/factories/UserFactory.php
+database/migrations/0001_01_01_000000_create_users_table.php
+database/migrations/0001_01_01_000001_create_cache_table.php
+database/migrations/0001_01_01_000002_create_jobs_table.php
+database/migrations/2026_08_13_000001_add_role_to_users_table.php
+database/migrations/2026_08_13_000002_create_child_profiles_table.php
+database/migrations/2026_08_13_000003_create_interests_table.php
+database/migrations/2026_08_13_000004_create_skills_table.php
+database/migrations/2026_08_13_000005_create_learning_paths_table.php
+database/migrations/2026_08_13_000006_create_modules_table.php
+database/migrations/2026_08_13_000007_create_activities_table.php
+database/migrations/2026_08_13_000008_create_progress_table.php
+database/migrations/2026_08_13_000009_create_categories_table.php
+database/migrations/2026_08_13_000010_create_instructor_profiles_table.php
+database/migrations/2026_08_13_000011_add_commerce_fields_to_learning_paths_table.php
+database/migrations/2026_08_13_000012_create_course_commerce_tables.php
+database/migrations/2026_08_13_000013_create_live_learning_tables.php
+database/migrations/2026_08_13_000014_create_course_discussion_tables.php
+database/migrations/2026_08_13_000015_create_certificates_table.php
+database/seeders/DatabaseSeeder.php
+docs/FEATURES_MARKETPLACE.md
+package.json
+phpunit.xml
+public/.htaccess
+public/css/skillpath.css
+public/index.php
+public/js/skillpath.js
+public/robots.txt
+resources/css/app.css
+resources/js/app.js
+resources/js/bootstrap.js
+resources/views/auth/login.blade.php
+resources/views/auth/register.blade.php
+resources/views/cart/index.blade.php
+resources/views/categories/index.blade.php
+resources/views/categories/show.blade.php
+resources/views/certificates/show.blade.php
+resources/views/checkout/index.blade.php
+resources/views/courses/show.blade.php
+resources/views/dashboard.blade.php
+resources/views/explore/index.blade.php
+resources/views/home.blade.php
+resources/views/instructor/courses/edit.blade.php
+resources/views/instructor/dashboard.blade.php
+resources/views/instructors/index.blade.php
+resources/views/instructors/show.blade.php
+resources/views/layouts/app.blade.php
+resources/views/learning/module.blade.php
+resources/views/learning/path.blade.php
+resources/views/live/index.blade.php
+resources/views/live/show.blade.php
+resources/views/my-courses/index.blade.php
+resources/views/onboarding/edit.blade.php
+resources/views/orders/index.blade.php
+resources/views/orders/show.blade.php
+resources/views/pages/how-it-works.blade.php
+resources/views/pages/parents.blade.php
+resources/views/wishlist/index.blade.php
+routes/console.php
+routes/web.php
+storage/app/private/.gitignore
+storage/app/public/.gitignore
+storage/framework/cache/data/.gitignore
+storage/framework/sessions/.gitignore
+storage/framework/testing/.gitignore
+storage/framework/views/.gitignore
+storage/logs/.gitignore
+tests/Feature/HomePageTest.php
+tests/TestCase.php
+tests/Unit/ExampleTest.php
+vite.config.js
