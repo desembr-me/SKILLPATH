@@ -1,0 +1,120 @@
+skillpath/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── AuthController.php
+│   │       ├── Controller.php
+│   │       ├── DashboardController.php
+│   │       ├── HomeController.php
+│   │       ├── LearningController.php
+│   │       └── OnboardingController.php
+│   ├── Models/
+│   │   ├── Activity.php
+│   │   ├── ChildProfile.php
+│   │   ├── Interest.php
+│   │   ├── LearningPath.php
+│   │   ├── Module.php
+│   │   ├── Progress.php
+│   │   ├── Skill.php
+│   │   └── User.php
+│   ├── Providers/
+│   │   └── AppServiceProvider.php
+│   └── Services/
+│       └── AdaptiveLearningService.php
+├── bootstrap/
+│   ├── cache/
+│   │   └── .gitignore
+│   ├── app.php
+│   └── providers.php
+├── config/
+│   ├── app.php
+│   ├── auth.php
+│   ├── cache.php
+│   ├── database.php
+│   ├── filesystems.php
+│   ├── logging.php
+│   ├── mail.php
+│   ├── queue.php
+│   ├── services.php
+│   └── session.php
+├── database/
+│   ├── factories/
+│   │   └── UserFactory.php
+│   ├── migrations/
+│   │   ├── 0001_01_01_000000_create_users_table.php
+│   │   ├── 0001_01_01_000001_create_cache_table.php
+│   │   ├── 0001_01_01_000002_create_jobs_table.php
+│   │   ├── 2026_08_13_000001_add_role_to_users_table.php
+│   │   ├── 2026_08_13_000002_create_child_profiles_table.php
+│   │   ├── 2026_08_13_000003_create_interests_table.php
+│   │   ├── 2026_08_13_000004_create_skills_table.php
+│   │   ├── 2026_08_13_000005_create_learning_paths_table.php
+│   │   ├── 2026_08_13_000006_create_modules_table.php
+│   │   ├── 2026_08_13_000007_create_activities_table.php
+│   │   └── 2026_08_13_000008_create_progress_table.php
+│   └── seeders/
+│       └── DatabaseSeeder.php
+├── public/
+│   ├── css/
+│   │   └── skillpath.css
+│   ├── js/
+│   │   └── skillpath.js
+│   ├── .htaccess
+│   ├── index.php
+│   └── robots.txt
+├── resources/
+│   ├── css/
+│   │   └── app.css
+│   ├── js/
+│   │   ├── app.js
+│   │   └── bootstrap.js
+│   └── views/
+│       ├── auth/
+│       │   ├── login.blade.php
+│       │   └── register.blade.php
+│       ├── layouts/
+│       │   └── app.blade.php
+│       ├── learning/
+│       │   ├── module.blade.php
+│       │   └── path.blade.php
+│       ├── onboarding/
+│       │   └── edit.blade.php
+│       ├── dashboard.blade.php
+│       └── home.blade.php
+├── routes/
+│   ├── console.php
+│   └── web.php
+├── storage/
+│   ├── app/
+│   │   ├── private/
+│   │   │   └── .gitignore
+│   │   └── public/
+│   │       └── .gitignore
+│   ├── framework/
+│   │   ├── cache/
+│   │   │   └── data/
+│   │   │       └── .gitignore
+│   │   ├── sessions/
+│   │   │   └── .gitignore
+│   │   ├── testing/
+│   │   │   └── .gitignore
+│   │   └── views/
+│   │       └── .gitignore
+│   └── logs/
+│       └── .gitignore
+├── tests/
+│   ├── Feature/
+│   │   └── HomePageTest.php
+│   ├── Unit/
+│   │   └── ExampleTest.php
+│   └── TestCase.php
+├── .editorconfig
+├── .env.example
+├── .gitattributes
+├── .gitignore
+├── artisan
+├── composer.json
+├── package.json
+├── phpunit.xml
+├── README.md
+└── vite.config.js
