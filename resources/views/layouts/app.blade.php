@@ -7,6 +7,7 @@
     <title>@yield('title', 'SKILLPATH')</title>
     <link rel="stylesheet" href="{{ asset('css/skillpath.css') }}">
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/certificate.css') }}">
 </head>
 <body>
 <header class="site-header">

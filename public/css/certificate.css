@@ -1,0 +1,542 @@
+/* =========================================================
+   SKILLPATH CERTIFICATE
+   Shared by student and admin certificate pages.
+   Screen ratio follows A4 landscape: 297 × 210 mm.
+   ========================================================= */
+
+.skill-certificate-page {
+    min-height: 75vh;
+    padding: 42px 0 64px;
+    background: #eef3f6;
+}
+
+.skill-certificate-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+    padding: 18px 20px;
+    border: 1px solid #dce2e7;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.skill-cert-page-kicker {
+    display: block;
+    margin-bottom: 4px;
+    color: #2388ae;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .9px;
+    text-transform: uppercase;
+}
+
+.skill-certificate-toolbar h1 {
+    margin: 0;
+    color: #20242e;
+    font-size: clamp(20px, 3vw, 30px);
+    line-height: 1.2;
+}
+
+.skill-certificate-toolbar p {
+    margin: 5px 0 0;
+    color: #6a7380;
+    font-size: 12px;
+}
+
+.skill-certificate-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.skill-certificate-print-area {
+    width: 100%;
+}
+
+.skill-certificate-document {
+    position: relative;
+    width: min(1120px, 100%);
+    aspect-ratio: 297 / 210;
+    margin: 0 auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(28px, 4vw, 52px);
+    border: 10px double #20242e;
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(69, 191, 230, .05), transparent 44%),
+        linear-gradient(135deg, #fffdf4 0%, #ffffff 48%, #eefaff 100%);
+    color: #20242e;
+    box-shadow: 0 18px 40px rgba(32, 36, 46, .12);
+}
+
+.skill-certificate-document::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    pointer-events: none;
+    border: 1px solid rgba(32, 36, 46, .35);
+}
+
+.skill-cert-ornament {
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    border: 16px solid rgba(255, 210, 26, .34);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.skill-cert-ornament.ornament-a { top: -52px; left: -52px; }
+.skill-cert-ornament.ornament-b { top: -52px; right: -52px; }
+.skill-cert-ornament.ornament-c { bottom: -52px; left: -52px; }
+.skill-cert-ornament.ornament-d { bottom: -52px; right: -52px; }
+
+.skill-cert-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.skill-cert-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.skill-cert-logo {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #20242e;
+    border-radius: 13px;
+    background: #43c8f5;
+    box-shadow: 4px 4px 0 #20242e;
+    font-size: 19px;
+    font-weight: 900;
+}
+
+.skill-cert-brand strong,
+.skill-cert-brand small,
+.skill-cert-code span,
+.skill-cert-code strong {
+    display: block;
+}
+
+.skill-cert-brand strong {
+    font-size: 18px;
+    letter-spacing: .5px;
+}
+
+.skill-cert-brand small {
+    margin-top: 2px;
+    color: #6d7682;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.skill-cert-code {
+    max-width: 240px;
+    text-align: right;
+}
+
+.skill-cert-code span {
+    color: #6d7682;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+}
+
+.skill-cert-code strong {
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+    font-size: 11px;
+}
+
+.skill-cert-title-block {
+    position: relative;
+    z-index: 1;
+    margin: clamp(24px, 4vw, 44px) auto 0;
+    text-align: center;
+}
+
+.skill-cert-kicker {
+    color: #1885ad;
+    font-size: clamp(10px, 1.2vw, 13px);
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+.skill-cert-title-block h1 {
+    margin: 6px 0 12px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 4.4vw, 48px);
+    font-weight: 700;
+    line-height: 1.05;
+}
+
+.skill-cert-title-block p,
+.skill-cert-recipient p {
+    margin: 0;
+    color: #68717d;
+    font-size: clamp(11px, 1.4vw, 15px);
+}
+
+.skill-cert-recipient {
+    position: relative;
+    z-index: 1;
+    width: min(760px, 86%);
+    margin: 12px auto 0;
+    text-align: center;
+}
+
+.skill-cert-recipient h2 {
+    margin: 4px 0 6px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(34px, 6.2vw, 68px);
+    font-weight: 700;
+    line-height: 1.05;
+}
+
+.skill-cert-name-line {
+    width: min(520px, 75%);
+    height: 2px;
+    display: block;
+    margin: 0 auto 13px;
+    background: linear-gradient(90deg, transparent, #d5ad12 18%, #d5ad12 82%, transparent);
+}
+
+.skill-cert-recipient h3 {
+    margin: 7px 0 4px;
+    font-size: clamp(18px, 2.8vw, 30px);
+    line-height: 1.2;
+}
+
+.skill-cert-recipient > small {
+    display: block;
+    color: #808895;
+    font-size: clamp(9px, 1.15vw, 12px);
+    font-weight: 700;
+}
+
+.skill-cert-achievement {
+    position: relative;
+    z-index: 1;
+    width: min(740px, 84%);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: clamp(18px, 3vw, 30px) auto 0;
+}
+
+.skill-cert-achievement > div {
+    padding: 9px 12px;
+    border-top: 1px solid #cfd5da;
+    border-bottom: 1px solid #cfd5da;
+    text-align: center;
+}
+
+.skill-cert-achievement span,
+.skill-cert-achievement strong {
+    display: block;
+}
+
+.skill-cert-achievement span {
+    color: #707986;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .55px;
+    text-transform: uppercase;
+}
+
+.skill-cert-achievement strong {
+    margin-top: 4px;
+    font-size: clamp(10px, 1.35vw, 14px);
+}
+
+.skill-cert-footer {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) 90px minmax(160px, 1fr);
+    gap: 20px;
+    align-items: end;
+    width: min(760px, 84%);
+    margin: auto auto 0;
+}
+
+.skill-cert-signature {
+    text-align: center;
+}
+
+.signature-line {
+    width: min(210px, 100%);
+    height: 1px;
+    display: block;
+    margin: 0 auto 7px;
+    background: #313743;
+}
+
+.skill-cert-signature strong,
+.skill-cert-signature small {
+    display: block;
+}
+
+.skill-cert-signature strong {
+    font-size: clamp(9px, 1.25vw, 12px);
+}
+
+.skill-cert-signature small {
+    margin-top: 2px;
+    color: #79818d;
+    font-size: 8px;
+}
+
+.skill-cert-seal {
+    width: 74px;
+    height: 74px;
+    display: grid;
+    place-content: center;
+    justify-self: center;
+    border: 3px double #c6a00b;
+    border-radius: 50%;
+    background: rgba(255, 243, 180, .78);
+    text-align: center;
+}
+
+.skill-cert-seal span,
+.skill-cert-seal small {
+    display: block;
+}
+
+.skill-cert-seal span {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 26px;
+    font-weight: 900;
+}
+
+.skill-cert-seal small {
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: .8px;
+}
+
+.skill-cert-footnote {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 13px;
+    color: #8b929c;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+
+.skill-certificate-document.is-revoked {
+    filter: grayscale(.4);
+}
+
+.skill-cert-revoked-stamp {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-13deg);
+    padding: 9px 28px;
+    border: 5px solid rgba(160, 35, 35, .55);
+    color: rgba(160, 35, 35, .58);
+    font-size: clamp(34px, 7vw, 72px);
+    font-weight: 900;
+    letter-spacing: 6px;
+}
+
+.skill-certificate-note {
+    width: min(1120px, 100%);
+    display: flex;
+    gap: 10px;
+    margin: 14px auto 0;
+    padding: 12px 14px;
+    border: 1px solid #ded39b;
+    border-radius: 12px;
+    background: #fff9df;
+    color: #65571d;
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+.skill-certificate-note strong {
+    flex: 0 0 auto;
+}
+
+/* Admin certificate area */
+.skill-cert-admin-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, .45fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.skill-cert-admin-preview {
+    padding: 16px !important;
+    background: #eef2f5 !important;
+}
+
+.skill-cert-admin-preview .skill-certificate-document {
+    width: 100%;
+    box-shadow: none;
+}
+
+.skill-cert-admin-panel .admin-section-header {
+    margin-bottom: 14px;
+}
+
+.skill-cert-admin-form {
+    padding-top: 14px;
+    border-top: 1px solid #e1e5e9;
+}
+
+/* A4 landscape printing */
+@page {
+    size: A4 landscape;
+    margin: 10mm;
+}
+
+@media print {
+    html,
+    body {
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    .site-header,
+    .site-footer,
+    .skill-certificate-toolbar,
+    .skill-certificate-note,
+    .admin-sidebar,
+    .admin-topbar,
+    .skill-cert-admin-toolbar,
+    .skill-cert-admin-panel,
+    .admin-alert {
+        display: none !important;
+    }
+
+    .admin-shell,
+    .admin-main,
+    .admin-content,
+    .skill-cert-admin-layout,
+    .skill-cert-admin-preview,
+    .skill-certificate-page,
+    .container {
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        background: #fff !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .skill-certificate-print-area {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .skill-certificate-document {
+        width: 277mm !important;
+        height: 190mm !important;
+        aspect-ratio: auto !important;
+        margin: 0 auto !important;
+        padding: 14mm 16mm !important;
+        border-width: 3mm !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+@media (max-width: 950px) {
+    .skill-cert-admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .skill-certificate-document {
+        padding: 28px;
+    }
+}
+
+@media (max-width: 720px) {
+    .skill-certificate-page {
+        padding-top: 24px;
+    }
+
+    .skill-certificate-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .skill-certificate-actions {
+        width: 100%;
+    }
+
+    .skill-certificate-actions .btn {
+        flex: 1;
+    }
+
+    .skill-certificate-document {
+        aspect-ratio: auto;
+        min-height: 680px;
+        padding: 24px 20px;
+    }
+
+    .skill-cert-header {
+        flex-direction: column;
+    }
+
+    .skill-cert-code {
+        max-width: none;
+        text-align: left;
+    }
+
+    .skill-cert-title-block {
+        margin-top: 28px;
+    }
+
+    .skill-cert-achievement {
+        width: 100%;
+        grid-template-columns: 1fr;
+    }
+
+    .skill-cert-footer {
+        width: 100%;
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-top: 26px;
+    }
+
+    .skill-cert-seal {
+        order: -1;
+    }
+
+    .skill-cert-footnote {
+        align-items: center;
+        flex-direction: column;
+    }
+}

@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#1f2430">
     <title>@yield('title', 'Admin SKILLPATH')</title>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/certificate.css') }}">
 </head>
 <body class="admin-body">
 <div class="admin-shell">
@@ -35,10 +36,25 @@
             <a class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                 <span class="admin-nav-icon">◉</span> Pengguna
             </a>
+            <a class="{{ request()->routeIs('admin.progress.*') ? 'active' : '' }}" href="{{ route('admin.progress.index') }}">
+                <span class="admin-nav-icon">↗</span> Progres Siswa
+            </a>
+            <a class="{{ request()->routeIs('admin.schedules.*') ? 'active' : '' }}" href="{{ route('admin.schedules.index') }}">
+                <span class="admin-nav-icon">◷</span> Jadwal Pengajaran
+            </a>
+            <a class="{{ request()->routeIs('admin.certificates.*') ? 'active' : '' }}" href="{{ route('admin.certificates.index') }}">
+                <span class="admin-nav-icon">◇</span> Sertifikat
+            </a>
+            <a class="{{ request()->routeIs('admin.statistics.*') ? 'active' : '' }}" href="{{ route('admin.statistics.index') }}">
+                <span class="admin-nav-icon">▥</span> Statistik Platform
+            </a>
 
             <span class="admin-nav-label">TRANSAKSI & KONTEN</span>
             <a class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}">
                 <span class="admin-nav-icon">▣</span> Pesanan
+            </a>
+            <a class="{{ request()->routeIs('admin.revenue.*') ? 'active' : '' }}" href="{{ route('admin.revenue.index') }}">
+                <span class="admin-nav-icon">Rp</span> Laporan Pendapatan
             </a>
             <a class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}" href="{{ route('admin.reviews.index') }}">
                 <span class="admin-nav-icon">★</span> Review

@@ -1,3 +1,38 @@
 @extends('layouts.app')
-@section('title','Sertifikat | '.$learningPath->title)
-@section('content')<section class="certificate-section"><div class="container"><div class="certificate-card"><div class="brand"><span class="brand-mark">S</span><span>SKILLPATH</span></div><span class="certificate-kicker">SERTIFIKAT PENYELESAIAN</span><h1>{{ $child->name }}</h1><p>telah menyelesaikan course</p><h2>{{ $learningPath->title }}</h2><p>Pengajar: {{ $learningPath->instructor?->name ?? 'Tim SKILLPATH' }}</p><div class="certificate-meta"><span>{{ $certificate->certificate_number }}</span><span>{{ $certificate->issued_at->format('d M Y') }}</span></div></div></div></section>@endsection
+
+@section('title', 'Sertifikat | '.$learningPath->title)
+
+@section('content')
+<section class="skill-certificate-page">
+    <div class="container">
+        <div class="skill-certificate-toolbar">
+            <div>
+                <span class="skill-cert-page-kicker">Sertifikat Course</span>
+                <h1>{{ $learningPath->title }}</h1>
+                <p>Sertifikat tersedia setelah seluruh aktivitas course selesai.</p>
+            </div>
+
+            <div class="skill-certificate-actions">
+                <a class="btn btn-light" href="{{ route('my-courses.index') }}">← Course Saya</a>
+                <button class="btn btn-dark" type="button" onclick="window.print()">
+                    Cetak / Simpan PDF
+                </button>
+            </div>
+        </div>
+
+        <x-certificate.document
+            :certificate="$certificate"
+            :child="$child"
+            :course="$learningPath"
+        />
+
+        <div class="skill-certificate-note">
+            <strong>Catatan</strong>
+            <span>
+                Gunakan menu <b>Cetak / Simpan PDF</b> untuk menyimpan sertifikat dalam ukuran A4 landscape.
+                Sertifikat yang dicabut administrator tidak dapat digunakan.
+            </span>
+        </div>
+    </div>
+</section>
+@endsection

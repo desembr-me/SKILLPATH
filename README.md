@@ -336,3 +336,71 @@ php artisan optimize:clear
 ```
 
 Dokumentasi lengkap tersedia di `docs/RECYCLE_BIN.md`.
+
+
+## Monitoring Progres Siswa
+
+Admin dapat membuka `/admin/progres-siswa` untuk memantau progres pembelajaran siswa, memfilter berdasarkan course dan status, melihat detail per course, serta mengekspor data ke CSV. Dokumentasi lengkap tersedia di `docs/MONITORING_PROGRESS.md`.
+
+## Fitur Admin: Jadwal Pengajaran dan Laporan Pendapatan
+
+Admin sekarang memiliki dua fitur operasional tambahan.
+
+### Jadwal Pengajaran
+
+```text
+/admin/jadwal-pengajaran
+```
+
+Admin dapat memantau, memfilter, membuat, mengubah, membatalkan, dan mengekspor jadwal live class.
+
+### Laporan Pendapatan
+
+```text
+/admin/laporan-pendapatan
+```
+
+Admin dapat menganalisis transaksi `PAID` berdasarkan rentang tanggal, course, pengajar, dan metode pembayaran. Laporan menyediakan ringkasan pendapatan, diskon, jumlah penjualan, tren, kontribusi course, kontribusi pengajar, dan ekspor CSV.
+
+Kedua fitur menggunakan tabel yang sudah ada sehingga tidak membutuhkan migration baru.
+
+Dokumentasi lengkap:
+
+```text
+docs/ADMIN_SCHEDULE_REVENUE.md
+```
+
+
+## Manajemen Sertifikat Admin
+
+Admin dapat mengelola sertifikat melalui:
+
+```text
+/admin/sertifikat
+```
+
+Fitur:
+
+- penerbitan sertifikat untuk siswa yang sudah menyelesaikan course,
+- status aktif/dicabut,
+- alasan pencabutan,
+- aktivasi ulang,
+- cetak,
+- pencarian dan filter,
+- ekspor CSV.
+
+## Statistik Platform Admin
+
+Admin dapat membuka:
+
+```text
+/admin/statistik-platform
+```
+
+Statistik mencakup pengguna, siswa, enrollment, aktivitas belajar, pendapatan, sertifikat, rating, live class, distribusi usia, popularitas kategori, course, dan pengajar.
+
+Dokumentasi lengkap:
+
+```text
+docs/ADMIN_CERTIFICATES_STATISTICS.md
+```
