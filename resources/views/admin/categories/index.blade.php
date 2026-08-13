@@ -7,7 +7,7 @@
 <div class="admin-detail-grid category-admin-grid">
     <section class="admin-panel">
         <div class="admin-panel-head">
-            <div><span class="admin-eyebrow">Struktur katalog</span><h2>Kategori course</h2></div>
+            <div><span class="admin-eyebrow">Struktur katalog</span><h2>Kategori kelas</h2></div>
         </div>
 
         <div class="admin-category-list">
@@ -15,7 +15,7 @@
                 <div class="admin-category-row">
                     <span class="admin-category-icon">{{ $category->icon }}</span>
                     <div><strong>{{ $category->name }}</strong><small>{{ $category->description ?: 'Tanpa deskripsi' }}</small></div>
-                    <span class="admin-category-count">{{ $category->learning_paths_count }} course</span>
+                    <span class="admin-category-count">{{ $category->learning_paths_count }} kelas</span>
                     <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" onsubmit="return confirm('Pindahkan kategori ini ke Recycle Bin?')">
                         @csrf
                         @method('DELETE')

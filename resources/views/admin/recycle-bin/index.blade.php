@@ -4,7 +4,7 @@
 @section('page-title', 'Recycle Bin')
 
 @section('content')
-@php($typeLabels = ['course' => 'COURSE', 'category' => 'KATEGORI', 'user' => 'PENGGUNA', 'review' => 'REVIEW'])
+@php($typeLabels = ['course' => 'KELAS', 'category' => 'KATEGORI', 'user' => 'PENGGUNA', 'review' => 'REVIEW'])
 <section class="admin-panel recycle-hero-panel">
     <div class="admin-panel-head admin-panel-head-wrap">
         <div>
@@ -28,7 +28,7 @@
             <strong>{{ array_sum($counts) }}</strong>
         </a>
         <a class="recycle-stat-card {{ $type === 'course' ? 'active' : '' }}" href="{{ route('admin.recycle-bin.index', ['type' => 'course']) }}">
-            <span>Course</span>
+            <span>Kelas</span>
             <strong>{{ $counts['course'] }}</strong>
         </a>
         <a class="recycle-stat-card {{ $type === 'category' ? 'active' : '' }}" href="{{ route('admin.recycle-bin.index', ['type' => 'category']) }}">
@@ -49,7 +49,7 @@
         <input type="search" name="q" value="{{ $q }}" placeholder="Cari data yang dihapus...">
         <select name="type">
             <option value="all" @selected($type === 'all')>Semua jenis</option>
-            <option value="course" @selected($type === 'course')>Course</option>
+            <option value="course" @selected($type === 'course')>Kelas</option>
             <option value="category" @selected($type === 'category')>Kategori</option>
             <option value="user" @selected($type === 'user')>Pengguna</option>
             <option value="review" @selected($type === 'review')>Review</option>
@@ -110,7 +110,7 @@
 
     <div class="recycle-note">
         <strong>Catatan keamanan:</strong>
-        Course atau pengguna yang memiliki riwayat transaksi dan enrollment tidak dapat dihapus permanen. Data transaksi harus tetap terjaga.
+        Kelas atau pengguna yang memiliki riwayat transaksi dan pendaftaran tidak dapat dihapus permanen. Data transaksi harus tetap terjaga.
     </div>
 </section>
 @endsection

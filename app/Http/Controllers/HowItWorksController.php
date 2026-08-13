@@ -14,23 +14,23 @@ class HowItWorksController extends Controller
             ],
             [
                 'number' => 2,
-                'title' => 'Sistem menyaring jalur',
-                'description' => 'SKILLPATH memfilter jalur berdasarkan rentang usia dan menghitung kecocokan minat.',
+                'title' => 'Temukan kelas yang cocok',
+                'description' => 'SKILLPATH menyaring kelas non-akademik berdasarkan usia, minat, jadwal, dan ketersediaan program.',
             ],
             [
                 'number' => 3,
-                'title' => 'Anak mulai aktivitas',
-                'description' => 'Anak belajar melalui modul dan aktivitas singkat yang terstruktur.',
+                'title' => 'Daftar atau beli kelas',
+                'description' => 'Orang tua mendaftarkan anak ke kelas gratis atau menyelesaikan pembayaran untuk kelas berbayar.',
             ],
             [
                 'number' => 4,
-                'title' => 'Progres disimpan',
-                'description' => 'Aktivitas yang selesai, poin, dan progres jalur tersimpan di database.',
+                'title' => 'Pilih jadwal tatap muka',
+                'description' => 'Setelah terdaftar, pilih sesi yang tersedia dan cek lokasi, ruangan, waktu, serta perlengkapan yang perlu dibawa.',
             ],
             [
                 'number' => 5,
-                'title' => 'Rekomendasi diperbarui',
-                'description' => 'Jalur yang sudah dimulai mendapat prioritas agar pengalaman belajar tetap berkelanjutan.',
+                'title' => 'Hadir dan selesaikan program',
+                'description' => 'Pengajar mencatat kehadiran setiap sesi. Riwayat kehadiran menjadi dasar penyelesaian kelas dan sertifikat bila tersedia.',
             ],
         ];
 

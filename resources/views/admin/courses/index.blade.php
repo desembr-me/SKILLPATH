@@ -1,21 +1,21 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kelola Course | Admin SKILLPATH')
-@section('page-title', 'Course')
+@section('title', 'Kelola Kelas | Admin SKILLPATH')
+@section('page-title', 'Kelas')
 
 @section('content')
 <section class="admin-panel">
     <div class="admin-panel-head admin-panel-head-wrap">
         <div>
             <span class="admin-eyebrow">Manajemen konten</span>
-            <h2>Daftar course</h2>
-            <p>Kontrol course yang tampil pada marketplace SKILLPATH.</p>
+            <h2>Daftar kelas</h2>
+            <p>Kontrol kelas non-akademik tatap muka yang tampil pada marketplace SKILLPATH.</p>
         </div>
-        <span class="admin-total-pill">{{ $courses->total() }} course</span>
+        <span class="admin-total-pill">{{ $courses->total() }} kelas</span>
     </div>
 
     <form class="admin-filter-bar" method="GET">
-        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari judul course...">
+        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari judul kelas...">
         <select name="category">
             <option value="">Semua kategori</option>
             @foreach($categories as $category)
@@ -35,7 +35,7 @@
         <table class="admin-table wide">
             <thead>
             <tr>
-                <th>Course</th>
+                <th>Kelas</th>
                 <th>Pengajar</th>
                 <th>Usia</th>
                 <th>Harga</th>
@@ -66,7 +66,7 @@
                                 @method('PATCH')
                                 <button class="admin-icon-btn {{ $course->is_published ? 'danger' : 'success' }}" type="submit">{{ $course->is_published ? 'Unpublish' : 'Publish' }}</button>
                             </form>
-                            <form method="POST" action="{{ route('admin.courses.destroy', $course) }}" onsubmit="return confirm('Pindahkan course ini ke Recycle Bin?')">
+                            <form method="POST" action="{{ route('admin.courses.destroy', $course) }}" onsubmit="return confirm('Pindahkan kelas ini ke Recycle Bin?')">
                                 @csrf
                                 @method('DELETE')
                                 <button class="admin-icon-btn danger" type="submit">Hapus</button>
@@ -75,7 +75,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="7" class="admin-empty-cell">Course tidak ditemukan.</td></tr>
+                <tr><td colspan="7" class="admin-empty-cell">Kelas tidak ditemukan.</td></tr>
             @endforelse
             </tbody>
         </table>

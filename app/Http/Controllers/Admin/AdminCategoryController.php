@@ -38,6 +38,6 @@ class AdminCategoryController extends Controller
     {
         $category->delete();
 
-        return back()->with('success', 'Kategori dipindahkan ke Recycle Bin. Relasi course tetap tersimpan dan akan kembali jika kategori dipulihkan.');
+        return back()->with('success', 'Kategori dipindahkan ke Recycle Bin. Relasi kelas tetap tersimpan dan akan kembali jika kategori dipulihkan.');
     }
 }

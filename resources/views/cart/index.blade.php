@@ -1,3 +1,14 @@
 @extends('layouts.app')
 @section('title','Keranjang | SKILLPATH')
-@section('content')<section class="simple-hero"><div class="container"><span class="eyebrow">Keranjang</span><h1>Course yang akan dibeli.</h1></div></section><section class="section"><div class="container commerce-grid"><div>@forelse($courses as $c)<article class="cart-item"><div class="course-thumb mini"><span>{{ $c->icon }}</span></div><div><h2><a href="{{ route('courses.show',$c) }}">{{ $c->title }}</a></h2><p>Pengajar: {{ $c->instructor?->name }}</p><strong>Rp{{ number_format($c->effectivePrice(),0,',','.') }}</strong></div><form method="POST" action="{{ route('cart.remove',$c) }}">@csrf @method('DELETE')<button class="text-button" type="submit">Hapus</button></form></article>@empty<div class="empty-card"><h2>Keranjang kosong.</h2><a class="btn btn-dark" href="{{ route('explore.index') }}">Jelajah Course</a></div>@endforelse</div>@if($courses->isNotEmpty())<aside class="summary-card"><h2>Ringkasan</h2><div class="summary-line"><span>Subtotal</span><strong>Rp{{ number_format($subtotal,0,',','.') }}</strong></div><div class="summary-line total"><span>Total</span><strong>Rp{{ number_format($subtotal,0,',','.') }}</strong></div><a class="btn btn-dark btn-full" href="{{ route('checkout.show') }}">Lanjut Checkout</a></aside>@endif</div></section>@endsection
+@section('content')
+<section class="simple-hero"><div class="container"><span class="eyebrow">Keranjang</span><h1>Kelas yang akan didaftarkan.</h1><p>Pembayaran dilakukan melalui website, sedangkan kegiatannya berlangsung tatap muka di lokasi kelas.</p></div></section>
+<section class="section"><div class="container commerce-grid"><div>
+@forelse($courses as $c)
+<article class="cart-item"><div class="course-thumb mini"><span>{{ $c->icon }}</span></div><div><h2><a href="{{ route('courses.show',$c) }}">{{ $c->title }}</a></h2><p>Pengajar: {{ $c->instructor?->name }}</p><p>📍 {{ $c->venue_summary ?: 'Lokasi tersedia di detail kelas' }}</p><strong>Rp{{ number_format($c->effectivePrice(),0,',','.') }}</strong></div><form method="POST" action="{{ route('cart.remove',$c) }}">@csrf @method('DELETE')<button class="text-button" type="submit">Hapus</button></form></article>
+@empty
+<div class="empty-card"><h2>Keranjang kosong.</h2><a class="btn btn-dark" href="{{ route('explore.index') }}">Jelajah Kelas</a></div>
+@endforelse
+</div>
+@if($courses->isNotEmpty())<aside class="summary-card"><h2>Ringkasan</h2><div class="summary-line"><span>Subtotal</span><strong>Rp{{ number_format($subtotal,0,',','.') }}</strong></div><div class="summary-line total"><span>Total</span><strong>Rp{{ number_format($subtotal,0,',','.') }}</strong></div><a class="btn btn-dark btn-full" href="{{ route('checkout.show') }}">Lanjut Checkout</a><p class="small-note">Setelah pembayaran berhasil, pilih jadwal kelas yang masih memiliki kursi.</p></aside>@endif
+</div></section>
+@endsection

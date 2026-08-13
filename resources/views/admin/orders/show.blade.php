@@ -21,7 +21,7 @@
 
         <div class="admin-table-wrap">
             <table class="admin-table">
-                <thead><tr><th>Course</th><th>Harga</th><th>Diskon</th><th>Subtotal</th></tr></thead>
+                <thead><tr><th>Kelas</th><th>Harga</th><th>Diskon</th><th>Subtotal</th></tr></thead>
                 <tbody>
                 @foreach($order->items as $item)
                     <tr>

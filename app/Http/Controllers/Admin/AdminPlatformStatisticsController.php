@@ -73,7 +73,7 @@ class AdminPlatformStatisticsController extends Controller
 
             fputcsv($handle, [], ';', '"', '');
             fputcsv($handle, [
-                'COURSE TERPOPULER',
+                'KELAS TERPOPULER',
                 'ENROLLMENT',
                 'RATING',
             ], ';', '"', '');

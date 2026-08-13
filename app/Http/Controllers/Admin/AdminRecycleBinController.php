@@ -66,7 +66,7 @@ class AdminRecycleBinController extends Controller
         User::onlyTrashed()->restore();
         CourseReview::onlyTrashed()->restore();
 
-        return back()->with('success', 'Semua data di Recycle Bin berhasil dipulihkan. Course yang dipulihkan tetap berstatus draft sampai dipublikasikan kembali oleh admin.');
+        return back()->with('success', 'Semua data di Recycle Bin berhasil dipulihkan. Kelas yang dipulihkan tetap berstatus draft sampai dipublikasikan kembali oleh admin.');
     }
 
     public function forceDelete(string $type, int $id)
@@ -97,7 +97,7 @@ class AdminRecycleBinController extends Controller
                     'type' => 'course',
                     'id' => $course->id,
                     'name' => $course->title,
-                    'detail' => 'Course · usia '.$course->min_age.'–'.$course->max_age.' tahun',
+                    'detail' => 'Kelas · usia '.$course->min_age.'–'.$course->max_age.' tahun',
                     'deleted_at' => $course->deleted_at,
                 ]),
 
@@ -140,7 +140,7 @@ class AdminRecycleBinController extends Controller
                     'type' => 'review',
                     'id' => $review->id,
                     'name' => 'Review '.$review->rating.' bintang',
-                    'detail' => ($review->user?->name ?? 'Pengguna tidak aktif').' · '.($review->learningPath?->title ?? 'Course tidak aktif'),
+                    'detail' => ($review->user?->name ?? 'Pengguna tidak aktif').' · '.($review->learningPath?->title ?? 'Kelas tidak aktif'),
                     'deleted_at' => $review->deleted_at,
                 ]),
         };
@@ -161,7 +161,7 @@ class AdminRecycleBinController extends Controller
     private function label(string $type): string
     {
         return match ($type) {
-            'course' => 'Course',
+            'course' => 'Kelas',
             'category' => 'Kategori',
             'user' => 'Pengguna',
             'review' => 'Review',
@@ -176,7 +176,7 @@ class AdminRecycleBinController extends Controller
             $hasEnrollments = DB::table('enrollments')->where('learning_path_id', $id)->exists();
 
             if ($hasTransactions || $hasEnrollments) {
-                return 'Course tidak dapat dihapus permanen karena memiliki riwayat transaksi atau enrollment. Pulihkan course jika masih diperlukan.';
+                return 'Kelas tidak dapat dihapus permanen karena memiliki riwayat transaksi atau pendaftaran. Pulihkan kelas jika masih diperlukan.';
             }
         }
 
@@ -189,7 +189,7 @@ class AdminRecycleBinController extends Controller
                 : false;
 
             if ($hasOrders || $hasCourses || $hasEnrollments) {
-                return 'Pengguna tidak dapat dihapus permanen karena memiliki riwayat course, transaksi, atau enrollment.';
+                return 'Pengguna tidak dapat dihapus permanen karena memiliki riwayat kelas, transaksi, atau pendaftaran.';
             }
         }
 

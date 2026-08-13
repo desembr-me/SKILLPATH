@@ -47,6 +47,6 @@ class AdminInstructorController extends Controller
         $instructor->coursesTaught()->update(['is_published' => false]);
         $instructor->delete();
 
-        return back()->with('success', 'Akun pengajar dipindahkan ke Recycle Bin. Course miliknya otomatis dibuat draft.');
+        return back()->with('success', 'Akun pengajar dipindahkan ke Recycle Bin. Kelas miliknya otomatis dibuat draft.');
     }
 }

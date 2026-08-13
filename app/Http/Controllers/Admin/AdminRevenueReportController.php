@@ -153,7 +153,7 @@ class AdminRevenueReportController extends Controller
                 'Tanggal Bayar',
                 'Pembeli',
                 'Email',
-                'Course',
+                'Kelas',
                 'Pengajar',
                 'Metode Pembayaran',
                 'Harga Normal',

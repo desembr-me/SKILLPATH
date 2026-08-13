@@ -44,7 +44,7 @@ class AdminCourseController extends Controller
             'published_at' => ! $learningPath->is_published ? now() : $learningPath->published_at,
         ]);
 
-        return back()->with('success', 'Status publikasi course berhasil diperbarui.');
+        return back()->with('success', 'Status publikasi kelas berhasil diperbarui.');
     }
 
     public function destroy(LearningPath $learningPath)
@@ -52,6 +52,6 @@ class AdminCourseController extends Controller
         $learningPath->update(['is_published' => false]);
         $learningPath->delete();
 
-        return back()->with('success', 'Course dipindahkan ke Recycle Bin.');
+        return back()->with('success', 'Kelas dipindahkan ke Recycle Bin.');
     }
 }

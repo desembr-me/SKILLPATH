@@ -12,14 +12,14 @@ class CartController extends Controller
     }
     public function add(Request $request, LearningPath $learningPath){
         abort_unless($learningPath->is_published,404);
-        if ($learningPath->is_free || $learningPath->effectivePrice() <= 0) return redirect()->route('courses.show',$learningPath)->with('success','Course ini gratis. Aktifkan langsung dari halaman course.');
+        if ($learningPath->is_free || $learningPath->effectivePrice() <= 0) return redirect()->route('courses.show',$learningPath)->with('success','Kelas ini gratis. Daftarkan anak langsung dari halaman kelas.');
         $cart = collect($request->session()->get('cart', []))->push($learningPath->id)->unique()->values()->all();
         $request->session()->put('cart',$cart);
-        return back()->with('success','Course ditambahkan ke keranjang.');
+        return back()->with('success','Kelas ditambahkan ke keranjang.');
     }
     public function remove(Request $request, LearningPath $learningPath){
         $cart = collect($request->session()->get('cart', []))->reject(fn($id)=>(int)$id === $learningPath->id)->values()->all();
         $request->session()->put('cart',$cart);
-        return back()->with('success','Course dihapus dari keranjang.');
+        return back()->with('success','Kelas dihapus dari keranjang.');
     }
 }

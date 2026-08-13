@@ -8,7 +8,7 @@
     <div>
         <span class="admin-eyebrow">Analitik platform</span>
         <h2>Pahami pertumbuhan dan aktivitas SKILLPATH.</h2>
-        <p>Statistik menggabungkan data pengguna, enrollment, aktivitas belajar, course, sertifikat, live class, review, dan transaksi.</p>
+        <p>Statistik menggabungkan data pengguna, pendaftaran kelas, kehadiran, jadwal tatap muka, sertifikat, review, dan transaksi.</p>
     </div>
 
     <a class="admin-btn secondary" href="{{ route('admin.statistics.export', ['period' => $period]) }}">Ekspor CSV</a>
@@ -39,15 +39,15 @@
     </article>
 
     <article class="admin-stat-card accent-yellow">
-        <span class="admin-stat-label">Siswa & Enrollment</span>
+        <span class="admin-stat-label">Peserta & Pendaftaran</span>
         <strong>{{ number_format($metrics['children']) }}</strong>
-        <small>{{ number_format($metrics['enrollments']) }} total enrollment</small>
+        <small>{{ number_format($metrics['enrollments']) }} total pendaftaran</small>
     </article>
 
     <article class="admin-stat-card accent-green">
-        <span class="admin-stat-label">Siswa Aktif Periode Ini</span>
+        <span class="admin-stat-label">Peserta Hadir Periode Ini</span>
         <strong>{{ number_format($metrics['active_students_period']) }}</strong>
-        <small>{{ number_format($metrics['completed_activities_period']) }} aktivitas selesai</small>
+        <small>{{ number_format($metrics['attendances_period']) }} kehadiran tercatat</small>
     </article>
 
     <article class="admin-stat-card accent-pink">
@@ -65,7 +65,7 @@
     <article class="admin-stat-card accent-blue">
         <span class="admin-stat-label">Completion Rate</span>
         <strong>{{ number_format($metrics['completion_rate'], 1) }}%</strong>
-        <small>Sertifikat aktif dibanding seluruh enrollment</small>
+        <small>Sertifikat aktif dibanding seluruh pendaftaran</small>
     </article>
 
     <article class="admin-stat-card accent-yellow">
@@ -75,9 +75,9 @@
     </article>
 
     <article class="admin-stat-card accent-pink">
-        <span class="admin-stat-label">Course Aktif</span>
+        <span class="admin-stat-label">Kelas Aktif</span>
         <strong>{{ number_format($metrics['published_courses']) }}</strong>
-        <small>Course yang dipublikasikan</small>
+        <small>Kelas yang dipublikasikan</small>
     </article>
 </div>
 
@@ -86,14 +86,14 @@
         <div>
             <span class="admin-eyebrow">Tren</span>
             <h2>Aktivitas platform</h2>
-            <p>Bandingkan pengguna baru, enrollment, aktivitas selesai, dan pendapatan pada periode yang sama.</p>
+            <p>Bandingkan pengguna baru, enrollment, kehadiran tercatat, dan pendapatan pada periode yang sama.</p>
         </div>
     </div>
 
     <div class="statistics-legend">
         <span><i class="legend-users"></i>Pengguna baru</span>
-        <span><i class="legend-enrollments"></i>Enrollment</span>
-        <span><i class="legend-activities"></i>Aktivitas selesai</span>
+        <span><i class="legend-enrollments"></i>Pendaftaran</span>
+        <span><i class="legend-activities"></i>Kehadiran</span>
         <span><i class="legend-revenue"></i>Pendapatan</span>
     </div>
 
@@ -113,8 +113,8 @@
                     ></span>
                     <span
                         class="stat-bar activities"
-                        style="height: {{ max(3, ($point['activities'] / $trend['max_activities']) * 100) }}%"
-                        title="Aktivitas selesai: {{ $point['activities'] }}"
+                        style="height: {{ max(3, ($point['attendances'] / $trend['max_attendances']) * 100) }}%"
+                        title="Kehadiran: {{ $point['attendances'] }}"
                     ></span>
                     <span
                         class="stat-bar revenue"
@@ -132,8 +132,8 @@
     <section class="admin-panel">
         <div class="admin-panel-head">
             <div>
-                <span class="admin-eyebrow">Funnel belajar</span>
-                <h2>Perjalanan siswa</h2>
+                <span class="admin-eyebrow">Funnel partisipasi</span>
+                <h2>Perjalanan peserta</h2>
             </div>
         </div>
 
@@ -216,20 +216,20 @@
                 <strong>{{ number_format($engagement['new_users']) }}</strong>
             </div>
             <div>
-                <span>Enrollment baru</span>
+                <span>Pendaftaran baru</span>
                 <strong>{{ number_format($engagement['new_enrollments']) }}</strong>
             </div>
             <div>
-                <span>Live class</span>
-                <strong>{{ number_format($engagement['live_sessions']) }}</strong>
+                <span>Sesi kelas</span>
+                <strong>{{ number_format($engagement['class_sessions']) }}</strong>
             </div>
             <div>
-                <span>Booking live</span>
-                <strong>{{ number_format($engagement['live_bookings']) }}</strong>
+                <span>Booking kursi</span>
+                <strong>{{ number_format($engagement['class_bookings']) }}</strong>
             </div>
             <div>
-                <span>Keterisian live</span>
-                <strong>{{ number_format($engagement['live_fill_rate'], 1) }}%</strong>
+                <span>Keterisian kelas</span>
+                <strong>{{ number_format($engagement['class_fill_rate'], 1) }}%</strong>
             </div>
             <div>
                 <span>Review disetujui</span>
@@ -243,10 +243,10 @@
     <section class="admin-panel">
         <div class="admin-panel-head">
             <div>
-                <span class="admin-eyebrow">Course</span>
-                <h2>Course terpopuler</h2>
+                <span class="admin-eyebrow">Kelas</span>
+                <h2>Kelas terpopuler</h2>
             </div>
-            <a href="{{ route('admin.courses.index') }}">Kelola course →</a>
+            <a href="{{ route('admin.courses.index') }}">Kelola kelas →</a>
         </div>
 
         <div class="statistics-ranking-list">
@@ -259,7 +259,7 @@
                     </div>
                     <div class="statistics-rank-value">
                         <strong>{{ number_format($course->enrollments_count) }}</strong>
-                        <small>enrollment · ★ {{ number_format((float) ($course->reviews_avg_rating ?? 0), 1) }}</small>
+                        <small>pendaftaran · ★ {{ number_format((float) ($course->reviews_avg_rating ?? 0), 1) }}</small>
                     </div>
                 </div>
             @empty
@@ -287,7 +287,7 @@
                     </div>
                     <div class="statistics-rank-value">
                         <strong>{{ number_format($instructor->enrollment_count) }}</strong>
-                        <small>{{ number_format($instructor->course_count) }} course</small>
+                        <small>{{ number_format($instructor->course_count) }} kelas</small>
                     </div>
                 </div>
             @empty

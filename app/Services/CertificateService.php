@@ -6,48 +6,52 @@ use App\Models\Certificate;
 use App\Models\ChildProfile;
 use App\Models\Enrollment;
 use App\Models\LearningPath;
-use App\Models\Progress;
+use App\Models\SessionBooking;
 use App\Models\User;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class CertificateService
 {
     public function evaluate(ChildProfile $child, LearningPath $course): array
     {
-        $course->loadMissing('modules.activities');
+        $course->loadMissing('classSessions');
 
-        $activityIds = $course->modules
-            ->flatMap(fn ($module) => $module->activities->pluck('id'))
+        $requiredSessions = $course->classSessions
+            ->where('status', '!=', 'cancelled')
             ->values();
+        $requiredSessionIds = $requiredSessions->pluck('id');
 
-        $progress = Progress::query()
+        $attendedCount = SessionBooking::query()
             ->where('child_profile_id', $child->id)
-            ->whereIn('activity_id', $activityIds)
-            ->where('status', 'completed')
-            ->get();
+            ->whereIn('class_session_id', $requiredSessionIds)
+            ->where('status', 'attended')
+            ->count();
 
-        $totalActivities = $activityIds->count();
-        $completedActivities = $progress->count();
+        $pendingSessions = $requiredSessions
+            ->filter(fn ($session) => $session->status !== 'completed')
+            ->count();
+
+        $totalSessions = $requiredSessions->count();
+        $attendanceRate = $totalSessions > 0
+            ? round(($attendedCount / $totalSessions) * 100, 1)
+            : 0;
 
         return [
             'eligible' => $course->certificate_enabled
-                && $totalActivities > 0
-                && $completedActivities === $totalActivities,
-            'total_activities' => $totalActivities,
-            'completed_activities' => $completedActivities,
-            'progress_percent' => $totalActivities > 0
-                ? (int) round(($completedActivities / $totalActivities) * 100)
-                : 0,
-            'final_score' => $progress->whereNotNull('score')->avg('score'),
+                && $totalSessions > 0
+                && $pendingSessions === 0
+                && $attendedCount === $totalSessions,
+            'total_sessions' => $totalSessions,
+            'attended_sessions' => $attendedCount,
+            'pending_sessions' => $pendingSessions,
+            'attendance_rate' => $attendanceRate,
+            'final_score' => $attendanceRate,
         ];
     }
 
-    public function issue(
-        ChildProfile $child,
-        LearningPath $course,
-        ?User $issuer = null
-    ): Certificate {
+    public function issue(ChildProfile $child, LearningPath $course, ?User $issuer = null): Certificate
+    {
         $hasEnrollment = Enrollment::query()
             ->where('child_profile_id', $child->id)
             ->where('learning_path_id', $course->id)
@@ -56,13 +60,13 @@ class CertificateService
 
         if (! $hasEnrollment) {
             throw ValidationException::withMessages([
-                'certificate' => 'Siswa tidak memiliki enrollment aktif pada course ini.',
+                'certificate' => 'Peserta tidak memiliki pendaftaran aktif pada kelas ini.',
             ]);
         }
 
         if (! $course->certificate_enabled) {
             throw ValidationException::withMessages([
-                'certificate' => 'Sertifikat tidak diaktifkan untuk course ini.',
+                'certificate' => 'Sertifikat tidak diaktifkan untuk kelas ini.',
             ]);
         }
 
@@ -70,7 +74,7 @@ class CertificateService
 
         if (! $evaluation['eligible']) {
             throw ValidationException::withMessages([
-                'certificate' => 'Siswa belum menyelesaikan seluruh aktivitas course.',
+                'certificate' => 'Sertifikat tersedia setelah seluruh sesi kelas selesai dan peserta tercatat hadir pada semua sesi wajib.',
             ]);
         }
 
@@ -79,9 +83,7 @@ class CertificateService
             ->where('learning_path_id', $course->id)
             ->first();
 
-        if ($existing) {
-            return $existing;
-        }
+        if ($existing) return $existing;
 
         return Certificate::create([
             'child_profile_id' => $child->id,
@@ -97,12 +99,8 @@ class CertificateService
     private function generateCertificateNumber(): string
     {
         do {
-            $number = 'CERT-SP-'
-                .now()->format('Ym')
-                .'-'
-                .Str::upper(Str::random(8));
+            $number = 'CERT-SP-'.now()->format('Ym').'-'.Str::upper(Str::random(8));
         } while (Certificate::where('certificate_number', $number)->exists());
-
         return $number;
     }
 }

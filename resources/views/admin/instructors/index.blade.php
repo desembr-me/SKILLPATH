@@ -35,7 +35,7 @@
                     </div>
                     <div class="admin-person-meta">
                         <span>{{ $instructor->email }}</span>
-                        <span>{{ $instructor->courses_taught_count }} course</span>
+                        <span>{{ $instructor->courses_taught_count }} kelas</span>
                         <span>{{ $profile?->years_experience ?? 0 }} tahun pengalaman</span>
                         <span>★ {{ number_format((float) ($profile?->rating ?? 0), 1) }}</span>
                     </div>
@@ -46,7 +46,7 @@
                         @method('PATCH')
                         <button class="admin-btn {{ $profile?->is_verified ? 'outline' : 'primary' }}" type="submit">{{ $profile?->is_verified ? 'Batalkan Verifikasi' : 'Verifikasi' }}</button>
                     </form>
-                    <form method="POST" action="{{ route('admin.instructors.destroy', $instructor) }}" onsubmit="return confirm('Pindahkan akun pengajar ini ke Recycle Bin? Course miliknya akan dibuat draft.')">
+                    <form method="POST" action="{{ route('admin.instructors.destroy', $instructor) }}" onsubmit="return confirm('Pindahkan akun pengajar ini ke Recycle Bin? Kelas miliknya akan dibuat draft.')">
                         @csrf
                         @method('DELETE')
                         <button class="admin-btn danger" type="submit">Hapus</button>

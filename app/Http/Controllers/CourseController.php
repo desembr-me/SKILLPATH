@@ -15,7 +15,7 @@ class CourseController extends Controller
 
         $learningPath->load([
             'skill','categories','interests','instructor.instructorProfile','modules.activities',
-            'reviews.user','liveSessions.instructor','questions.user','questions.answers.user',
+            'reviews.user','classSessions.instructor','classSessions.bookings','questions.user','questions.answers.user',
         ]);
 
         $averageRating = round((float) $learningPath->reviews->avg('rating'), 1);
@@ -27,12 +27,19 @@ class CourseController extends Controller
         if ($request->user()) {
             $child = $request->user()->childProfile;
             $isEnrolled = $child
-                ? Enrollment::where('child_profile_id', $child->id)->where('learning_path_id', $learningPath->id)->where('status', 'active')->exists()
+                ? Enrollment::where('child_profile_id', $child->id)
+                    ->where('learning_path_id', $learningPath->id)
+                    ->where('status', 'active')
+                    ->exists()
                 : false;
-            $isWishlisted = Wishlist::where('user_id', $request->user()->id)->where('learning_path_id', $learningPath->id)->exists();
+            $isWishlisted = Wishlist::where('user_id', $request->user()->id)
+                ->where('learning_path_id', $learningPath->id)
+                ->exists();
         }
 
-        return view('courses.show', compact('learningPath','averageRating','reviewCount','studentCount','isEnrolled','isWishlisted'));
+        return view('courses.show', compact(
+            'learningPath','averageRating','reviewCount','studentCount','isEnrolled','isWishlisted'
+        ));
     }
 
     public function enrollFree(Request $request, LearningPath $learningPath)
@@ -41,13 +48,19 @@ class CourseController extends Controller
         if (! $child) return redirect()->route('onboarding.edit');
 
         abort_unless($learningPath->is_published && ($learningPath->is_free || $learningPath->effectivePrice() <= 0), 403);
-        abort_unless($child->age >= $learningPath->min_age && $child->age <= $learningPath->max_age, 422, 'Usia anak belum sesuai dengan course ini.');
+        abort_unless(
+            $child->age >= $learningPath->min_age && $child->age <= $learningPath->max_age,
+            422,
+            'Usia anak belum sesuai dengan kelas ini.'
+        );
 
         Enrollment::updateOrCreate(
             ['child_profile_id'=>$child->id,'learning_path_id'=>$learningPath->id],
-            ['status'=>'active','enrolled_at'=>now(),'expires_at'=>$learningPath->access_days ? now()->addDays($learningPath->access_days) : null]
+            ['status'=>'active','enrolled_at'=>now(),'expires_at'=>null]
         );
 
-        return redirect()->route('learning.path', $learningPath)->with('success', 'Course gratis berhasil diaktifkan.');
+        return redirect()
+            ->route('class-schedules.index', ['course' => $learningPath->id])
+            ->with('success', 'Pendaftaran kelas gratis berhasil. Silakan pilih jadwal tatap muka.');
     }
 }

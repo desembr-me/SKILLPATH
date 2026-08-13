@@ -7,13 +7,4 @@ document.addEventListener('DOMContentLoaded', () => {
             nav.classList.toggle('is-open');
         });
     }
-
-    const instructorToggle = document.querySelector('[data-instructor-toggle]');
-    const instructorSidebar = document.querySelector('[data-instructor-sidebar]');
-
-    if (instructorToggle && instructorSidebar) {
-        instructorToggle.addEventListener('click', () => {
-            instructorSidebar.classList.toggle('open');
-        });
-    }
 });

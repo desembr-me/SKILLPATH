@@ -2,8 +2,15 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "skillpath/skillpath",
     "type": "project",
-    "description": "SKILLPATH - Platform upskilling nonakademik berbasis User-Centered Design dengan jalur belajar adaptif untuk anak usia 5-14 tahun.",
-    "keywords": ["laravel", "education", "ucd", "adaptive-learning", "children"],
+    "description": "SKILLPATH - Marketplace kelas non-akademik tatap muka untuk anak usia 5-14 tahun.",
+    "keywords": [
+        "laravel",
+        "offline-classes",
+        "non-academic",
+        "children",
+        "marketplace",
+        "attendance"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.3",

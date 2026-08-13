@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassSession;
 use App\Models\LearningPath;
-use App\Models\LiveSession;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -16,190 +16,109 @@ class AdminTeachingScheduleController extends Controller
     {
         $this->validateFilters($request);
 
-        $query = $this->filteredQuery($request)
+        $schedules = $this->filteredQuery($request)
             ->with([
-                'learningPath' => fn ($courseQuery) => $courseQuery->withTrashed(),
+                'learningPath' => fn ($query) => $query->withTrashed(),
                 'instructor.instructorProfile',
             ])
             ->withCount([
-                'bookings as booked_count' => fn ($bookingQuery) => $bookingQuery
-                    ->where('status', 'booked'),
-            ]);
-
-        $schedules = $query
+                'bookings as booked_count' => fn ($query) => $query->whereIn('status', ['booked','attended']),
+                'bookings as attended_count' => fn ($query) => $query->where('status', 'attended'),
+            ])
             ->orderBy('starts_at')
             ->paginate(15)
             ->withQueryString();
 
-        $occupancyRows = LiveSession::query()
-            ->withCount([
-                'bookings as booked_count' => fn ($bookingQuery) => $bookingQuery
-                    ->where('status', 'booked'),
-            ])
-            ->whereIn('status', ['scheduled', 'live'])
+        $occupancyRows = ClassSession::query()
+            ->withCount(['bookings as booked_count' => fn ($query) => $query->whereIn('status', ['booked','attended'])])
+            ->where('status', 'scheduled')
             ->where('starts_at', '>=', now()->startOfDay())
             ->get();
 
         $avgOccupancy = $occupancyRows->isNotEmpty()
-            ? round((float) $occupancyRows->avg(
-                fn ($session) => $session->capacity > 0
-                    ? min(100, ($session->booked_count / $session->capacity) * 100)
-                    : 0
-            ), 1)
+            ? round((float) $occupancyRows->avg(fn ($session) => $session->capacity > 0
+                ? min(100, ($session->booked_count / $session->capacity) * 100)
+                : 0), 1)
             : 0;
 
         $stats = [
-            'today' => LiveSession::whereDate('starts_at', today())
-                ->where('status', '!=', 'cancelled')
-                ->count(),
-            'live_now' => LiveSession::where('status', 'live')->count(),
-            'upcoming' => LiveSession::where('starts_at', '>=', now())
-                ->whereIn('status', ['scheduled', 'live'])
+            'today' => ClassSession::whereDate('starts_at', today())->where('status', '!=', 'cancelled')->count(),
+            'upcoming' => ClassSession::where('starts_at', '>=', now())->where('status', 'scheduled')->count(),
+            'completed_month' => ClassSession::where('status', 'completed')
+                ->whereBetween('ends_at', [now()->startOfMonth(), now()->endOfMonth()])
                 ->count(),
             'avg_occupancy' => $avgOccupancy,
         ];
 
-        $instructors = User::query()
-            ->where('role', 'instructor')
-            ->orderBy('name')
-            ->get(['id', 'name']);
+        $instructors = User::where('role', 'instructor')->orderBy('name')->get(['id','name']);
+        $courses = LearningPath::with('instructor')->orderBy('title')->get(['id','title','instructor_id']);
 
-        $courses = LearningPath::query()
-            ->with('instructor')
-            ->orderBy('title')
-            ->get(['id', 'title', 'instructor_id']);
-
-        return view('admin.schedules.index', compact(
-            'schedules',
-            'stats',
-            'instructors',
-            'courses'
-        ));
+        return view('admin.schedules.index', compact('schedules','stats','instructors','courses'));
     }
 
     public function create()
     {
-        $courses = LearningPath::query()
-            ->where('is_published', true)
+        $courses = LearningPath::where('is_published', true)
             ->whereNotNull('instructor_id')
             ->with('instructor')
             ->orderBy('title')
             ->get();
-
         return view('admin.schedules.create', compact('courses'));
     }
 
     public function store(Request $request)
     {
         $data = $this->validateSchedule($request);
-        $course = LearningPath::query()->findOrFail($data['learning_path_id']);
+        $course = LearningPath::findOrFail($data['learning_path_id']);
+        abort_unless($course->instructor_id, 422, 'Kelas belum memiliki pengajar.');
 
-        abort_unless($course->instructor_id, 422, 'Course belum memiliki pengajar.');
+        $this->ensureNoInstructorConflict($course->instructor_id, $data['starts_at'], $data['ends_at']);
 
-        $this->ensureNoInstructorConflict(
-            instructorId: $course->instructor_id,
-            startsAt: $data['starts_at'],
-            endsAt: $data['ends_at'],
-        );
+        ClassSession::create($data + ['instructor_id' => $course->instructor_id]);
 
-        LiveSession::create([
-            'learning_path_id' => $course->id,
-            'instructor_id' => $course->instructor_id,
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null,
-            'starts_at' => $data['starts_at'],
-            'ends_at' => $data['ends_at'],
-            'meeting_url' => $data['meeting_url'] ?? null,
-            'capacity' => $data['capacity'],
-            'status' => $data['status'],
-            'recording_url' => $data['recording_url'] ?? null,
-        ]);
-
-        return redirect()
-            ->route('admin.schedules.index')
-            ->with('success', 'Jadwal pengajaran berhasil dibuat.');
+        return redirect()->route('admin.schedules.index')->with('success', 'Jadwal kelas offline berhasil dibuat.');
     }
 
-    public function edit(LiveSession $liveSession)
+    public function edit(ClassSession $classSession)
     {
-        $liveSession->load([
+        $classSession->load([
             'learningPath' => fn ($query) => $query->withTrashed(),
             'instructor',
         ]);
-
-        $courses = LearningPath::query()
-            ->withTrashed()
-            ->whereNotNull('instructor_id')
-            ->with('instructor')
-            ->orderBy('title')
-            ->get();
-
-        return view('admin.schedules.edit', compact(
-            'liveSession',
-            'courses'
-        ));
+        $courses = LearningPath::withTrashed()->whereNotNull('instructor_id')->with('instructor')->orderBy('title')->get();
+        return view('admin.schedules.edit', compact('classSession','courses'));
     }
 
-    public function update(Request $request, LiveSession $liveSession)
+    public function update(Request $request, ClassSession $classSession)
     {
         $data = $this->validateSchedule($request);
-        $course = LearningPath::withTrashed()
-            ->findOrFail($data['learning_path_id']);
+        $course = LearningPath::withTrashed()->findOrFail($data['learning_path_id']);
+        abort_unless($course->instructor_id, 422, 'Kelas belum memiliki pengajar.');
 
-        abort_unless($course->instructor_id, 422, 'Course belum memiliki pengajar.');
+        $this->ensureNoInstructorConflict($course->instructor_id, $data['starts_at'], $data['ends_at'], $classSession->id);
+        $classSession->update($data + ['instructor_id' => $course->instructor_id]);
 
-        $this->ensureNoInstructorConflict(
-            instructorId: $course->instructor_id,
-            startsAt: $data['starts_at'],
-            endsAt: $data['ends_at'],
-            ignoreSessionId: $liveSession->id,
-        );
-
-        $liveSession->update([
-            'learning_path_id' => $course->id,
-            'instructor_id' => $course->instructor_id,
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null,
-            'starts_at' => $data['starts_at'],
-            'ends_at' => $data['ends_at'],
-            'meeting_url' => $data['meeting_url'] ?? null,
-            'capacity' => $data['capacity'],
-            'status' => $data['status'],
-            'recording_url' => $data['recording_url'] ?? null,
-        ]);
-
-        return redirect()
-            ->route('admin.schedules.index')
-            ->with('success', 'Jadwal pengajaran berhasil diperbarui.');
+        return redirect()->route('admin.schedules.index')->with('success', 'Jadwal kelas offline berhasil diperbarui.');
     }
 
-    public function cancel(LiveSession $liveSession)
+    public function cancel(ClassSession $classSession)
     {
-        if ($liveSession->status === 'completed') {
-            return back()->withErrors([
-                'schedule' => 'Jadwal yang sudah selesai tidak dapat dibatalkan.',
-            ]);
+        if ($classSession->status === 'completed') {
+            return back()->withErrors(['schedule' => 'Jadwal yang sudah selesai tidak dapat dibatalkan.']);
         }
-
-        $liveSession->update(['status' => 'cancelled']);
-
-        return back()->with('success', 'Jadwal pengajaran dibatalkan.');
+        $classSession->update(['status' => 'cancelled']);
+        $classSession->bookings()->where('status', 'booked')->update(['status' => 'cancelled']);
+        return back()->with('success', 'Jadwal kelas dibatalkan.');
     }
 
     public function export(Request $request): StreamedResponse
     {
         $this->validateFilters($request);
-
-        $filename = 'jadwal-pengajaran-'.now()->format('Ymd-His').'.csv';
-
         $rows = $this->filteredQuery($request)
-            ->with([
-                'learningPath' => fn ($query) => $query->withTrashed(),
-                'instructor',
-            ])
+            ->with(['learningPath' => fn ($query) => $query->withTrashed(), 'instructor'])
             ->withCount([
-                'bookings as booked_count' => fn ($bookingQuery) => $bookingQuery
-                    ->where('status', 'booked'),
+                'bookings as booked_count' => fn ($query) => $query->whereIn('status', ['booked','attended']),
+                'bookings as attended_count' => fn ($query) => $query->where('status', 'attended'),
             ])
             ->orderBy('starts_at')
             ->get();
@@ -207,97 +126,58 @@ class AdminTeachingScheduleController extends Controller
         return response()->streamDownload(function () use ($rows) {
             $handle = fopen('php://output', 'w');
             fwrite($handle, "\xEF\xBB\xBF");
-
             fputcsv($handle, [
-                'Tanggal',
-                'Jam Mulai',
-                'Jam Selesai',
-                'Course',
-                'Pengajar',
-                'Judul Sesi',
-                'Status',
-                'Peserta Booking',
-                'Kapasitas',
-                'Keterisian (%)',
-                'Meeting URL',
+                'Tanggal','Jam Mulai','Jam Selesai','Kelas','Pengajar','Judul Sesi','Lokasi','Alamat','Ruangan',
+                'Status','Kursi Terisi','Hadir','Kapasitas','Keterisian (%)'
             ], ';', '"', '');
 
             foreach ($rows as $session) {
-                $occupancy = $session->capacity > 0
-                    ? round(($session->booked_count / $session->capacity) * 100, 1)
-                    : 0;
-
+                $occupancy = $session->capacity > 0 ? round(($session->booked_count / $session->capacity) * 100, 1) : 0;
                 fputcsv($handle, [
                     $session->starts_at?->format('Y-m-d'),
                     $session->starts_at?->format('H:i'),
                     $session->ends_at?->format('H:i'),
-                    $session->learningPath?->title ?? 'Course tidak tersedia',
+                    $session->learningPath?->title ?? 'Kelas tidak tersedia',
                     $session->instructor?->name ?? 'Pengajar tidak tersedia',
                     $session->title,
+                    $session->venue_name,
+                    $session->address,
+                    $session->room ?? '-',
                     $session->status,
                     $session->booked_count,
+                    $session->attended_count,
                     $session->capacity,
                     $occupancy,
-                    $session->meeting_url,
                 ], ';', '"', '');
             }
-
             fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-        ]);
+        }, 'jadwal-kelas-offline-'.now()->format('Ymd-His').'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     private function filteredQuery(Request $request)
     {
-        $query = LiveSession::query();
+        $query = ClassSession::query();
 
         if ($request->filled('q')) {
             $q = trim((string) $request->q);
-
             $query->where(function ($builder) use ($q) {
-                $builder
-                    ->where('title', 'like', "%{$q}%")
-                    ->orWhereHas(
-                        'learningPath',
-                        fn ($courseQuery) => $courseQuery
-                            ->where('title', 'like', "%{$q}%")
-                    )
-                    ->orWhereHas(
-                        'instructor',
-                        fn ($instructorQuery) => $instructorQuery
-                            ->where('name', 'like', "%{$q}%")
-                    );
+                $builder->where('title', 'like', "%{$q}%")
+                    ->orWhere('venue_name', 'like', "%{$q}%")
+                    ->orWhere('address', 'like', "%{$q}%")
+                    ->orWhereHas('learningPath', fn ($courseQuery) => $courseQuery->where('title', 'like', "%{$q}%"))
+                    ->orWhereHas('instructor', fn ($instructorQuery) => $instructorQuery->where('name', 'like', "%{$q}%"));
             });
         }
 
-        if ($request->filled('course_id')) {
-            $query->where('learning_path_id', $request->integer('course_id'));
-        }
+        if ($request->filled('course_id')) $query->where('learning_path_id', $request->integer('course_id'));
+        if ($request->filled('instructor_id')) $query->where('instructor_id', $request->integer('instructor_id'));
+        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('date_from')) $query->whereDate('starts_at', '>=', $request->date_from);
+        if ($request->filled('date_to')) $query->whereDate('starts_at', '<=', $request->date_to);
 
-        if ($request->filled('instructor_id')) {
-            $query->where('instructor_id', $request->integer('instructor_id'));
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('starts_at', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('starts_at', '<=', $request->date_to);
-        }
-
-        if ($request->period === 'today') {
-            $query->whereDate('starts_at', today());
-        } elseif ($request->period === 'upcoming') {
-            $query->where('starts_at', '>=', now());
-        } elseif ($request->period === 'past') {
-            $query->where('ends_at', '<', now());
-        }
+        if ($request->period === 'today') $query->whereDate('starts_at', today());
+        elseif ($request->period === 'upcoming') $query->where('starts_at', '>=', now());
+        elseif ($request->period === 'past') $query->where('ends_at', '<', now());
 
         return $query;
     }
@@ -305,57 +185,47 @@ class AdminTeachingScheduleController extends Controller
     private function validateSchedule(Request $request): array
     {
         return $request->validate([
-            'learning_path_id' => ['required', 'integer', 'exists:learning_paths,id'],
-            'title' => ['required', 'string', 'max:150'],
-            'description' => ['nullable', 'string', 'max:2000'],
-            'starts_at' => ['required', 'date'],
-            'ends_at' => ['required', 'date', 'after:starts_at'],
-            'meeting_url' => ['nullable', 'url', 'max:255'],
-            'capacity' => ['required', 'integer', 'min:1', 'max:500'],
-            'status' => ['required', 'in:scheduled,live,completed,cancelled'],
-            'recording_url' => ['nullable', 'url', 'max:255'],
+            'learning_path_id' => ['required','integer','exists:learning_paths,id'],
+            'title' => ['required','string','max:150'],
+            'description' => ['nullable','string','max:2000'],
+            'starts_at' => ['required','date'],
+            'ends_at' => ['required','date','after:starts_at'],
+            'venue_name' => ['required','string','max:180'],
+            'address' => ['required','string','max:1000'],
+            'room' => ['nullable','string','max:100'],
+            'map_url' => ['nullable','url','max:255'],
+            'capacity' => ['required','integer','min:1','max:500'],
+            'status' => ['required','in:scheduled,completed,cancelled'],
+            'preparation_notes' => ['nullable','string','max:2000'],
         ]);
     }
 
     private function validateFilters(Request $request): void
     {
         $request->validate([
-            'q' => ['nullable', 'string', 'max:120'],
-            'course_id' => ['nullable', 'integer', 'exists:learning_paths,id'],
-            'instructor_id' => ['nullable', 'integer', 'exists:users,id'],
-            'status' => ['nullable', 'in:scheduled,live,completed,cancelled'],
-            'period' => ['nullable', 'in:today,upcoming,past'],
-            'date_from' => ['nullable', 'date_format:Y-m-d'],
-            'date_to' => ['nullable', 'date_format:Y-m-d'],
+            'q'=>['nullable','string','max:120'],
+            'course_id'=>['nullable','integer','exists:learning_paths,id'],
+            'instructor_id'=>['nullable','integer','exists:users,id'],
+            'status'=>['nullable','in:scheduled,completed,cancelled'],
+            'period'=>['nullable','in:today,upcoming,past'],
+            'date_from'=>['nullable','date_format:Y-m-d'],
+            'date_to'=>['nullable','date_format:Y-m-d'],
         ]);
     }
 
-    private function ensureNoInstructorConflict(
-        int $instructorId,
-        string $startsAt,
-        string $endsAt,
-        ?int $ignoreSessionId = null
-    ): void {
-        $conflict = LiveSession::query()
+    private function ensureNoInstructorConflict(int $instructorId, string $startsAt, string $endsAt, ?int $ignoreSessionId = null): void
+    {
+        $conflict = ClassSession::query()
             ->where('instructor_id', $instructorId)
             ->whereNotIn('status', ['cancelled'])
-            ->when(
-                $ignoreSessionId,
-                fn ($query) => $query->whereKeyNot($ignoreSessionId)
-            )
+            ->when($ignoreSessionId, fn ($query) => $query->whereKeyNot($ignoreSessionId))
             ->where('starts_at', '<', $endsAt)
             ->where('ends_at', '>', $startsAt)
             ->first();
 
         if ($conflict) {
             throw ValidationException::withMessages([
-                'starts_at' => 'Pengajar sudah memiliki jadwal yang bertabrakan: '
-                    .$conflict->title
-                    .' ('
-                    .$conflict->starts_at->format('d M Y H:i')
-                    .'–'
-                    .$conflict->ends_at->format('H:i')
-                    .').',
+                'starts_at' => 'Pengajar sudah memiliki jadwal yang bertabrakan: '.$conflict->title.' ('.$conflict->starts_at->format('d M Y H:i').'–'.$conflict->ends_at->format('H:i').').',
             ]);
         }
     }

@@ -7,7 +7,7 @@
 <x-admin.feature-header
     eyebrow="Keuangan Platform"
     title="Laporan pendapatan"
-    description="Analisis transaksi yang sudah dibayar, tren penjualan, diskon, course, pengajar, dan metode pembayaran."
+    description="Analisis transaksi yang sudah dibayar, tren penjualan, diskon, kelas, pengajar, dan metode pembayaran."
 >
     <x-slot:actions>
         <a class="admin-btn secondary" href="{{ route('admin.revenue.export', request()->query()) }}">Ekspor CSV</a>
@@ -28,9 +28,9 @@
             </label>
 
             <label class="admin-filter-field">
-                <span>Course</span>
+                <span>Kelas</span>
                 <select name="course_id">
-                    <option value="">Semua course</option>
+                    <option value="">Semua kelas</option>
                     @foreach($courses as $course)
                         <option value="{{ $course->id }}" @selected((string) request('course_id') === (string) $course->id)>
                             {{ $course->title }}
@@ -80,7 +80,7 @@
     <x-admin.metric-card
         label="Pesanan Dibayar"
         :value="number_format($summary['paid_orders'])"
-        :hint="number_format($summary['items_sold']).' course terjual'"
+        :hint="number_format($summary['items_sold']).' kelas terjual'"
         tone="blue"
     />
     <x-admin.metric-card
@@ -181,7 +181,7 @@
 
 <div class="admin-split-grid">
     <section class="admin-section-card">
-        <x-admin.section-header eyebrow="Course" title="Pendapatan per course" />
+        <x-admin.section-header eyebrow="Kelas" title="Pendapatan per kelas" />
 
         <div class="admin-ranking-list">
             @forelse($courseRevenue as $row)
@@ -194,13 +194,13 @@
                     <strong>Rp{{ number_format($row->revenue, 0, ',', '.') }}</strong>
                 </div>
             @empty
-                <div class="admin-empty-state"><strong>Belum ada penjualan course.</strong></div>
+                <div class="admin-empty-state"><strong>Belum ada penjualan kelas.</strong></div>
             @endforelse
         </div>
     </section>
 
     <section class="admin-section-card">
-        <x-admin.section-header eyebrow="Pengajar" title="Kontribusi course per pengajar" />
+        <x-admin.section-header eyebrow="Pengajar" title="Kontribusi kelas per pengajar" />
 
         <div class="admin-ranking-list">
             @forelse($instructorRevenue as $row)
@@ -208,7 +208,7 @@
                     <span class="admin-rank">{{ $loop->iteration }}</span>
                     <div>
                         <strong>{{ $row->instructor_name }}</strong>
-                        <small>{{ $row->items_sold }} course terjual</small>
+                        <small>{{ $row->items_sold }} kelas terjual</small>
                     </div>
                     <strong>Rp{{ number_format($row->revenue, 0, ',', '.') }}</strong>
                 </div>
@@ -219,7 +219,7 @@
 
         <div class="admin-info-note inside">
             <strong>Catatan</strong>
-            <span>Nilai menunjukkan penjualan course terkait pengajar. Belum termasuk komisi, pajak, atau payout.</span>
+            <span>Nilai menunjukkan penjualan kelas terkait pengajar. Belum termasuk komisi, pajak, atau payout.</span>
         </div>
     </section>
 </div>
@@ -228,7 +228,7 @@
     <x-admin.section-header
         eyebrow="Transaksi"
         title="Detail transaksi terbayar"
-        description="Setiap baris merepresentasikan satu course pada pesanan dengan status PAID."
+        description="Setiap baris merepresentasikan satu kelas pada pesanan dengan status PAID."
     >
         <x-slot:actions>
             <span class="admin-count-pill">{{ number_format($transactions->total()) }} item</span>
@@ -242,7 +242,7 @@
                 <th>Tanggal</th>
                 <th>Pesanan</th>
                 <th>Pembeli</th>
-                <th>Course</th>
+                <th>Kelas</th>
                 <th>Pengajar</th>
                 <th>Metode</th>
                 <th>Diskon</th>

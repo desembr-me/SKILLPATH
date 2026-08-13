@@ -6,7 +6,7 @@
 @section('content')
 <section class="admin-panel">
     <div class="admin-panel-head admin-panel-head-wrap">
-        <div><span class="admin-eyebrow">Moderasi</span><h2>Review course</h2><p>Atur review yang boleh tampil di halaman course.</p></div>
+        <div><span class="admin-eyebrow">Moderasi</span><h2>Review kelas</h2><p>Atur review yang boleh tampil di halaman kelas.</p></div>
         <span class="admin-total-pill">{{ $reviews->total() }} review</span>
     </div>
 

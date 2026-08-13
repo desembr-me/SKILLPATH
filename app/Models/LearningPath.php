@@ -10,15 +10,15 @@ class LearningPath extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'skill_id','instructor_id','title','slug','description','price','sale_price','is_free','course_type',
-        'min_age','max_age','level','duration_minutes','icon','thumbnail_url','promo_video_url','certificate_enabled',
-        'live_class_enabled','access_days','learning_outcomes','requirements','is_published','published_at',
+        'skill_id','instructor_id','title','slug','description','price','sale_price','is_free','class_type',
+        'min_age','max_age','level','duration_minutes','icon','thumbnail_url','certificate_enabled',
+        'venue_summary','materials_included','learning_outcomes','requirements','is_published','published_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_published'=>'boolean','is_free'=>'boolean','certificate_enabled'=>'boolean','live_class_enabled'=>'boolean',
+            'is_published'=>'boolean','is_free'=>'boolean','certificate_enabled'=>'boolean',
             'price'=>'decimal:2','sale_price'=>'decimal:2','published_at'=>'datetime','deleted_at'=>'datetime',
         ];
     }
@@ -31,7 +31,7 @@ class LearningPath extends Model
     public function categories(){ return $this->belongsToMany(Category::class); }
     public function reviews(){ return $this->hasMany(CourseReview::class)->where('is_approved', true); }
     public function enrollments(){ return $this->hasMany(Enrollment::class); }
-    public function liveSessions(){ return $this->hasMany(LiveSession::class)->orderBy('starts_at'); }
+    public function classSessions(){ return $this->hasMany(ClassSession::class)->orderBy('starts_at'); }
     public function questions(){ return $this->hasMany(CourseQuestion::class)->latest(); }
     public function certificates(){ return $this->hasMany(Certificate::class); }
 
@@ -47,5 +47,14 @@ class LearningPath extends Model
         $sale = (float) ($this->sale_price ?? $this->price);
         if ($price <= 0 || $sale >= $price) return 0;
         return (int) round((($price - $sale) / $price) * 100);
+    }
+
+    public function classTypeLabel(): string
+    {
+        return match ($this->class_type) {
+            'workshop' => 'Workshop',
+            'private' => 'Privat',
+            default => 'Kelas Rutin',
+        };
     }
 }

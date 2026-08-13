@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ClassSession extends Model
+{
+    protected $fillable = [
+        'learning_path_id', 'instructor_id', 'title', 'description',
+        'starts_at', 'ends_at', 'venue_name', 'address', 'room', 'map_url',
+        'capacity', 'status', 'preparation_notes',
+    ];
+
+    protected function casts(): array
+    {
+        return ['starts_at' => 'datetime', 'ends_at' => 'datetime'];
+    }
+
+    public function learningPath(){ return $this->belongsTo(LearningPath::class); }
+    public function instructor(){ return $this->belongsTo(User::class, 'instructor_id'); }
+    public function bookings(){ return $this->hasMany(SessionBooking::class); }
+
+    public function bookedSeats(): int
+    {
+        return $this->bookings()->whereIn('status', ['booked', 'attended'])->count();
+    }
+}

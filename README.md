@@ -1,406 +1,198 @@
 # SKILLPATH
 
-**SKILLPATH: Platform Upskilling Nonakademik Berbasis User-Centered Design dengan Jalur Belajar Adaptif Sesuai Minat Anak Usia 5–14 Tahun**
+SKILLPATH adalah marketplace **kelas non-akademik tatap muka untuk anak usia 5–14 tahun**. Orang tua dapat menemukan program berdasarkan usia dan minat, mendaftarkan anak, menyelesaikan transaksi melalui website, memilih jadwal kelas offline, melihat lokasi dan persiapan, serta memantau kehadiran.
 
-Project ini disusun langsung mengikuti struktur aplikasi Laravel, bukan lagi dalam folder `overlay`.
+Versi ini merupakan perubahan konsep dari platform course online menjadi platform pendaftaran kelas offline. Fitur live class, meeting URL, recording, video pembelajaran, progres aktivitas online, dan penyelesaian modul oleh siswa sudah dikeluarkan dari alur produk.
 
-## Struktur Utama
+## Konsep produk
+
+Alur utama pengguna:
+
+1. Orang tua membuat akun dan profil anak.
+2. Sistem merekomendasikan kelas non-akademik sesuai usia dan minat.
+3. Orang tua memilih kelas gratis atau berbayar.
+4. Untuk kelas berbayar, pembayaran dilakukan melalui alur checkout marketplace.
+5. Setelah pendaftaran aktif, orang tua memilih sesi tatap muka yang tersedia.
+6. Detail sesi berisi tanggal, waktu, venue, alamat, ruangan/titik temu, kapasitas, tautan peta, dan catatan persiapan.
+7. Pengajar mencatat peserta sebagai hadir, tidak hadir, atau dibatalkan.
+8. Sertifikat opsional diterbitkan setelah seluruh sesi wajib selesai dan peserta memenuhi kehadiran.
+
+## Jenis kelas
+
+`learning_paths.class_type` mendukung:
+
+- `regular` → Kelas Rutin
+- `workshop` → Workshop
+- `private` → Privat
+
+`modules` dan `activities` tetap dipertahankan sebagai **rangkaian/program kegiatan offline** yang ditampilkan sebagai gambaran isi kelas. Keduanya bukan lagi aktivitas e-learning yang harus diklik selesai oleh peserta.
+
+## Role
+
+### Parent
+
+- membuat profil anak,
+- memilih kelas,
+- membeli atau mendaftar kelas gratis,
+- menyimpan wishlist,
+- melihat kelas yang sudah terdaftar,
+- memilih dan membatalkan pemesanan kursi,
+- melihat lokasi dan persiapan kelas,
+- melihat riwayat transaksi,
+- memberi ulasan,
+- bertanya kepada pengajar,
+- melihat sertifikat yang memenuhi syarat.
+
+### Instructor
+
+- melihat kelas yang diajar,
+- mengubah informasi program dan area kelas,
+- membuat jadwal tatap muka,
+- menentukan venue, alamat, ruangan, peta, kapasitas, dan persiapan,
+- melihat daftar peserta,
+- mencatat status kehadiran,
+- menandai sesi selesai,
+- menjawab pertanyaan peserta.
+
+### Admin
+
+- dashboard operasional,
+- manajemen kelas, kategori, pengajar, pengguna, pesanan, dan review,
+- manajemen jadwal kelas offline,
+- monitoring kehadiran peserta,
+- laporan pendapatan,
+- penerbitan dan manajemen sertifikat,
+- statistik platform,
+- recycle bin untuk data yang menggunakan soft delete.
+
+## Data offline utama
+
+### `class_sessions`
+
+Menyimpan pelaksanaan fisik sebuah kelas:
+
+- `learning_path_id`
+- `instructor_id`
+- `title`
+- `description`
+- `starts_at`
+- `ends_at`
+- `venue_name`
+- `address`
+- `room`
+- `map_url`
+- `capacity`
+- `status`: `scheduled`, `completed`, atau `cancelled`
+- `preparation_notes`
+
+### `session_bookings`
+
+Menyimpan pemesanan kursi dan kehadiran anak:
+
+- `class_session_id`
+- `child_profile_id`
+- `status`: `booked`, `attended`, `absent`, atau `cancelled`
+- `booked_at`
+- `checked_in_at`
+- `notes`
+
+Kombinasi `class_session_id` dan `child_profile_id` unik agar satu anak tidak memiliki booking ganda pada sesi yang sama.
+
+## Fitur online yang dihapus
+
+Konsep baru tidak menggunakan:
+
+- live class,
+- meeting URL,
+- recording URL,
+- video promosi/pembelajaran sebagai bagian inti course,
+- tipe `self_paced`, `live`, dan `hybrid`,
+- masa akses course online,
+- progres aktivitas siswa,
+- poin aktivitas,
+- halaman player/modul pembelajaran,
+- aksi peserta untuk menandai aktivitas selesai.
+
+## Struktur utama
 
 ```text
-skillpath/
-├── app/
-│   ├── Http/Controllers/
-│   ├── Models/
-│   ├── Providers/
-│   └── Services/
-├── bootstrap/
-├── config/
-├── database/
-│   ├── factories/
-│   ├── migrations/
-│   └── seeders/
-├── public/
-│   ├── css/
-│   └── js/
-├── resources/
-│   ├── css/
-│   ├── js/
-│   └── views/
-├── routes/
-├── storage/
-├── tests/
-├── artisan
-├── composer.json
-├── package.json
-├── phpunit.xml
-└── vite.config.js
+app/
+├── Http/Controllers/
+│   ├── ClassScheduleController.php
+│   ├── CourseController.php
+│   ├── MyCourseController.php
+│   ├── InstructorScheduleController.php
+│   └── Admin/
+│       ├── AdminAttendanceController.php
+│       └── AdminTeachingScheduleController.php
+├── Models/
+│   ├── LearningPath.php
+│   ├── ClassSession.php
+│   ├── SessionBooking.php
+│   └── Enrollment.php
+└── Services/
+    ├── AdaptiveLearningService.php
+    ├── AttendanceService.php
+    └── CertificateService.php
+
+resources/views/
+├── classes/
+├── courses/
+├── my-courses/
+├── instructor/
+└── admin/
+    ├── attendance/
+    └── schedules/
 ```
-
-Folder `vendor/` dan `node_modules/` tidak disertakan karena keduanya dibuat oleh dependency manager.
-
-## Persyaratan
-
-- PHP 8.3+
-- Composer
-- MySQL
-- Node.js dan npm hanya diperlukan jika Anda ingin memakai Vite
 
 ## Instalasi
 
-### 1. Ekstrak project
+Kebutuhan utama:
 
-Masuk ke folder:
-
-```bash
-cd skillpath
-```
-
-### 2. Install dependency PHP
+- PHP 8.3+
+- Composer
+- MySQL/MariaDB
+- Node.js + npm bila ingin menggunakan pipeline Vite
 
 ```bash
 composer install
-```
-
-### 3. Buat file environment
-
-Linux/macOS:
-
-```bash
 cp .env.example .env
-```
-
-Windows:
-
-```powershell
-copy .env.example .env
-```
-
-### 4. Generate application key
-
-```bash
 php artisan key:generate
 ```
 
-### 5. Buat database MySQL
-
-```sql
-CREATE DATABASE skillpath
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-```
-
-### 6. Periksa `.env`
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=skillpath
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 7. Migrasi dan seeder
-
-```bash
-php artisan migrate
-php artisan db:seed
-```
-
-### 8. Jalankan server
-
-```bash
-php artisan serve
-```
-
-Buka:
-
-```text
-http://127.0.0.1:8000
-```
-
-## Fitur MVP
-
-- Landing page ramah anak
-- Register dan login orang tua
-- Profil anak usia 5–14 tahun
-- Pemilihan minat
-- Jalur belajar nonakademik
-- Modul dan aktivitas
-- Penyimpanan progres
-- Poin belajar
-- Dashboard anak
-- Rekomendasi adaptif berbasis usia, minat, dan progres
-
-## File Penting SKILLPATH
-
-```text
-app/Services/AdaptiveLearningService.php
-routes/web.php
-database/seeders/DatabaseSeeder.php
-resources/views/home.blade.php
-resources/views/dashboard.blade.php
-public/css/skillpath.css
-```
-
-## Catatan
-
-CSS utama MVP ditempatkan di `public/css/skillpath.css` agar tampilan dapat berjalan tanpa `npm run dev`.
-
-Jika ingin memindahkan frontend ke Vite, pindahkan atau import stylesheet tersebut melalui `resources/css/app.css`, lalu gunakan `@vite(...)` pada layout.
-
-
-## Fitur Kategori
-
-SKILLPATH sekarang memiliki lima kategori utama:
-
-1. Arts
-2. Languages
-3. Music
-4. Sports
-5. Technology
-
-> Penulisan `tecnology` dinormalisasi menjadi `Technology`.
-
-Struktur database kategori:
-
-```text
-categories
-    ↓ many-to-many
-category_learning_path
-    ↓
-learning_paths
-```
-
-Route kategori:
-
-```text
-GET /kategori
-GET /kategori/{category}
-```
-
-File utama:
-
-```text
-app/Models/Category.php
-app/Http/Controllers/CategoryController.php
-database/migrations/2026_08_13_000009_create_categories_table.php
-resources/views/categories/index.blade.php
-resources/views/categories/show.blade.php
-```
-
-Jika database sebelumnya sudah pernah dimigrasikan, jalankan:
-
-```bash
-php artisan migrate
-php artisan db:seed
-```
-
-Untuk mengulang seluruh data pengembangan dari awal:
+Atur koneksi database MySQL di `.env`, kemudian:
 
 ```bash
 php artisan migrate:fresh --seed
-```
-
-## Fitur Navbar Lengkap
-
-Navbar sekarang menggunakan halaman dan route khusus:
-
-```text
-/                  Beranda
-/kategori          Kategori
-/jelajah-jalur     Jelajah Jalur + filter
-/cara-kerja        Penjelasan alur adaptif dan UCD
-/untuk-orang-tua   Fitur dan ringkasan progres orang tua
-/dashboard         Dashboard pengguna yang sudah login
-/login             Login
-/register          Registrasi
-```
-
-### Jelajah Jalur
-
-Mendukung filter:
-
-- kata kunci
-- kategori
-- usia 5–14 tahun
-- kelompok skill
-
-### Untuk Orang Tua
-
-Jika pengguna sudah login dan memiliki profil anak, halaman menampilkan:
-
-- jumlah aktivitas selesai
-- total poin
-- jumlah minat aktif
-- tombol menuju dashboard
-- tombol mengubah profil dan minat
-
-### Perbaikan Relasi Minat
-
-Relasi `ChildProfile` dan `Interest` secara eksplisit menggunakan tabel pivot `child_interest` agar sesuai dengan migration.
-
-
-## Upgrade Marketplace Course & Pengajar
-
-Versi ini mengembangkan SKILLPATH menjadi marketplace course nonakademik untuk anak usia 5–14 tahun.
-
-### Fitur pengguna/orang tua
-- katalog course dan filter usia/kategori/tipe/harga
-- detail course, kurikulum, harga promo, rating, pengajar
-- wishlist dan keranjang
-- checkout dan simulasi pembayaran
-- riwayat pesanan
-- enrollment course untuk profil anak
-- Course Saya dan progres
-- live class dan booking kursi
-- tanya pengajar
-- review course
-- sertifikat setelah seluruh aktivitas selesai
-
-### Fitur pengajar
-- profil pengajar publik
-- dashboard pengajar
-- statistik course dan peserta
-- edit harga, tipe course, hasil belajar, persyaratan
-- membuat dan menghapus live class
-- menjawab pertanyaan peserta
-
-### Akun demo seeder
-- Orang tua: `parent@skillpath.test` / `password`
-- Pengajar: `naila@skillpath.test` / `password`
-
-### Menjalankan migrasi
-Jika masih development dan data lama boleh dihapus:
-
-```bash
-php artisan migrate:fresh --seed
-php artisan optimize:clear
 php artisan serve
 ```
 
-Checkout pada starter ini masih berupa simulasi. Untuk produksi, sambungkan `CheckoutController` ke payment gateway seperti Midtrans/Xendit dan validasi callback server-to-server sebelum membuat enrollment aktif.
+CSS utama aplikasi juga tersedia di `public/css`, sehingga tampilan inti tidak bergantung sepenuhnya pada proses build frontend.
 
+## Data demo
 
-## Admin Panel
+Seeder menyediakan contoh:
 
-Akses administrator:
+- kelas seni/cerita kreatif,
+- coding kreatif,
+- eksperimen sains,
+- public speaking,
+- English conversation,
+- musik,
+- olahraga,
+- workshop gratis,
+- pengajar,
+- parent dan profil anak,
+- jadwal tatap muka,
+- booking mendatang,
+- contoh hadir/tidak hadir,
+- pesanan berbayar,
+- sertifikat contoh.
 
-```text
-URL      : /admin
-Email    : admin@skillpath.test
-Password : password
-```
+## Catatan migrasi dari konsep lama
 
-Fitur admin:
+Database sebaiknya dibuat ulang dengan `php artisan migrate:fresh --seed` saat berpindah dari versi course online ke versi offline ini. Struktur migration lama untuk `progress` dan live learning telah dikeluarkan dan diganti dengan `class_sessions` serta `session_bookings`.
 
-- Dashboard statistik platform
-- Manajemen publikasi course
-- Verifikasi pengajar
-- Daftar pengguna dan peran
-- Monitoring pesanan
-- Pembaruan status transaksi
-- Manajemen kategori
-- Moderasi review
+Jika aplikasi lama sudah berisi data produksi, jangan menjalankan `migrate:fresh`. Buat backup terlebih dahulu lalu gunakan `php artisan migrate`. Migration `2026_08_13_000018_convert_online_course_fields_to_offline.php` menangani field katalog lama dan menghapus tabel progres, sedangkan migration offline session memindahkan jadwal/booking lama ke struktur kelas tatap muka. Jadwal yang berasal dari live class diberi lokasi placeholder `Lokasi perlu diperbarui`, sehingga admin wajib mengisi venue dan alamat yang benar sebelum jadwal digunakan.
 
-Setelah mengambil versi ini, gunakan:
-
-```bash
-php artisan migrate:fresh --seed
-php artisan optimize:clear
-php artisan serve
-```
-
-## Recycle Bin Admin
-
-Admin memiliki fitur Recycle Bin pada:
-
-```text
-/admin/recycle-bin
-```
-
-Data yang mendukung Soft Delete:
-
-- Course
-- Kategori
-- Pengguna/Pengajar
-- Review
-
-Admin dapat memulihkan data, memulihkan semua data, atau menghapus permanen data yang aman untuk dihapus. Course dan pengguna yang memiliki riwayat transaksi/enrollment dilindungi dari penghapusan permanen.
-
-Setelah menambahkan fitur ini ke project lama, jalankan:
-
-```bash
-php artisan migrate
-php artisan optimize:clear
-```
-
-Dokumentasi lengkap tersedia di `docs/RECYCLE_BIN.md`.
-
-
-## Monitoring Progres Siswa
-
-Admin dapat membuka `/admin/progres-siswa` untuk memantau progres pembelajaran siswa, memfilter berdasarkan course dan status, melihat detail per course, serta mengekspor data ke CSV. Dokumentasi lengkap tersedia di `docs/MONITORING_PROGRESS.md`.
-
-## Fitur Admin: Jadwal Pengajaran dan Laporan Pendapatan
-
-Admin sekarang memiliki dua fitur operasional tambahan.
-
-### Jadwal Pengajaran
-
-```text
-/admin/jadwal-pengajaran
-```
-
-Admin dapat memantau, memfilter, membuat, mengubah, membatalkan, dan mengekspor jadwal live class.
-
-### Laporan Pendapatan
-
-```text
-/admin/laporan-pendapatan
-```
-
-Admin dapat menganalisis transaksi `PAID` berdasarkan rentang tanggal, course, pengajar, dan metode pembayaran. Laporan menyediakan ringkasan pendapatan, diskon, jumlah penjualan, tren, kontribusi course, kontribusi pengajar, dan ekspor CSV.
-
-Kedua fitur menggunakan tabel yang sudah ada sehingga tidak membutuhkan migration baru.
-
-Dokumentasi lengkap:
-
-```text
-docs/ADMIN_SCHEDULE_REVENUE.md
-```
-
-
-## Manajemen Sertifikat Admin
-
-Admin dapat mengelola sertifikat melalui:
-
-```text
-/admin/sertifikat
-```
-
-Fitur:
-
-- penerbitan sertifikat untuk siswa yang sudah menyelesaikan course,
-- status aktif/dicabut,
-- alasan pencabutan,
-- aktivasi ulang,
-- cetak,
-- pencarian dan filter,
-- ekspor CSV.
-
-## Statistik Platform Admin
-
-Admin dapat membuka:
-
-```text
-/admin/statistik-platform
-```
-
-Statistik mencakup pengguna, siswa, enrollment, aktivitas belajar, pendapatan, sertifikat, rating, live class, distribusi usia, popularitas kategori, course, dan pengajar.
-
-Dokumentasi lengkap:
-
-```text
-docs/ADMIN_CERTIFICATES_STATISTICS.md
-```
+Dokumentasi konsep lebih rinci tersedia di folder `docs/`.

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Progress;
+use App\Models\Enrollment;
+use App\Models\SessionBooking;
 use App\Services\AdaptiveLearningService;
 use Illuminate\Http\Request;
 
@@ -11,29 +12,29 @@ class DashboardController extends Controller
     public function __invoke(Request $request, AdaptiveLearningService $adaptive)
     {
         $child = $request->user()->childProfile;
-
-        if (! $child) {
-            return redirect()->route('onboarding.edit');
-        }
+        if (! $child) return redirect()->route('onboarding.edit');
 
         $child->load('interests');
-
         $recommendations = $adaptive->recommend($child, 4);
 
-        $completedActivities = Progress::query()
-            ->where('child_profile_id', $child->id)
-            ->where('status', 'completed')
+        $registeredClasses = Enrollment::where('child_profile_id', $child->id)
+            ->where('status', 'active')
             ->count();
 
-        $totalPoints = Progress::query()
+        $upcomingBookings = SessionBooking::query()
             ->where('child_profile_id', $child->id)
-            ->sum('points_awarded');
+            ->where('status', 'booked')
+            ->whereHas('classSession', fn ($query) => $query
+                ->where('status', 'scheduled')
+                ->where('starts_at', '>=', now()))
+            ->count();
+
+        $attendedSessions = SessionBooking::where('child_profile_id', $child->id)
+            ->where('status', 'attended')
+            ->count();
 
         return view('dashboard', compact(
-            'child',
-            'recommendations',
-            'completedActivities',
-            'totalPoints'
+            'child', 'recommendations', 'registeredClasses', 'upcomingBookings', 'attendedSessions'
         ));
     }
 }

@@ -15,8 +15,8 @@ class WishlistController extends Controller
     }
     public function toggle(Request $request, LearningPath $learningPath){
         $item=Wishlist::where('user_id',$request->user()->id)->where('learning_path_id',$learningPath->id)->first();
-        if($item){$item->delete(); return back()->with('success','Course dihapus dari wishlist.');}
+        if($item){$item->delete(); return back()->with('success','Kelas dihapus dari wishlist.');}
         Wishlist::create(['user_id'=>$request->user()->id,'learning_path_id'=>$learningPath->id]);
-        return back()->with('success','Course disimpan ke wishlist.');
+        return back()->with('success','Kelas disimpan ke wishlist.');
     }
 }

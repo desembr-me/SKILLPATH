@@ -4,8 +4,8 @@
 <section class="explore-hero">
     <div class="container">
         <span class="eyebrow">Pengajar SKILLPATH</span>
-        <h1>Belajar bersama pengajar yang sesuai bidangnya.</h1>
-        <p>Profil pengajar menampilkan keahlian, pengalaman, rating, dan course yang tersedia.</p>
+        <h1>Temukan pengajar untuk kegiatan tatap muka sesuai bidangnya.</h1>
+        <p>Profil pengajar menampilkan keahlian, pengalaman, rating, dan kelas offline yang tersedia.</p>
     </div>
 </section>
 <section class="section">
@@ -25,7 +25,7 @@
                         <div class="path-meta">
                             <span>★ {{ $i->instructorProfile?->rating ?? 0 }}</span>
                             <span>{{ $i->instructorProfile?->years_experience ?? 0 }} tahun</span>
-                            <span>{{ $i->courses_taught_count }} course</span>
+                            <span>{{ $i->courses_taught_count }} kelas</span>
                         </div>
                         <a class="btn btn-ghost" href="{{ route('instructors.show',$i) }}">Lihat Profil</a>
                     </div>
