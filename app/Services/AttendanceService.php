@@ -110,14 +110,24 @@ class AttendanceService
                     ->filter(fn ($session) => $session->starts_at?->isFuture())
                     ->count();
 
+                $absent = $bookings->where('status', 'absent')->count();
+                $status = match (true) {
+                    $absent > 0 => 'needs_attention',
+                    $upcoming > 0 => 'active',
+                    $records->isNotEmpty() => 'completed',
+                    default => 'not_scheduled',
+                };
+
                 return [
                     'enrollment' => $enrollment,
                     'path' => $path,
                     'session_count' => $path->classSessions->where('status', '!=', 'cancelled')->count(),
                     'attended_count' => $attended,
-                    'absent_count' => $bookings->where('status', 'absent')->count(),
+                    'absent_count' => $absent,
                     'upcoming_count' => $upcoming,
                     'attendance_rate' => $records->count() > 0 ? (int) round(($attended / $records->count()) * 100) : null,
+                    'status' => $status,
+                    'status_label' => $this->statusLabel($status),
                 ];
             })
             ->sortByDesc(fn ($item) => $item['enrollment']->enrolled_at)

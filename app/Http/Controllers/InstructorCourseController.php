@@ -22,13 +22,13 @@ class InstructorCourseController extends Controller
             'price'=>['required','numeric','min:0'],
             'sale_price'=>['nullable','numeric','min:0'],
             'class_type'=>['required','in:regular,workshop,private'],
-            'venue_summary'=>['nullable','string','max:180'],
-            'materials_included'=>['nullable','string','max:3000'],
+            'certificate_enabled'=>['nullable','boolean'],
             'learning_outcomes'=>['nullable','string','max:3000'],
             'requirements'=>['nullable','string','max:3000'],
         ]);
 
         $data['is_free'] = (float) $data['price'] === 0.0;
+        $data['certificate_enabled'] = $request->boolean('certificate_enabled');
         $learningPath->update($data);
 
         return back()->with('success', 'Informasi kelas berhasil diperbarui.');

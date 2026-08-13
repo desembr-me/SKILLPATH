@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Detail Sertifikat | Admin SKILLPATH')
-@section('page-title', 'Detail Sertifikat')
+@section('title', 'Detail Sertifikat Kelas | Admin SKILLPATH')
+@section('page-title', 'Detail Sertifikat Kelas')
 
 @section('content')
 <div class="admin-page-toolbar skill-cert-admin-toolbar">
@@ -22,7 +22,7 @@
         <x-certificate.document
             :certificate="$certificate"
             :child="$certificate->childProfile"
-            :course="$certificate->learningPath"
+            :kelas="$certificate->learningPath"
             :issuer-name="$certificate->issuedBy?->name"
         />
     </section>
@@ -48,7 +48,7 @@
                 <strong>{{ $certificate->childProfile?->user?->name ?? '—' }}</strong>
             </div>
             <div>
-                <span>Course</span>
+                <span>Kelas</span>
                 <strong>{{ $certificate->learningPath?->title ?? '—' }}</strong>
             </div>
             <div>

@@ -8,7 +8,7 @@
         <span class="eyebrow">Kategori Skill</span>
         <h1>Pilih bidang yang paling menarik.</h1>
         <p>
-            Jelajahi kelas tersedia berdasarkan kategori. Setiap kategori berisi kegiatan nonakademik
+            Jelajahi jalur belajar berdasarkan kategori. Setiap kategori berisi kegiatan nonakademik
             yang dapat dipilih sesuai minat dan usia anak.
         </p>
     </div>
@@ -23,7 +23,7 @@
 
                     <div class="category-card-copy">
                         <span class="category-count">
-                            {{ $category->learning_paths_count }} kelas tersedia
+                            {{ $category->learning_paths_count }} jalur belajar
                         </span>
 
                         <h2>{{ $category->name }}</h2>

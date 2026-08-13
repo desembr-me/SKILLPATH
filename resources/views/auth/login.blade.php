@@ -7,8 +7,8 @@
     <div class="container auth-grid">
         <div class="auth-side">
             <span class="eyebrow">Selamat datang kembali</span>
-            <h1>Lanjutkan aktivitas dan jadwal kelas anak.</h1>
-            <p>Masuk untuk melihat kelas terdaftar, jadwal tatap muka, kehadiran, dan rekomendasi berikutnya.</p>
+            <h1>Lanjutkan jalur mengikuti kelas anak.</h1>
+            <p>Masuk untuk melihat progres dan rekomendasi berikutnya.</p>
         </div>
 
         <div class="form-card">

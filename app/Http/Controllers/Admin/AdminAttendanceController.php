@@ -28,7 +28,7 @@ class AdminAttendanceController extends Controller
         );
 
         $courses = LearningPath::query()->whereHas('enrollments')->orderBy('title')->get(['id','title']);
-        return view('admin.attendance.index', compact('students','stats','courses'));
+        return view('admin.progress.index', compact('students','stats','courses'));
     }
 
     public function show(ChildProfile $childProfile, AttendanceService $attendanceService)
@@ -41,7 +41,7 @@ class AdminAttendanceController extends Controller
             ->sortByDesc(fn ($booking) => $booking->classSession->starts_at)
             ->values();
 
-        return view('admin.attendance.show', compact('childProfile','summary','courseAttendance','bookings'));
+        return view('admin.progress.show', compact('childProfile','summary','courseAttendance','bookings'));
     }
 
     public function export(Request $request, AttendanceService $attendanceService): StreamedResponse
@@ -125,6 +125,7 @@ class AdminAttendanceController extends Controller
             'attendance_low' => $rows->sortBy(fn ($row) => $row['attendance_rate'] ?? -1),
             'attendance_high' => $rows->sortByDesc(fn ($row) => $row['attendance_rate'] ?? -1),
             'recent' => $rows->sortByDesc(fn ($row) => $row['last_session_at']?->timestamp ?? 0),
+            'booking_high' => $rows->sortByDesc(fn ($row) => $row['booking_count']),
             default => $rows->sortBy(fn ($row) => mb_strtolower($row['child']->name)),
         };
 
@@ -138,7 +139,7 @@ class AdminAttendanceController extends Controller
             'course'=>['nullable','integer','exists:learning_paths,id'],
             'age_group'=>['nullable','in:5_7,8_10,11_14'],
             'status'=>['nullable','in:active,completed,needs_attention,not_scheduled'],
-            'sort'=>['nullable','in:name,attendance_low,attendance_high,recent'],
+            'sort'=>['nullable','in:name,attendance_low,attendance_high,recent,booking_high'],
         ]);
     }
 }

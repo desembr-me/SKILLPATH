@@ -1,11 +1,67 @@
 @extends('admin.layouts.app')
-@section('title','Terbitkan Sertifikat | Admin SKILLPATH')
-@section('page-title','Terbitkan Sertifikat')
+
+@section('title', 'Terbitkan Sertifikat | Admin SKILLPATH')
+@section('page-title', 'Terbitkan Sertifikat')
+
 @section('content')
-<div class="admin-page-toolbar"><a class="admin-btn ghost" href="{{ route('admin.certificates.index') }}">← Manajemen Sertifikat</a></div>
-<x-admin.feature-header eyebrow="Validasi Penyelesaian" title="Peserta siap menerima sertifikat" description="Hanya peserta yang terdaftar, seluruh sesi wajib sudah selesai, dan kehadirannya lengkap yang ditampilkan." />
-<section class="admin-section-card"><x-admin.section-header eyebrow="Kandidat" title="Daftar peserta memenuhi syarat"><x-slot:actions><span class="admin-count-pill">{{ number_format($eligible->count()) }} kandidat</span></x-slot:actions></x-admin.section-header>
-<div class="admin-stack-list">@forelse($eligible as $item)@php($enrollment=$item['enrollment']) @php($evaluation=$item['evaluation'])
-<article class="admin-list-card certificate-candidate-card"><span class="admin-avatar-sm large">{{ strtoupper(substr($enrollment->childProfile->name,0,1)) }}</span><div class="admin-list-content"><div class="admin-list-heading"><div><strong>{{ $enrollment->childProfile->name }}</strong><small>{{ $enrollment->learningPath->title }} · {{ $enrollment->learningPath->instructor?->name ?? 'Pengajar tidak tersedia' }}</small></div><span class="admin-status completed">SIAP</span></div><div class="admin-meta-row"><span>Usia {{ $enrollment->childProfile->age }} tahun</span><span>{{ $evaluation['attended_sessions'] }}/{{ $evaluation['total_sessions'] }} sesi hadir</span><span>Kehadiran {{ number_format($evaluation['attendance_rate'],0) }}%</span></div></div><form method="POST" action="{{ route('admin.certificates.store') }}">@csrf<input type="hidden" name="child_profile_id" value="{{ $enrollment->child_profile_id }}"><input type="hidden" name="learning_path_id" value="{{ $enrollment->learning_path_id }}"><button class="admin-btn primary" type="submit">Terbitkan</button></form></article>
-@empty<div class="admin-empty-state"><strong>Belum ada peserta yang siap menerima sertifikat.</strong><span>Pastikan semua sesi program sudah selesai dan kehadiran peserta telah ditandai.</span></div>@endforelse</div></section>
+<div class="admin-page-toolbar">
+    <a class="admin-btn ghost" href="{{ route('admin.certificates.index') }}">← Manajemen Sertifikat</a>
+</div>
+
+<x-admin.feature-header
+    eyebrow="Validasi Penyelesaian"
+    title="Peserta siap menerima sertifikat"
+    description="Hanya peserta dengan enrollment aktif, seluruh sesi kelas selesai, dan kehadiran lengkap yang ditampilkan."
+/>
+
+<section class="admin-section-card">
+    <x-admin.section-header
+        eyebrow="Kandidat"
+        title="Daftar peserta memenuhi syarat"
+    >
+        <x-slot:actions>
+            <span class="admin-count-pill">{{ number_format($eligible->count()) }} kandidat</span>
+        </x-slot:actions>
+    </x-admin.section-header>
+
+    <div class="admin-stack-list">
+        @forelse($eligible as $item)
+            @php($enrollment = $item['enrollment'])
+            @php($evaluation = $item['evaluation'])
+
+            <article class="admin-list-card certificate-candidate-card">
+                <span class="admin-avatar-sm large">{{ strtoupper(substr($enrollment->childProfile->name, 0, 1)) }}</span>
+
+                <div class="admin-list-content">
+                    <div class="admin-list-heading">
+                        <div>
+                            <strong>{{ $enrollment->childProfile->name }}</strong>
+                            <small>{{ $enrollment->learningPath->title }} · {{ $enrollment->learningPath->instructor?->name ?? 'Pengajar tidak tersedia' }}</small>
+                        </div>
+                        <span class="admin-status completed">SIAP</span>
+                    </div>
+
+                    <div class="admin-meta-row">
+                        <span>Usia {{ $enrollment->childProfile->age }} tahun</span>
+                        <span>{{ $evaluation['attended_sessions'] }}/{{ $evaluation['total_sessions'] }} sesi hadir</span>
+                        <span>Kehadiran {{ number_format($evaluation['attendance_rate'], 0) }}%</span>
+                        <span>Sesi selesai {{ $evaluation['total_sessions'] - $evaluation['pending_sessions'] }}/{{ $evaluation['total_sessions'] }}</span>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ route('admin.certificates.store') }}">
+                    @csrf
+                    <input type="hidden" name="child_profile_id" value="{{ $enrollment->child_profile_id }}">
+                    <input type="hidden" name="learning_path_id" value="{{ $enrollment->learning_path_id }}">
+                    <button class="admin-btn primary" type="submit">Terbitkan</button>
+                </form>
+            </article>
+        @empty
+            <div class="admin-empty-state">
+                <strong>Belum ada peserta yang siap diterbitkan sertifikat.</strong>
+                <span>Peserta yang belum memenuhi kehadiran atau sudah memiliki sertifikat tidak ditampilkan.</span>
+            </div>
+        @endforelse
+    </div>
+</section>
 @endsection

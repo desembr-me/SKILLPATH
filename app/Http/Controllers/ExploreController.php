@@ -24,7 +24,7 @@ class ExploreController extends Controller
         $query = LearningPath::query()
             ->where('is_published', true)
             ->with(['skill','categories','interests','instructor.instructorProfile','reviews'])
-            ->withCount('enrollments');
+            ->withCount(['enrollments','classSessions']);
 
         if (! empty($validated['q'])) {
             $keyword = trim($validated['q']);

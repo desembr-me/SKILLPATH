@@ -1,37 +1,202 @@
 @extends('admin.layouts.app')
-@section('title','Jadwal Kelas Offline | Admin SKILLPATH')
-@section('page-title','Jadwal Kelas Offline')
+
+@section('title', 'Jadwal Kelas | Admin SKILLPATH')
+@section('page-title', 'Jadwal Kelas')
+
 @section('content')
-<x-admin.feature-header eyebrow="Operasional" title="Jadwal kelas tatap muka" description="Kelola sesi, lokasi, kapasitas, dan keterisian kelas nonakademik." :primary-href="route('admin.schedules.create')" primary-label="Tambah Jadwal" :secondary-href="route('admin.schedules.export',request()->query())" secondary-label="Export CSV" />
-<div class="admin-stat-grid">
-    <x-admin.metric-card label="Sesi Hari Ini" :value="$stats['today']" />
-    <x-admin.metric-card label="Akan Datang" :value="$stats['upcoming']" />
-    <x-admin.metric-card label="Selesai Bulan Ini" :value="$stats['completed_month']" />
-    <x-admin.metric-card label="Rata-rata Keterisian" :value="$stats['avg_occupancy'].'%'" />
+<x-admin.feature-header
+    eyebrow="Operasional Kelas"
+    title="Jadwal kelas"
+    description="Kelola sesi tatap muka, pengajar, kapasitas, keterisian peserta, lokasi, dan status kelas."
+>
+    <x-slot:actions>
+        <a class="admin-btn secondary" href="{{ route('admin.schedules.export', request()->query()) }}">Ekspor CSV</a>
+        <a class="admin-btn primary" href="{{ route('admin.schedules.create') }}">Tambah Jadwal</a>
+    </x-slot:actions>
+</x-admin.feature-header>
+
+<div class="admin-metric-grid">
+    <x-admin.metric-card label="Kelas Hari Ini" :value="number_format($stats['today'])" hint="Tidak termasuk sesi dibatalkan" tone="blue" />
+    <x-admin.metric-card label="Sedang Berlangsung" :value="number_format($stats['ongoing'])" hint="Sesi tatap muka sedang berjalan" tone="red" />
+    <x-admin.metric-card label="Akan Datang" :value="number_format($stats['upcoming'])" hint="Sesi terjadwal mendatang" tone="yellow" />
+    <x-admin.metric-card
+        label="Rata-rata Keterisian"
+        :value="number_format($stats['avg_occupancy'], 1).'%'" 
+        hint="Booking dibanding kapasitas sesi mendatang"
+        tone="green"
+    />
 </div>
+
 <section class="admin-section-card">
-<form method="GET" class="admin-filter-panel">
-<div class="admin-filter-grid">
-<label class="admin-filter-field"><span>Cari</span><input name="q" value="{{ request('q') }}" placeholder="Sesi, kelas, lokasi, pengajar"></label>
-<label class="admin-filter-field"><span>Kelas</span><select name="course_id"><option value="">Semua kelas</option>@foreach($courses as $course)<option value="{{ $course->id }}" @selected((string)request('course_id')===(string)$course->id)>{{ $course->title }}</option>@endforeach</select></label>
-<label class="admin-filter-field"><span>Pengajar</span><select name="instructor_id"><option value="">Semua pengajar</option>@foreach($instructors as $instructor)<option value="{{ $instructor->id }}" @selected((string)request('instructor_id')===(string)$instructor->id)>{{ $instructor->name }}</option>@endforeach</select></label>
-<label class="admin-filter-field"><span>Status</span><select name="status"><option value="">Semua</option><option value="scheduled" @selected(request('status')==='scheduled')>Terjadwal</option><option value="completed" @selected(request('status')==='completed')>Selesai</option><option value="cancelled" @selected(request('status')==='cancelled')>Dibatalkan</option></select></label>
-<label class="admin-filter-field"><span>Periode</span><select name="period"><option value="">Semua waktu</option><option value="today" @selected(request('period')==='today')>Hari ini</option><option value="upcoming" @selected(request('period')==='upcoming')>Mendatang</option><option value="past" @selected(request('period')==='past')>Sudah lewat</option></select></label>
-<label class="admin-filter-field"><span>Dari</span><input type="date" name="date_from" value="{{ request('date_from') }}"></label>
-<label class="admin-filter-field"><span>Sampai</span><input type="date" name="date_to" value="{{ request('date_to') }}"></label>
-</div><div class="admin-filter-actions"><button class="admin-btn primary" type="submit">Terapkan</button><a class="admin-btn ghost" href="{{ route('admin.schedules.index') }}">Reset</a></div>
-</form>
-<div class="admin-table-shell"><table class="admin-table admin-data-table"><thead><tr><th>Waktu</th><th>Sesi & Kelas</th><th>Lokasi</th><th>Pengajar</th><th>Keterisian</th><th>Status</th><th></th></tr></thead><tbody>
-@forelse($schedules as $session)
-@php($occupancy=$session->capacity>0?min(100,($session->booked_count/$session->capacity)*100):0)
-<tr><td><strong>{{ $session->starts_at?->translatedFormat('d M Y') }}</strong><small class="admin-cell-help">{{ $session->starts_at?->format('H:i') }}–{{ $session->ends_at?->format('H:i') }}</small></td>
-<td><strong>{{ $session->title }}</strong><small class="admin-cell-help">{{ $session->learningPath?->title ?? 'Kelas tidak tersedia' }}</small></td>
-<td><strong>{{ $session->venue_name }}</strong><small class="admin-cell-help">{{ $session->room ?: $session->address }}</small></td>
-<td>{{ $session->instructor?->name ?? 'Tidak tersedia' }}</td>
-<td><div class="admin-progress-cell"><div><strong>{{ $session->booked_count }}/{{ $session->capacity }}</strong><small>{{ number_format($occupancy,0) }}% · {{ $session->attended_count }} hadir</small></div><div class="admin-progress-track"><span style="width:{{ $occupancy }}%"></span></div></div></td>
-<td><span class="admin-status {{ $session->status }}">{{ strtoupper($session->status) }}</span></td>
-<td><div class="admin-row-actions"><a class="admin-btn small ghost" href="{{ route('admin.schedules.edit',$session) }}">Edit</a>@if(!in_array($session->status,['completed','cancelled']))<form method="POST" action="{{ route('admin.schedules.cancel',$session) }}" onsubmit="return confirm('Batalkan jadwal kelas ini?')">@csrf @method('PATCH')<button class="admin-btn small danger" type="submit">Batalkan</button></form>@endif</div></td></tr>
-@empty<tr><td colspan="7"><div class="admin-empty-state"><strong>Belum ada jadwal yang sesuai.</strong><span>Tambahkan jadwal kelas tatap muka atau ubah filter.</span></div></td></tr>@endforelse
-</tbody></table></div><div class="admin-pagination">{{ $schedules->links() }}</div>
+    <x-admin.section-header
+        eyebrow="Agenda"
+        title="Daftar jadwal kelas"
+        description="Sistem mencegah jadwal pengajar yang bertabrakan pada waktu yang sama."
+    >
+        <x-slot:actions>
+            <span class="admin-count-pill">{{ number_format($schedules->total()) }} sesi</span>
+        </x-slot:actions>
+    </x-admin.section-header>
+
+    <form class="admin-filter-panel" method="GET" action="{{ route('admin.schedules.index') }}">
+        <div class="admin-filter-grid schedule-filter-grid">
+            <label class="admin-filter-field">
+                <span>Cari jadwal</span>
+                <input type="search" name="q" value="{{ request('q') }}" placeholder="Judul sesi, kelas, lokasi, atau pengajar">
+            </label>
+
+            <label class="admin-filter-field">
+                <span>Kelas</span>
+                <select name="course_id">
+                    <option value="">Semua kelas</option>
+                    @foreach($courses as $course)
+                        <option value="{{ $course->id }}" @selected((string) request('course_id') === (string) $course->id)>
+                            {{ $course->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </label>
+
+            <label class="admin-filter-field">
+                <span>Pengajar</span>
+                <select name="instructor_id">
+                    <option value="">Semua pengajar</option>
+                    @foreach($instructors as $instructor)
+                        <option value="{{ $instructor->id }}" @selected((string) request('instructor_id') === (string) $instructor->id)>
+                            {{ $instructor->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </label>
+
+            <label class="admin-filter-field">
+                <span>Status</span>
+                <select name="status">
+                    <option value="">Semua status</option>
+                    <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
+                    <option value="live" @selected(request('status') === 'live')>Sedang berlangsung</option>
+                    <option value="completed" @selected(request('status') === 'completed')>Completed</option>
+                    <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
+                </select>
+            </label>
+
+            <label class="admin-filter-field">
+                <span>Periode</span>
+                <select name="period">
+                    <option value="">Semua waktu</option>
+                    <option value="today" @selected(request('period') === 'today')>Hari ini</option>
+                    <option value="upcoming" @selected(request('period') === 'upcoming')>Mendatang</option>
+                    <option value="past" @selected(request('period') === 'past')>Sudah lewat</option>
+                </select>
+            </label>
+
+            <label class="admin-filter-field">
+                <span>Dari tanggal</span>
+                <input type="date" name="date_from" value="{{ request('date_from') }}">
+            </label>
+
+            <label class="admin-filter-field">
+                <span>Sampai tanggal</span>
+                <input type="date" name="date_to" value="{{ request('date_to') }}">
+            </label>
+        </div>
+
+        <div class="admin-filter-actions">
+            <button class="admin-btn primary" type="submit">Terapkan Filter</button>
+            <a class="admin-btn ghost" href="{{ route('admin.schedules.index') }}">Reset</a>
+        </div>
+    </form>
+
+    <div class="admin-table-shell">
+        <table class="admin-table admin-data-table schedule-table">
+            <thead>
+            <tr>
+                <th>Waktu</th>
+                <th>Sesi & Kelas</th>
+                <th>Pengajar</th>
+                <th>Keterisian</th>
+                <th>Status</th>
+                <th>Lokasi</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @forelse($schedules as $session)
+                @php($occupancy = $session->capacity > 0 ? min(100, ($session->booked_count / $session->capacity) * 100) : 0)
+                <tr>
+                    <td>
+                        <strong>{{ $session->starts_at?->translatedFormat('d M Y') }}</strong>
+                        <small class="admin-cell-help">
+                            {{ $session->starts_at?->format('H:i') }}–{{ $session->ends_at?->format('H:i') }}
+                        </small>
+                    </td>
+                    <td>
+                        <strong>{{ $session->title }}</strong>
+                        <small class="admin-cell-help">{{ $session->learningPath?->title ?? 'Kelas tidak tersedia' }}</small>
+                    </td>
+                    <td>
+                        <div class="admin-identity-cell compact">
+                            <span class="admin-avatar-sm">{{ strtoupper(substr($session->instructor?->name ?? 'P', 0, 1)) }}</span>
+                            <div>
+                                <strong>{{ $session->instructor?->name ?? 'Tidak tersedia' }}</strong>
+                                <small>{{ $session->instructor?->instructorProfile?->headline ?? 'Pengajar SKILLPATH' }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="admin-progress-cell">
+                            <div>
+                                <strong>{{ $session->booked_count }}/{{ $session->capacity }}</strong>
+                                <small>{{ number_format($occupancy, 0) }}%</small>
+                            </div>
+                            <div class="admin-progress-track">
+                                <span style="width: {{ $occupancy }}%"></span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="admin-status {{ $session->status }}">{{ strtoupper($session->status) }}</span>
+                    </td>
+                    <td>
+                        @if($session->map_url)
+                            <a class="admin-inline-link" href="{{ $session->map_url }}" target="_blank" rel="noopener">{{ $session->venue_name ?: 'Buka peta' }}</a>
+                        @else
+                            <span class="admin-muted">{{ $session->venue_name ?: 'Belum tersedia' }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="admin-row-actions">
+                            <a class="admin-btn small ghost" href="{{ route('admin.schedules.edit', $session) }}">Edit</a>
+
+                            @if(!in_array($session->status, ['completed', 'cancelled']))
+                                <form method="POST" action="{{ route('admin.schedules.cancel', $session) }}" onsubmit="return confirm('Batalkan jadwal kelas ini?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="admin-btn small danger" type="submit">Batalkan</button>
+                                </form>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7">
+                        <div class="admin-empty-state">
+                            <strong>Belum ada jadwal yang sesuai.</strong>
+                            <span>Tambahkan jadwal baru atau ubah filter pencarian.</span>
+                        </div>
+                    </td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="admin-pagination">{{ $schedules->links() }}</div>
 </section>
+
+<div class="admin-info-note">
+    <strong>Validasi jadwal</strong>
+    <span>Admin tidak dapat membuat dua sesi yang waktunya bertabrakan untuk pengajar yang sama.</span>
+</div>
 @endsection

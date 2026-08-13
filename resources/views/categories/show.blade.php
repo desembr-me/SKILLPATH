@@ -17,7 +17,7 @@
 <section class="section section-soft">
     <div class="container">
         <div class="section-heading split-heading">
-            <div><span class="eyebrow">Kelas {{ $category->name }}</span><h2>Pilih kelas tatap muka sesuai usia dan minat anak.</h2></div>
+            <div><span class="eyebrow">Kelas {{ $category->name }}</span><h2>Pilih kelas sesuai usia dan kebutuhan anak.</h2></div>
             <a class="text-link" href="{{ route('explore.index', ['category' => $category->slug]) }}">Filter lebih lengkap →</a>
         </div>
 

@@ -7,13 +7,13 @@
     <div class="container">
         <div class="skill-certificate-toolbar">
             <div>
-                <span class="skill-cert-page-kicker">Sertifikat Course</span>
+                <span class="skill-cert-page-kicker">Sertifikat Kelas</span>
                 <h1>{{ $learningPath->title }}</h1>
-                <p>Sertifikat tersedia setelah seluruh aktivitas course selesai.</p>
+                <p>Sertifikat tersedia setelah persyaratan kehadiran kelas terpenuhi.</p>
             </div>
 
             <div class="skill-certificate-actions">
-                <a class="btn btn-light" href="{{ route('my-courses.index') }}">← Course Saya</a>
+                <a class="btn btn-light" href="{{ route('my-courses.index') }}">← Kelas Saya</a>
                 <button class="btn btn-dark" type="button" onclick="window.print()">
                     Cetak / Simpan PDF
                 </button>

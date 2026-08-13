@@ -95,7 +95,7 @@ class AdminCertificateController extends Controller
             return redirect()
                 ->route('admin.certificates.show', $existing)
                 ->withErrors([
-                    'certificate' => 'Sertifikat untuk siswa dan course tersebut sudah ada.',
+                    'certificate' => 'Sertifikat untuk peserta dan kelas tersebut sudah ada.',
                 ]);
         }
 
@@ -186,8 +186,8 @@ class AdminCertificateController extends Controller
                 'Nama Siswa',
                 'Usia',
                 'Orang Tua',
-                'Course',
-                'Nilai Akhir',
+                'Kelas',
+                'Kehadiran (%)',
                 'Tanggal Terbit',
                 'Status',
                 'Diterbitkan Oleh',
@@ -310,7 +310,7 @@ class AdminCertificateController extends Controller
             ->with([
                 'childProfile.user',
                 'learningPath.instructor',
-                'learningPath.modules.activities',
+                'learningPath.classSessions',
             ])
             ->where('status', 'active')
             ->whereHas(

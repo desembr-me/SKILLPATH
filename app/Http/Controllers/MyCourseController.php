@@ -39,13 +39,20 @@ class MyCourseController extends Controller
             $courseSessionIds = $course->classSessions->pluck('id');
             $courseBookings = $bookings->whereIn('class_session_id', $courseSessionIds);
 
+            $attendanceRecords = $courseBookings->whereIn('status', ['attended','absent']);
+            $attendedCount = $courseBookings->where('status', 'attended')->count();
+            $attendanceRate = $attendanceRecords->count() > 0
+                ? (int) round(($attendedCount / $attendanceRecords->count()) * 100)
+                : 0;
+
             return [
                 'enrollment' => $enrollment,
                 'course' => $course,
                 'next_session' => $nextSession,
                 'next_booking' => $nextSession ? $bookings->get($nextSession->id) : null,
-                'attended_count' => $courseBookings->where('status', 'attended')->count(),
+                'attended_count' => $attendedCount,
                 'booked_count' => $courseBookings->where('status', 'booked')->count(),
+                'progress' => $attendanceRate,
                 'certificate' => $course->certificates()
                     ->where('child_profile_id', $enrollment->child_profile_id)
                     ->where('status', 'active')

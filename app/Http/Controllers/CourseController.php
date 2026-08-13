@@ -60,7 +60,7 @@ class CourseController extends Controller
         );
 
         return redirect()
-            ->route('class-schedules.index', ['course' => $learningPath->id])
+            ->route('live.index', ['course' => $learningPath->id])
             ->with('success', 'Pendaftaran kelas gratis berhasil. Silakan pilih jadwal tatap muka.');
     }
 }

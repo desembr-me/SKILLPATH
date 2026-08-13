@@ -15,7 +15,7 @@
 <div class="admin-quick-grid">
 <a href="{{ route('admin.courses.index') }}" class="admin-quick-card"><span>▤</span><strong>Kelas</strong><small>Publikasi dan katalog</small></a>
 <a href="{{ route('admin.instructors.index') }}" class="admin-quick-card"><span>♙</span><strong>Pengajar</strong><small>Verifikasi profil</small></a>
-<a href="{{ route('admin.attendance.index') }}" class="admin-quick-card"><span>✓</span><strong>Kehadiran Peserta</strong><small>{{ $stats['student_profiles'] }} peserta termonitor</small></a>
+<a href="{{ route('admin.progress.index') }}" class="admin-quick-card"><span>✓</span><strong>Kehadiran Peserta</strong><small>{{ $stats['student_profiles'] }} peserta termonitor</small></a>
 <a href="{{ route('admin.schedules.index') }}" class="admin-quick-card"><span>◷</span><strong>Jadwal Kelas</strong><small>{{ $stats['upcoming_teaching'] }} sesi akan datang</small></a>
 <a href="{{ route('admin.revenue.index') }}" class="admin-quick-card"><span>Rp</span><strong>Laporan Pendapatan</strong><small>Analisis transaksi PAID</small></a>
 <a href="{{ route('admin.certificates.index') }}" class="admin-quick-card"><span>◇</span><strong>Sertifikat</strong><small>{{ $stats['certificates'] }} sertifikat aktif</small></a>

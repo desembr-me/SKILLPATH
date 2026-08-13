@@ -1,13 +1,13 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Monitoring Progres Siswa | Admin SKILLPATH')
-@section('page-title', 'Monitoring Progres Siswa')
+@section('title', 'Monitoring Kehadiran Peserta | Admin SKILLPATH')
+@section('page-title', 'Monitoring Kehadiran Peserta')
 
 @section('content')
 <x-admin.feature-header
-    eyebrow="Learning Analytics"
-    title="Monitoring progres siswa"
-    description="Pantau progres course, aktivitas, nilai, poin, dan siswa yang membutuhkan perhatian dalam satu tampilan."
+    eyebrow="Operasional Kelas"
+    title="Monitoring kehadiran peserta"
+    description="Pantau pendaftaran kelas, booking jadwal, kehadiran, dan peserta yang membutuhkan perhatian dalam satu tampilan."
 >
     <x-slot:actions>
         <a class="admin-btn secondary" href="{{ route('admin.progress.export', request()->query()) }}">Ekspor CSV</a>
@@ -16,58 +16,58 @@
 
 <div class="admin-metric-grid">
     <x-admin.metric-card
-        label="Siswa Termonitor"
+        label="Peserta Termonitor"
         :value="number_format($stats['students'])"
-        hint="Memiliki enrollment aktif"
+        hint="Memiliki kelas aktif"
         tone="blue"
     />
     <x-admin.metric-card
-        label="Rata-rata Progres"
-        :value="$stats['average_progress'].'%'"
-        :hint="$stats['active'].' siswa aktif belajar'"
+        label="Rata-rata Kehadiran"
+        :value="$stats['average_attendance'].'%'"
+        :hint="$stats['active'].' peserta dengan jadwal aktif'"
         tone="yellow"
     />
     <x-admin.metric-card
         label="Perlu Perhatian"
         :value="number_format($stats['needs_attention'])"
-        :hint="$stats['not_started'].' belum mulai'"
+        :hint="$stats['needs_attention'].' perlu ditinjau'"
         tone="red"
     />
     <x-admin.metric-card
-        label="Selesai"
+        label="Program Selesai"
         :value="number_format($stats['completed'])"
-        hint="Mencapai 100% aktivitas"
+        hint="Tidak ada jadwal mendatang"
         tone="green"
     />
 </div>
 
 <section class="admin-section-card">
     <x-admin.section-header
-        eyebrow="Daftar Siswa"
-        title="Progres pembelajaran"
-        description="Gunakan filter untuk menemukan siswa berdasarkan course, usia, kondisi progres, atau aktivitas terakhir."
+        eyebrow="Daftar Peserta"
+        title="Kehadiran kelas"
+        description="Gunakan filter untuk menemukan peserta berdasarkan kelas, usia, kondisi kehadiran, atau sesi terakhir."
     >
         <x-slot:actions>
-            <span class="admin-count-pill">{{ number_format($students->total()) }} siswa</span>
+            <span class="admin-count-pill">{{ number_format($students->total()) }} peserta</span>
         </x-slot:actions>
     </x-admin.section-header>
 
     <form class="admin-filter-panel" method="GET" action="{{ route('admin.progress.index') }}">
         <div class="admin-filter-grid progress-filter-grid">
             <label class="admin-filter-field">
-                <span>Cari siswa</span>
+                <span>Cari peserta</span>
                 <input
                     type="search"
                     name="q"
                     value="{{ request('q') }}"
-                    placeholder="Nama siswa, orang tua, atau email"
+                    placeholder="Nama peserta, orang tua, atau email"
                 >
             </label>
 
             <label class="admin-filter-field">
-                <span>Course</span>
+                <span>Kelas</span>
                 <select name="course">
-                    <option value="">Semua course</option>
+                    <option value="">Semua kelas</option>
                     @foreach($courses as $course)
                         <option value="{{ $course->id }}" @selected((string) request('course') === (string) $course->id)>
                             {{ $course->title }}
@@ -91,9 +91,9 @@
                 <select name="status">
                     <option value="">Semua status</option>
                     <option value="active" @selected(request('status') === 'active')>Aktif</option>
-                    <option value="completed" @selected(request('status') === 'completed')>Selesai</option>
+                    <option value="completed" @selected(request('status') === 'completed')>Program Selesai</option>
                     <option value="needs_attention" @selected(request('status') === 'needs_attention')>Perlu perhatian</option>
-                    <option value="not_started" @selected(request('status') === 'not_started')>Belum mulai</option>
+                    <option value="not_scheduled" @selected(request('status') === 'not_scheduled')>Belum ada jadwal</option>
                 </select>
             </label>
 
@@ -101,10 +101,10 @@
                 <span>Urutkan</span>
                 <select name="sort">
                     <option value="name" @selected(request('sort', 'name') === 'name')>Nama A–Z</option>
-                    <option value="progress_low" @selected(request('sort') === 'progress_low')>Progres terendah</option>
-                    <option value="progress_high" @selected(request('sort') === 'progress_high')>Progres tertinggi</option>
-                    <option value="recent" @selected(request('sort') === 'recent')>Aktivitas terbaru</option>
-                    <option value="inactive" @selected(request('sort') === 'inactive')>Paling lama tidak aktif</option>
+                    <option value="attendance_low" @selected(request('sort') === 'attendance_low')>Kehadiran terendah</option>
+                    <option value="attendance_high" @selected(request('sort') === 'attendance_high')>Kehadiran tertinggi</option>
+                    <option value="recent" @selected(request('sort') === 'recent')>Sesi terbaru</option>
+                    <option value="booking_high" @selected(request('sort') === 'booking_high')>Booking terbanyak</option>
                 </select>
             </label>
         </div>
@@ -119,13 +119,13 @@
         <table class="admin-table admin-data-table progress-table">
             <thead>
             <tr>
-                <th>Siswa</th>
-                <th>Course</th>
-                <th>Aktivitas</th>
-                <th>Progres</th>
-                <th>Poin</th>
-                <th>Nilai</th>
-                <th>Terakhir Aktif</th>
+                <th>Peserta</th>
+                <th>Kelas</th>
+                <th>Booking</th>
+                <th>Kehadiran</th>
+                <th>Hadir</th>
+                <th>Tidak Hadir</th>
+                <th>Sesi Terakhir</th>
                 <th>Status</th>
                 <th></th>
             </tr>
@@ -144,33 +144,31 @@
                     </td>
                     <td>
                         <strong>{{ $row['enrollment_count'] }}</strong>
-                        <small class="admin-cell-help">enrollment aktif</small>
+                        <small class="admin-cell-help">kelas aktif</small>
                     </td>
                     <td>
-                        <strong>{{ $row['completed_activities'] }}/{{ $row['total_activities'] }}</strong>
-                        <small class="admin-cell-help">{{ $row['remaining_activities'] }} tersisa</small>
+                        <strong>{{ $row['booking_count'] }}/{{ $row['session_count'] }}</strong>
+                        <small class="admin-cell-help">{{ $row['unbooked_upcoming'] }} jadwal belum dipesan</small>
                     </td>
                     <td>
                         <div class="admin-progress-cell">
                             <div>
-                                <strong>{{ $row['progress_percent'] }}%</strong>
+                                <strong>{{ $row['attendance_rate'] !== null ? $row['attendance_rate'].'%' : '—' }}</strong>
                             </div>
                             <div class="admin-progress-track">
-                                <span style="width: {{ $row['progress_percent'] }}%"></span>
+                                <span style="width: {{ $row['attendance_rate'] ?? 0 }}%"></span>
                             </div>
                         </div>
                     </td>
-                    <td>{{ number_format($row['points']) }}</td>
-                    <td>{{ $row['average_score'] !== null ? number_format($row['average_score'], 1) : '—' }}</td>
+                    <td>{{ number_format($row['attended_count']) }}</td>
+                    <td>{{ number_format($row['absent_count']) }}</td>
                     <td>
-                        @if($row['last_activity_at'])
-                            <strong>{{ $row['last_activity_at']->translatedFormat('d M Y') }}</strong>
-                            <small class="admin-cell-help">{{ $row['days_inactive'] }} hari lalu</small>
+                        @if($row['last_session_at'])
+                            <strong>{{ $row['last_session_at']->translatedFormat('d M Y') }}</strong>
+                            <small class="admin-cell-help">{{ $row['last_session_at']->diffForHumans() }}</small>
                         @else
                             <span class="admin-muted">Belum ada</span>
-                            @if($row['days_inactive'] !== null)
-                                <small class="admin-cell-help">{{ $row['days_inactive'] }} hari sejak enrollment</small>
-                            @endif
+                            <small class="admin-cell-help">Belum ada sesi tercatat</small>
                         @endif
                     </td>
                     <td>
@@ -187,7 +185,7 @@
                 <tr>
                     <td colspan="9">
                         <div class="admin-empty-state">
-                            <strong>Tidak ada siswa ditemukan.</strong>
+                            <strong>Tidak ada peserta ditemukan.</strong>
                             <span>Ubah filter untuk menampilkan data lain.</span>
                         </div>
                     </td>
@@ -203,7 +201,7 @@
 </section>
 
 <div class="admin-info-note">
-    <strong>Aturan monitoring</strong>
-    <span>Aktif: ada aktivitas ≤14 hari. Perlu perhatian: tidak aktif &gt;14 hari, atau belum mulai setelah &gt;7 hari sejak enrollment.</span>
+    <strong>Aturan monitoring kehadiran</strong>
+    <span>Aktif: masih ada jadwal mendatang. Perlu perhatian: ada ketidakhadiran atau jadwal mendatang yang belum dipesan.</span>
 </div>
 @endsection

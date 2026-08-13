@@ -25,7 +25,7 @@
                 <span class="admin-nav-icon">▦</span> Dashboard
             </a>
             <a class="{{ request()->routeIs('admin.courses.*') ? 'active' : '' }}" href="{{ route('admin.courses.index') }}">
-                <span class="admin-nav-icon">▤</span> Course
+                <span class="admin-nav-icon">▤</span> Kelas
             </a>
             <a class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
                 <span class="admin-nav-icon">◫</span> Kategori
@@ -37,10 +37,10 @@
                 <span class="admin-nav-icon">◉</span> Pengguna
             </a>
             <a class="{{ request()->routeIs('admin.progress.*') ? 'active' : '' }}" href="{{ route('admin.progress.index') }}">
-                <span class="admin-nav-icon">↗</span> Progres Siswa
+                <span class="admin-nav-icon">↗</span> Kehadiran Peserta
             </a>
             <a class="{{ request()->routeIs('admin.schedules.*') ? 'active' : '' }}" href="{{ route('admin.schedules.index') }}">
-                <span class="admin-nav-icon">◷</span> Jadwal Pengajaran
+                <span class="admin-nav-icon">◷</span> Jadwal Kelas
             </a>
             <a class="{{ request()->routeIs('admin.certificates.*') ? 'active' : '' }}" href="{{ route('admin.certificates.index') }}">
                 <span class="admin-nav-icon">◇</span> Sertifikat

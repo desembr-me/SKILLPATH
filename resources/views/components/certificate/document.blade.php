@@ -1,14 +1,14 @@
 @props([
     'certificate',
     'child',
-    'course',
+    'kelas',
     'issuerName' => null,
 ])
 
 @php
-    $instructorName = $course?->instructor?->name ?? 'Tim Pengajar SKILLPATH';
+    $instructorName = $kelas?->instructor?->name ?? 'Tim Pengajar SKILLPATH';
     $issuer = $issuerName ?: ($certificate?->issuedBy?->name ?? 'Tim SKILLPATH');
-    $categories = $course?->categories?->pluck('name')->implode(' · ') ?: 'Pengembangan Keterampilan Nonakademik';
+    $categories = $kelas?->categories?->pluck('name')->implode(' · ') ?: 'Pengembangan Keterampilan Nonakademik';
     $isRevoked = method_exists($certificate, 'isRevoked')
         ? $certificate->isRevoked()
         : ($certificate->status ?? null) === 'revoked';
@@ -47,10 +47,10 @@
             <span class="skill-cert-name-line"></span>
 
             <p>
-                atas keberhasilan menyelesaikan course
+                atas keberhasilan menyelesaikan kelas
             </p>
 
-            <h3>{{ $course?->title ?? 'Course SKILLPATH' }}</h3>
+            <h3>{{ $kelas?->title ?? 'Kelas SKILLPATH' }}</h3>
             <small>{{ $categories }}</small>
         </section>
 
@@ -79,7 +79,7 @@
             <div class="skill-cert-signature">
                 <span class="signature-line"></span>
                 <strong>{{ $instructorName }}</strong>
-                <small>Pengajar Course</small>
+                <small>Pengajar Kelas</small>
             </div>
 
             <div class="skill-cert-seal" aria-hidden="true">

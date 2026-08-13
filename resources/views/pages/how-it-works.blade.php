@@ -7,15 +7,15 @@
     <div class="container info-hero-grid">
         <div>
             <span class="eyebrow">Cara Kerja</span>
-            <h1>Dari minat anak menjadi kegiatan tatap muka yang nyata.</h1>
+            <h1>Dari minat anak menjadi kelas tatap muka yang tepat.</h1>
             <p>
-                SKILLPATH membantu orang tua memilih kelas non-akademik berdasarkan usia dan minat, lalu mengelola pendaftaran, jadwal, lokasi, serta kehadiran dalam satu tempat.
+                SKILLPATH menggunakan data usia dan minat untuk menyederhanakan pilihan kelas nonakademik, jadwal, dan kegiatan tatap muka.
             </p>
         </div>
         <div class="info-hero-card">
-            <span class="info-card-label">Alur Kelas Offline</span>
-            <strong>Minat + Usia + Jadwal</strong>
-            <span>→ kelas yang sesuai</span>
+            <span class="info-card-label">Alur Pilihan</span>
+            <strong>Usia + Minat + Jadwal</strong>
+            <span>→ rekomendasi kelas</span>
         </div>
     </div>
 </section>
@@ -42,18 +42,18 @@
 <section class="section section-soft">
     <div class="container ucd-grid">
         <div>
-            <span class="eyebrow">Pengalaman Orang Tua & Anak</span>
-            <h2>Informasi penting tampil sebelum anak berangkat ke lokasi.</h2>
+            <span class="eyebrow">User-Centered Design</span>
+            <h2>Antarmuka menyesuaikan kebutuhan anak dan orang tua.</h2>
             <p>
-                Setiap kelas menampilkan rentang usia, pengajar, lokasi, jadwal, kapasitas, fasilitas, dan persiapan yang diperlukan agar keputusan tidak dibuat berdasarkan foto promosi dan doa semata.
+                Desain menggunakan navigasi singkat, area klik besar, bahasa sederhana, jadwal yang terlihat, serta pilihan yang tidak berlebihan.
             </p>
         </div>
 
         <div class="principle-grid">
-            <article><strong>5–7 tahun</strong><span>Program singkat dengan pendampingan dan proses antar-jemput yang jelas.</span></article>
-            <article><strong>8–10 tahun</strong><span>Kegiatan eksploratif dengan arahan langsung dari pengajar.</span></article>
-            <article><strong>11–14 tahun</strong><span>Program lebih mandiri, kolaboratif, dan berbasis keterampilan.</span></article>
-            <article><strong>Orang tua</strong><span>Mengelola transaksi, jadwal, pemesanan kursi, dan riwayat kehadiran.</span></article>
+            <article><strong>5–7 tahun</strong><span>Pendampingan lebih tinggi dan instruksi singkat.</span></article>
+            <article><strong>8–10 tahun</strong><span>Pilihan mandiri dengan arahan visual yang jelas.</span></article>
+            <article><strong>11–14 tahun</strong><span>Kontrol lebih besar terhadap pilihan kelas dan kegiatan.</span></article>
+            <article><strong>Orang tua</strong><span>Memantau kelas, jadwal, minat, dan kehadiran.</span></article>
         </div>
     </div>
 </section>
@@ -62,12 +62,12 @@
     <div class="container cta-panel">
         <div>
             <span class="eyebrow">Mulai</span>
-            <h2>Siapkan profil anak dan temukan kelas non-akademik di sekitarnya.</h2>
+            <h2>Siapkan profil anak dan temukan kelas tatap muka pertama.</h2>
         </div>
         @auth
             <a class="btn btn-dark" href="{{ route('dashboard') }}">Buka Dashboard</a>
         @else
-            <a class="btn btn-dark" href="{{ route('register') }}">Mulai Gratis</a>
+            <a class="btn btn-dark" href="{{ route('register') }}">Mulai Cari Kelas</a>
         @endauth
     </div>
 </section>

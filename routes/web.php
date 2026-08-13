@@ -40,27 +40,27 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/kategori', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/kategori/{category}', [CategoryController::class, 'show'])->name('categories.show');
-Route::get('/kelas', [ExploreController::class, 'index'])->name('explore.index');
-Route::get('/kelas/{learningPath}', [CourseController::class, 'show'])->name('courses.show');
+Route::get('/course', [ExploreController::class, 'index'])->name('explore.index');
+Route::get('/course/{learningPath}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/pengajar', [InstructorController::class, 'index'])->name('instructors.index');
 Route::get('/pengajar/{instructor}', [InstructorController::class, 'show'])->name('instructors.show');
 Route::get('/cara-kerja', HowItWorksController::class)->name('how-it-works');
 Route::get('/untuk-orang-tua', ParentController::class)->name('parents');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+    Route::get('/masuk', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/masuk', [AuthController::class, 'login'])->name('login.store');
+    Route::get('/daftar', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/daftar', [AuthController::class, 'register'])->name('register.store');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
 
-    Route::get('/kelas', [AdminCourseController::class, 'index'])->name('courses.index');
-    Route::patch('/kelas/{learningPath}/publikasi', [AdminCourseController::class, 'togglePublish'])->name('courses.toggle-publish');
-    Route::delete('/kelas/{learningPath}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
+    Route::get('/course', [AdminCourseController::class, 'index'])->name('courses.index');
+    Route::patch('/course/{learningPath}/publikasi', [AdminCourseController::class, 'togglePublish'])->name('courses.toggle-publish');
+    Route::delete('/course/{learningPath}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
 
     Route::get('/pengajar', [AdminInstructorController::class, 'index'])->name('instructors.index');
     Route::patch('/pengajar/{instructor}/verifikasi', [AdminInstructorController::class, 'toggleVerify'])->name('instructors.toggle-verify');
@@ -69,17 +69,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/pengguna', [AdminUserController::class, 'index'])->name('users.index');
     Route::delete('/pengguna/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
-    Route::get('/kehadiran-peserta', [AdminAttendanceController::class, 'index'])->name('attendance.index');
-    Route::get('/kehadiran-peserta/export', [AdminAttendanceController::class, 'export'])->name('attendance.export');
-    Route::get('/kehadiran-peserta/{childProfile}', [AdminAttendanceController::class, 'show'])->name('attendance.show');
+    // Route name lama dipertahankan agar tampilan/template asli tidak perlu dirombak.
+    // Isinya sekarang monitoring kehadiran kelas tatap muka, bukan progress e-learning.
+    Route::get('/progres-siswa', [AdminAttendanceController::class, 'index'])->name('progress.index');
+    Route::get('/progres-siswa/export', [AdminAttendanceController::class, 'export'])->name('progress.export');
+    Route::get('/progres-siswa/{childProfile}', [AdminAttendanceController::class, 'show'])->name('progress.show');
 
-    Route::get('/jadwal-kelas', [AdminTeachingScheduleController::class, 'index'])->name('schedules.index');
-    Route::get('/jadwal-kelas/export', [AdminTeachingScheduleController::class, 'export'])->name('schedules.export');
-    Route::get('/jadwal-kelas/tambah', [AdminTeachingScheduleController::class, 'create'])->name('schedules.create');
-    Route::post('/jadwal-kelas', [AdminTeachingScheduleController::class, 'store'])->name('schedules.store');
-    Route::get('/jadwal-kelas/{classSession}/edit', [AdminTeachingScheduleController::class, 'edit'])->name('schedules.edit');
-    Route::put('/jadwal-kelas/{classSession}', [AdminTeachingScheduleController::class, 'update'])->name('schedules.update');
-    Route::patch('/jadwal-kelas/{classSession}/batalkan', [AdminTeachingScheduleController::class, 'cancel'])->name('schedules.cancel');
+    Route::get('/jadwal-pengajaran', [AdminTeachingScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/jadwal-pengajaran/export', [AdminTeachingScheduleController::class, 'export'])->name('schedules.export');
+    Route::get('/jadwal-pengajaran/tambah', [AdminTeachingScheduleController::class, 'create'])->name('schedules.create');
+    Route::post('/jadwal-pengajaran', [AdminTeachingScheduleController::class, 'store'])->name('schedules.store');
+    Route::get('/jadwal-pengajaran/{classSession}/edit', [AdminTeachingScheduleController::class, 'edit'])->name('schedules.edit');
+    Route::put('/jadwal-pengajaran/{classSession}', [AdminTeachingScheduleController::class, 'update'])->name('schedules.update');
+    Route::patch('/jadwal-pengajaran/{classSession}/batalkan', [AdminTeachingScheduleController::class, 'cancel'])->name('schedules.cancel');
 
     Route::get('/laporan-pendapatan', [AdminRevenueReportController::class, 'index'])->name('revenue.index');
     Route::get('/laporan-pendapatan/export', [AdminRevenueReportController::class, 'export'])->name('revenue.export');
@@ -118,8 +120,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    Route::post('/kelas/{learningPath}/daftar-gratis', [CourseController::class, 'enrollFree'])->name('courses.enroll-free');
-    Route::post('/kelas/{learningPath}/wishlist', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::post('/course/{learningPath}/aktifkan-gratis', [CourseController::class, 'enrollFree'])->name('courses.enroll-free');
+    Route::post('/course/{learningPath}/wishlist', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 
     Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
@@ -127,28 +129,30 @@ Route::middleware('auth')->group(function () {
     Route::delete('/keranjang/{learningPath}', [CartController::class, 'remove'])->name('cart.remove');
     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-
     Route::get('/pesanan', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/pesanan/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/pesanan/{order}/bayar-demo', [CheckoutController::class, 'pay'])->name('orders.pay-demo');
 
-    Route::get('/kelas-saya', [MyCourseController::class, 'index'])->name('my-courses.index');
-    Route::get('/jadwal-kelas', [ClassScheduleController::class, 'index'])->name('class-schedules.index');
-    Route::get('/jadwal-kelas/{classSession}', [ClassScheduleController::class, 'show'])->name('class-schedules.show');
-    Route::post('/jadwal-kelas/{classSession}/booking', [ClassScheduleController::class, 'book'])->name('class-schedules.book');
-    Route::patch('/jadwal-kelas/{classSession}/batalkan', [ClassScheduleController::class, 'cancel'])->name('class-schedules.cancel');
+    Route::get('/course-saya', [MyCourseController::class, 'index'])->name('my-courses.index');
 
-    Route::post('/kelas/{learningPath}/review', [ReviewController::class, 'store'])->name('reviews.store');
-    Route::post('/kelas/{learningPath}/pertanyaan', [CourseQuestionController::class, 'store'])->name('questions.store');
+    // Nama route Live lama dipertahankan hanya untuk kompatibilitas UI.
+    // Seluruh perilakunya sekarang adalah jadwal kelas offline/tatap muka.
+    Route::get('/jadwal-kelas', [ClassScheduleController::class, 'index'])->name('live.index');
+    Route::get('/jadwal-kelas/{classSession}', [ClassScheduleController::class, 'show'])->name('live.show');
+    Route::post('/jadwal-kelas/{classSession}/booking', [ClassScheduleController::class, 'book'])->name('live.book');
+    Route::patch('/jadwal-kelas/{classSession}/batalkan', [ClassScheduleController::class, 'cancel'])->name('live.cancel');
+
+    Route::post('/course/{learningPath}/review', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/course/{learningPath}/pertanyaan', [CourseQuestionController::class, 'store'])->name('questions.store');
     Route::get('/sertifikat/{learningPath}', [CertificateController::class, 'show'])->name('certificates.show');
 
     Route::get('/pengajar-dashboard', InstructorDashboardController::class)->name('instructor.dashboard');
-    Route::get('/pengajar-dashboard/kelas/{learningPath}/edit', [InstructorCourseController::class, 'edit'])->name('instructor.courses.edit');
-    Route::put('/pengajar-dashboard/kelas/{learningPath}', [InstructorCourseController::class, 'update'])->name('instructor.courses.update');
-    Route::post('/pengajar-dashboard/kelas/{learningPath}/jadwal', [InstructorScheduleController::class, 'store'])->name('instructor.schedules.store');
+    Route::get('/pengajar-dashboard/course/{learningPath}/edit', [InstructorCourseController::class, 'edit'])->name('instructor.courses.edit');
+    Route::put('/pengajar-dashboard/course/{learningPath}', [InstructorCourseController::class, 'update'])->name('instructor.courses.update');
+    Route::post('/pengajar-dashboard/course/{learningPath}/live-session', [InstructorScheduleController::class, 'store'])->name('instructor.live.store');
     Route::get('/pengajar-dashboard/jadwal/{classSession}', [InstructorScheduleController::class, 'show'])->name('instructor.schedules.show');
     Route::patch('/pengajar-dashboard/jadwal/{classSession}/selesai', [InstructorScheduleController::class, 'complete'])->name('instructor.schedules.complete');
     Route::patch('/pengajar-dashboard/jadwal/{classSession}/booking/{sessionBooking}', [InstructorScheduleController::class, 'updateAttendance'])->name('instructor.schedules.attendance');
-    Route::delete('/pengajar-dashboard/jadwal/{classSession}', [InstructorScheduleController::class, 'destroy'])->name('instructor.schedules.destroy');
+    Route::delete('/pengajar-dashboard/live-session/{classSession}', [InstructorScheduleController::class, 'destroy'])->name('instructor.live.destroy');
     Route::post('/pengajar-dashboard/pertanyaan/{courseQuestion}/jawab', [CourseQuestionController::class, 'answer'])->name('instructor.questions.answer');
 });

@@ -32,7 +32,9 @@ class ClassScheduleController extends Controller
             ->get()
             ->keyBy('class_session_id');
 
-        return view('classes.index', compact('sessions','bookings'));
+        
+        $bookedIds = $bookings->filter(fn ($booking) => in_array($booking->status, ['booked','attended'], true))->keys();
+        return view('live.index', compact('sessions','bookings','bookedIds'));
     }
 
     public function show(Request $request, ClassSession $classSession)
@@ -53,7 +55,8 @@ class ClassScheduleController extends Controller
             ->where('class_session_id', $classSession->id)
             ->first();
 
-        return view('classes.show', compact('classSession','booking'));
+        $liveSession = $classSession;
+        return view('live.show', compact('liveSession','booking'));
     }
 
     public function book(Request $request, ClassSession $classSession)

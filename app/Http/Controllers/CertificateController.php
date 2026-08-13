@@ -44,7 +44,7 @@ class CertificateController extends Controller
             ?? $certificateService->issue($child, $learningPath);
 
         $learningPath->load(
-            'modules.activities',
+            'classSessions',
             'instructor.instructorProfile',
             'categories'
         );

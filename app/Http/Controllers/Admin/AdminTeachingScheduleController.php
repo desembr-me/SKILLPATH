@@ -44,6 +44,7 @@ class AdminTeachingScheduleController extends Controller
         $stats = [
             'today' => ClassSession::whereDate('starts_at', today())->where('status', '!=', 'cancelled')->count(),
             'upcoming' => ClassSession::where('starts_at', '>=', now())->where('status', 'scheduled')->count(),
+            'ongoing' => ClassSession::where('status', 'scheduled')->where('starts_at', '<=', now())->where('ends_at', '>=', now())->count(),
             'completed_month' => ClassSession::where('status', 'completed')
                 ->whereBetween('ends_at', [now()->startOfMonth(), now()->endOfMonth()])
                 ->count(),
@@ -171,7 +172,11 @@ class AdminTeachingScheduleController extends Controller
 
         if ($request->filled('course_id')) $query->where('learning_path_id', $request->integer('course_id'));
         if ($request->filled('instructor_id')) $query->where('instructor_id', $request->integer('instructor_id'));
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->status === 'live') {
+            $query->where('status', 'scheduled')->where('starts_at', '<=', now())->where('ends_at', '>=', now());
+        } elseif ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
         if ($request->filled('date_from')) $query->whereDate('starts_at', '>=', $request->date_from);
         if ($request->filled('date_to')) $query->whereDate('starts_at', '<=', $request->date_to);
 
@@ -184,7 +189,7 @@ class AdminTeachingScheduleController extends Controller
 
     private function validateSchedule(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'learning_path_id' => ['required','integer','exists:learning_paths,id'],
             'title' => ['required','string','max:150'],
             'description' => ['nullable','string','max:2000'],
@@ -195,9 +200,15 @@ class AdminTeachingScheduleController extends Controller
             'room' => ['nullable','string','max:100'],
             'map_url' => ['nullable','url','max:255'],
             'capacity' => ['required','integer','min:1','max:500'],
-            'status' => ['required','in:scheduled,completed,cancelled'],
+            'status' => ['required','in:scheduled,live,completed,cancelled'],
             'preparation_notes' => ['nullable','string','max:2000'],
         ]);
+
+        if (($data['status'] ?? null) === 'live') {
+            $data['status'] = 'scheduled';
+        }
+
+        return $data;
     }
 
     private function validateFilters(Request $request): void
@@ -206,7 +217,7 @@ class AdminTeachingScheduleController extends Controller
             'q'=>['nullable','string','max:120'],
             'course_id'=>['nullable','integer','exists:learning_paths,id'],
             'instructor_id'=>['nullable','integer','exists:users,id'],
-            'status'=>['nullable','in:scheduled,completed,cancelled'],
+            'status'=>['nullable','in:scheduled,live,completed,cancelled'],
             'period'=>['nullable','in:today,upcoming,past'],
             'date_from'=>['nullable','date_format:Y-m-d'],
             'date_to'=>['nullable','date_format:Y-m-d'],

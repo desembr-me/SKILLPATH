@@ -4,8 +4,8 @@
 <section class="explore-hero">
     <div class="container">
         <span class="eyebrow">Pengajar SKILLPATH</span>
-        <h1>Temukan pengajar untuk kegiatan tatap muka sesuai bidangnya.</h1>
-        <p>Profil pengajar menampilkan keahlian, pengalaman, rating, dan kelas offline yang tersedia.</p>
+        <h1>Belajar bersama pengajar yang sesuai bidangnya.</h1>
+        <p>Profil pengajar menampilkan keahlian, pengalaman, rating, dan kelas yang tersedia.</p>
     </div>
 </section>
 <section class="section">

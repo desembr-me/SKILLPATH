@@ -1,11 +1,11 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Progres '.$childProfile->name.' | Admin SKILLPATH')
-@section('page-title', 'Detail Progres Siswa')
+@section('title', 'Kehadiran '.$childProfile->name.' | Admin SKILLPATH')
+@section('page-title', 'Detail Kehadiran Peserta')
 
 @section('content')
 <div class="admin-page-toolbar">
-    <a class="admin-btn ghost" href="{{ route('admin.progress.index') }}">← Monitoring Progres</a>
+    <a class="admin-btn ghost" href="{{ route('admin.progress.index') }}">← Monitoring Kehadiran</a>
     <span class="admin-status {{ $summary['status'] }}">{{ $summary['status_label'] }}</span>
 </div>
 
@@ -13,7 +13,7 @@
     <div class="admin-profile-avatar-lg">{{ strtoupper(substr($childProfile->name, 0, 1)) }}</div>
 
     <div class="admin-profile-copy">
-        <span class="admin-eyebrow">Profil siswa</span>
+        <span class="admin-eyebrow">Profil peserta</span>
         <h2>{{ $childProfile->name }}</h2>
         <p>
             Usia {{ $childProfile->age }} tahun ·
@@ -33,8 +33,8 @@
     </div>
 
     <div class="admin-profile-side">
-        <span>Aktivitas terakhir</span>
-        <strong>{{ $summary['last_activity_at']?->translatedFormat('d M Y, H:i') ?? 'Belum ada' }}</strong>
+        <span>Sesi terakhir</span>
+        <strong>{{ $summary['last_session_at']?->translatedFormat('d M Y, H:i') ?? 'Belum ada' }}</strong>
         @if($summary['attention_reason'])
             <small>{{ $summary['attention_reason'] }}</small>
         @endif
@@ -43,27 +43,27 @@
 
 <div class="admin-metric-grid">
     <x-admin.metric-card
-        label="Progres Keseluruhan"
-        :value="$summary['progress_percent'].'%'"
-        :hint="$summary['completed_activities'].'/'.$summary['total_activities'].' aktivitas selesai'"
+        label="Tingkat Kehadiran"
+        :value="($summary['attendance_rate'] ?? 0).'%'"
+        :hint="$summary['attended_count'].'/'.$summary['session_count'].' sesi dihadiri'"
         tone="blue"
     />
     <x-admin.metric-card
-        label="Course Aktif"
+        label="Kelas Aktif"
         :value="$summary['enrollment_count']"
-        :hint="$summary['remaining_activities'].' aktivitas tersisa'"
+        :hint="$summary['upcoming_booked'].' booking mendatang'"
         tone="yellow"
     />
     <x-admin.metric-card
-        label="Total Poin"
-        :value="number_format($summary['points'])"
-        hint="Akumulasi aktivitas selesai"
+        label="Sesi Dihadiri"
+        :value="number_format($summary['attended_count'])"
+        hint="Kehadiran yang sudah dikonfirmasi"
         tone="green"
     />
     <x-admin.metric-card
-        label="Rata-rata Nilai"
-        :value="$summary['average_score'] !== null ? number_format($summary['average_score'], 1) : '—'"
-        hint="Dari aktivitas yang memiliki nilai"
+        label="Tidak Hadir"
+        :value="number_format($summary['absent_count'])"
+        hint="Sesi dengan status tidak hadir"
         tone="pink"
     />
 </div>
@@ -71,13 +71,13 @@
 <div class="admin-split-grid progress-detail-grid">
     <section class="admin-section-card">
         <x-admin.section-header
-            eyebrow="Course"
-            title="Progres per course"
-            description="Rincian aktivitas, poin, nilai, dan status belajar pada setiap course."
+            eyebrow="Kelas"
+            title="Kehadiran per kelas"
+            description="Rincian jadwal, kehadiran, dan status peserta pada setiap kelas."
         />
 
         <div class="admin-stack-list">
-            @forelse($courseProgress as $item)
+            @forelse($courseAttendance as $item)
                 <article class="admin-list-card">
                     <div class="admin-list-icon">{{ $item['path']->icon }}</div>
 
@@ -91,24 +91,24 @@
                         </div>
 
                         <div class="admin-progress-summary">
-                            <strong>{{ $item['progress_percent'] }}%</strong>
+                            <strong>{{ $item['attendance_rate'] !== null ? $item['attendance_rate'].'%' : '—' }}</strong>
                             <div class="admin-progress-track large">
-                                <span style="width: {{ $item['progress_percent'] }}%"></span>
+                                <span style="width: {{ $item['attendance_rate'] ?? 0 }}%"></span>
                             </div>
                         </div>
 
                         <div class="admin-meta-row">
-                            <span>{{ $item['completed_activities'] }}/{{ $item['total_activities'] }} aktivitas</span>
-                            <span>{{ number_format($item['points']) }} poin</span>
-                            <span>Nilai {{ $item['average_score'] !== null ? number_format($item['average_score'], 1) : '—' }}</span>
-                            <span>Terakhir {{ $item['last_activity_at']?->translatedFormat('d M Y') ?? 'belum ada' }}</span>
+                            <span>{{ $item['attended_count'] }}/{{ $item['session_count'] }} sesi hadir</span>
+                            <span>{{ number_format($item['absent_count']) }} tidak hadir</span>
+                            <span>{{ number_format($item['upcoming_count']) }} sesi mendatang</span>
+                            <span>Terdaftar {{ $item['enrollment']->enrolled_at?->translatedFormat('d M Y') ?? '—' }}</span>
                         </div>
                     </div>
                 </article>
             @empty
                 <div class="admin-empty-state">
-                    <strong>Belum ada course.</strong>
-                    <span>Siswa belum mempunyai enrollment yang dapat dipantau.</span>
+                    <strong>Belum ada kelas.</strong>
+                    <span>Peserta belum mempunyai pendaftaran kelas yang dapat dipantau.</span>
                 </div>
             @endforelse
         </div>
@@ -117,26 +117,26 @@
     <aside class="admin-section-card">
         <x-admin.section-header
             eyebrow="Ringkasan"
-            title="Aktivitas siswa"
-            description="Informasi singkat untuk tindak lanjut admin."
+            title="Kehadiran peserta"
+            description="Informasi singkat untuk tindak lanjut kehadiran peserta."
         />
 
         <div class="admin-detail-list">
             <div>
-                <span>Mulai enrollment</span>
-                <strong>{{ $summary['first_enrollment_at']?->translatedFormat('d M Y') ?? 'Belum ada' }}</strong>
+                <span>Total booking</span>
+                <strong>{{ number_format($summary['booking_count']) }}</strong>
             </div>
             <div>
-                <span>Hari tidak aktif</span>
-                <strong>{{ $summary['days_inactive'] !== null ? $summary['days_inactive'].' hari' : '—' }}</strong>
+                <span>Sesi dihadiri</span>
+                <strong>{{ number_format($summary['attended_count']) }}</strong>
             </div>
             <div>
-                <span>Aktivitas selesai</span>
-                <strong>{{ $summary['completed_activities'] }}</strong>
+                <span>Tidak hadir</span>
+                <strong>{{ number_format($summary['absent_count']) }}</strong>
             </div>
             <div>
-                <span>Aktivitas tersisa</span>
-                <strong>{{ $summary['remaining_activities'] }}</strong>
+                <span>Belum dipesan</span>
+                <strong>{{ number_format($summary['unbooked_upcoming']) }}</strong>
             </div>
         </div>
 
@@ -147,8 +147,8 @@
             </div>
         @else
             <div class="admin-alert-box success">
-                <strong>Monitoring normal</strong>
-                <span>Tidak ada indikator keterlambatan yang perlu ditindaklanjuti saat ini.</span>
+                <strong>Kehadiran normal</strong>
+                <span>Tidak ada indikator kehadiran yang perlu ditindaklanjuti saat ini.</span>
             </div>
         @endif
     </aside>
@@ -156,9 +156,9 @@
 
 <section class="admin-section-card">
     <x-admin.section-header
-        eyebrow="Riwayat Belajar"
-        title="Aktivitas terbaru"
-        description="20 aktivitas terakhir yang ditandai selesai oleh siswa."
+        eyebrow="Riwayat Kehadiran"
+        title="Sesi terbaru"
+        description="Riwayat sesi kelas dan status kehadiran peserta."
     />
 
     <div class="admin-table-shell">
@@ -166,29 +166,29 @@
             <thead>
             <tr>
                 <th>Tanggal</th>
-                <th>Course</th>
-                <th>Modul</th>
-                <th>Aktivitas</th>
-                <th>Nilai</th>
-                <th>Poin</th>
+                <th>Kelas</th>
+                <th>Jadwal</th>
+                <th>Lokasi</th>
+                <th>Status</th>
+                <th>Catatan</th>
             </tr>
             </thead>
             <tbody>
-            @forelse($recentActivities as $progress)
+            @forelse($bookings as $booking)
                 <tr>
-                    <td>{{ $progress->completed_at?->translatedFormat('d M Y, H:i') ?? '—' }}</td>
-                    <td>{{ $progress->activity->module->learningPath?->title ?? 'Course tidak tersedia' }}</td>
-                    <td>{{ $progress->activity->module->title }}</td>
-                    <td><strong>{{ $progress->activity->title }}</strong></td>
-                    <td>{{ $progress->score ?? '—' }}</td>
-                    <td><strong>+{{ number_format($progress->points_awarded) }}</strong></td>
+                    <td>{{ $booking->classSession?->starts_at?->translatedFormat('d M Y, H:i') ?? '—' }}</td>
+                    <td>{{ $booking->classSession?->learningPath?->title ?? 'Kelas tidak tersedia' }}</td>
+                    <td>{{ $booking->classSession?->title ?? '—' }}</td>
+                    <td><strong>{{ $booking->classSession?->venue_name ?? '—' }}</strong></td>
+                    <td>{{ $booking->statusLabel() }}</td>
+                    <td><strong>{{ $booking->notes ?: '—' }}</strong></td>
                 </tr>
             @empty
                 <tr>
                     <td colspan="6">
                         <div class="admin-empty-state">
-                            <strong>Belum ada riwayat aktivitas.</strong>
-                            <span>Aktivitas yang selesai akan muncul di sini.</span>
+                            <strong>Belum ada riwayat kehadiran.</strong>
+                            <span>Booking dan kehadiran kelas akan muncul di sini.</span>
                         </div>
                     </td>
                 </tr>
