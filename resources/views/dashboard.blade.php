@@ -8,7 +8,7 @@
         <div>
             <span class="eyebrow">Halo, {{ $child->name }}</span>
             <h1>Mau belajar apa hari ini?</h1>
-            <p>Rekomendasi di bawah disusun dari usia, minat, dan progresmu.</p>
+            <p>Rekomendasi di bawah disusun dari usia, minat hasil co-design, kebutuhan belajar, dan progresmu.</p>
         </div>
 
         <a class="btn btn-ghost-light" href="{{ route('onboarding.edit') }}">Ubah Minat</a>
@@ -51,7 +51,7 @@
                     <div class="recommendation-top">
                         <div class="path-icon">{{ $path->icon }}</div>
                         <span class="match-badge">
-                            {{ $item['matched_interests'] > 0 ? 'Sesuai minat' : 'Pilihan baru' }}
+                            {{ $item['match_reason'] }}
                         </span>
                     </div>
 

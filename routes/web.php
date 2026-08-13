@@ -22,6 +22,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseQuestionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\FinalExamController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HowItWorksController;
 use App\Http\Controllers\InstructorController;
@@ -144,11 +145,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/course-saya', [MyCourseController::class, 'index'])->name('my-courses.index');
     Route::get('/live-class', [LiveClassController::class, 'index'])->name('live.index');
     Route::get('/live-class/{liveSession}', [LiveClassController::class, 'show'])->name('live.show');
+    Route::get('/live-class/{liveSession}/konfirmasi', [LiveClassController::class, 'confirm'])->name('live.confirm');
     Route::post('/live-class/{liveSession}/booking', [LiveClassController::class, 'book'])->name('live.book');
+    Route::post('/live-class/{liveSession}/kredit', [LiveClassController::class, 'convertToCredit'])->name('live.credit');
 
     Route::post('/course/{learningPath}/review', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/course/{learningPath}/pertanyaan', [CourseQuestionController::class, 'store'])->name('questions.store');
     Route::get('/sertifikat/{learningPath}', [CertificateController::class, 'show'])->name('certificates.show');
+    Route::get('/jalur/{learningPath}/ujian-akhir', [FinalExamController::class, 'show'])->name('exams.show');
+    Route::post('/jalur/{learningPath}/ujian-akhir', [FinalExamController::class, 'submit'])->name('exams.submit');
 
     Route::get('/jalur/{learningPath}', [LearningController::class, 'showPath'])->name('learning.path');
     Route::get('/modul/{module}', [LearningController::class, 'showModule'])->name('learning.module');

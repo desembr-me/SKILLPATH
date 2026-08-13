@@ -8,4 +8,6 @@ class LiveSession extends Model
     public function learningPath(){ return $this->belongsTo(LearningPath::class); }
     public function instructor(){ return $this->belongsTo(User::class, 'instructor_id'); }
     public function bookings(){ return $this->hasMany(SessionBooking::class); }
+    public function creditsGenerated(){ return $this->hasMany(SessionCredit::class, 'source_live_session_id'); }
+    public function creditsUsed(){ return $this->hasMany(SessionCredit::class, 'used_live_session_id'); }
 }

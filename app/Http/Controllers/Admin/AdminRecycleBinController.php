@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\CourseReview;
 use App\Models\LearningPath;
 use App\Models\User;
+use App\Services\ReviewRatingService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -51,27 +52,38 @@ class AdminRecycleBinController extends Controller
         return view('admin.recycle-bin.index', compact('items', 'counts', 'type', 'q'));
     }
 
-    public function restore(string $type, int $id)
+    public function restore(string $type, int $id, ReviewRatingService $ratingService)
     {
         $model = $this->findTrashed($type, $id);
         $model->restore();
 
+        if ($type === 'review' && $model instanceof CourseReview) {
+            $instructorId = $model->learningPath?->instructor_id;
+            if ($instructorId) {
+                $ratingService->recalculateForInstructor((int) $instructorId);
+            }
+        }
+
         return back()->with('success', $this->label($type).' berhasil dipulihkan dari Recycle Bin.');
     }
 
-    public function restoreAll()
+    public function restoreAll(ReviewRatingService $ratingService)
     {
         LearningPath::onlyTrashed()->restore();
         Category::onlyTrashed()->restore();
         User::onlyTrashed()->restore();
         CourseReview::onlyTrashed()->restore();
+        $ratingService->recalculateAll();
 
         return back()->with('success', 'Semua data di Recycle Bin berhasil dipulihkan. Course yang dipulihkan tetap berstatus draft sampai dipublikasikan kembali oleh admin.');
     }
 
-    public function forceDelete(string $type, int $id)
+    public function forceDelete(string $type, int $id, ReviewRatingService $ratingService)
     {
         $model = $this->findTrashed($type, $id);
+        $instructorId = $type === 'review' && $model instanceof CourseReview
+            ? $model->learningPath?->instructor_id
+            : null;
 
         $blockedReason = $this->permanentDeleteBlockReason($type, $id);
         if ($blockedReason) {
@@ -79,6 +91,10 @@ class AdminRecycleBinController extends Controller
         }
 
         $model->forceDelete();
+
+        if ($instructorId) {
+            $ratingService->recalculateForInstructor((int) $instructorId);
+        }
 
         return back()->with('success', $this->label($type).' dihapus permanen.');
     }
@@ -133,7 +149,11 @@ class AdminRecycleBinController extends Controller
 
             'review' => CourseReview::onlyTrashed()
                 ->with(['user', 'learningPath'])
-                ->when($q !== '', fn ($query) => $query->where('review', 'like', "%{$q}%"))
+                ->when($q !== '', fn ($query) => $query->where(function ($builder) use ($q) {
+                    $builder->where('review', 'like', "%{$q}%")
+                        ->orWhere('mentor_review', 'like', "%{$q}%")
+                        ->orWhere('platform_review', 'like', "%{$q}%");
+                }))
                 ->latest('deleted_at')
                 ->get()
                 ->map(fn (CourseReview $review) => [

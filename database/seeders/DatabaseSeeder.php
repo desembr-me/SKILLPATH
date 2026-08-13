@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\ChildProfile;
 use App\Models\Enrollment;
+use App\Models\FinalExam;
+use App\Models\ExamAttempt;
 use App\Models\InstructorProfile;
 use App\Models\Interest;
 use App\Models\LearningPath;
@@ -31,6 +33,7 @@ class DatabaseSeeder extends Seeder
             ['name'=>'Komunikasi','icon'=>'☏','description'=>'Berbicara, mendengar, dan menyampaikan ide.'],
             ['name'=>'Kewirausahaan','icon'=>'◎','description'=>'Ide usaha, nilai, perencanaan, dan tanggung jawab.'],
             ['name'=>'Kehidupan Sehari-hari','icon'=>'⌂','description'=>'Kemandirian, kebiasaan baik, dan keterampilan praktis.'],
+            ['name'=>'Pengembangan Diri','icon'=>'✧','description'=>'Percaya diri, mengenali emosi, kemampuan sosial, dan kebiasaan positif.'],
         ])->mapWithKeys(function($item){$m=Interest::updateOrCreate(['slug'=>Str::slug($item['name'])],$item+['slug'=>Str::slug($item['name'])]);return[$m->slug=>$m];});
 
         $skills = collect([
@@ -47,6 +50,7 @@ class DatabaseSeeder extends Seeder
             ['name'=>'Music','slug'=>'music','icon'=>'♫','description'=>'Mengenal ritme, bunyi, tempo, dan ekspresi melalui aktivitas musik sederhana.'],
             ['name'=>'Sports','slug'=>'sports','icon'=>'●','description'=>'Mengembangkan koordinasi gerak, kebugaran, disiplin, dan sportivitas.'],
             ['name'=>'Technology','slug'=>'technology','icon'=>'</>','description'=>'Mengenal logika digital, coding, teknologi, dan pemecahan masalah secara bertahap.'],
+            ['name'=>'Self-Improvement','slug'=>'self-improvement','icon'=>'✧','description'=>'Pengembangan diri anak melalui kemampuan sosial, emosional, percaya diri, kemandirian, dan kebiasaan positif.'],
         ])->mapWithKeys(function($item){$m=Category::updateOrCreate(['slug'=>$item['slug']],$item);return[$m->slug=>$m];});
 
         $admin=User::updateOrCreate(['email'=>'admin@skillpath.test'],['name'=>'Admin SKILLPATH','password'=>Hash::make('password'),'role'=>'admin']);
@@ -72,6 +76,7 @@ class DatabaseSeeder extends Seeder
             ['title'=>'Penjelajah Coding Visual','category'=>'technology','skill'=>'literasi-digital','instructor'=>'arif@skillpath.test','min'=>8,'max'=>14,'duration'=>240,'icon'=>'⌨','price'=>249000,'sale'=>189000,'type'=>'hybrid','interests'=>['teknologi'],'description'=>'Belajar logika urutan, event, loop, dan project coding visual tanpa sintaks rumit.','outcomes'=>'Anak memahami algoritma sederhana, pola, loop, dan dapat membuat project interaktif dasar.','requirements'=>'Laptop atau komputer dengan browser modern.'],
             ['title'=>'Eksperimen Sains Mini','category'=>'technology','skill'=>'problem-solving','instructor'=>'arif@skillpath.test','min'=>7,'max'=>12,'duration'=>160,'icon'=>'⚗','price'=>149000,'sale'=>null,'type'=>'self_paced','interests'=>['sains'],'description'=>'Melatih observasi, prediksi, dan kesimpulan melalui eksperimen sederhana.','outcomes'=>'Anak dapat membuat prediksi, mencatat hasil, dan menjelaskan kesimpulan sederhana.','requirements'=>'Pendampingan orang dewasa untuk kegiatan eksperimen.'],
             ['title'=>'Berani Bicara','category'=>'languages','skill'=>'komunikasi','instructor'=>'maya@skillpath.test','min'=>6,'max'=>14,'duration'=>200,'icon'=>'●','price'=>199000,'sale'=>159000,'type'=>'hybrid','interests'=>['komunikasi'],'description'=>'Melatih struktur bicara, volume suara, mendengar aktif, dan presentasi singkat.','outcomes'=>'Anak mampu menyampaikan ide singkat secara terstruktur dan percaya diri.','requirements'=>'Perangkat dengan mikrofon untuk latihan live.'],
+            ['title'=>'Kenali Emosi dan Percaya Diri','category'=>'self-improvement','skill'=>'kemandirian','instructor'=>'maya@skillpath.test','min'=>6,'max'=>12,'duration'=>180,'icon'=>'✧','price'=>179000,'sale'=>139000,'type'=>'hybrid','interests'=>['pengembangan-diri','komunikasi'],'description'=>'Membantu anak mengenali emosi, menyampaikan kebutuhan, membangun percaya diri, dan berlatih keterampilan sosial melalui aktivitas aman dan reflektif.','outcomes'=>'Anak mampu mengenali emosi dasar, menggunakan kalimat untuk menyampaikan kebutuhan, dan mencoba strategi sederhana untuk membangun percaya diri dalam situasi sosial.','requirements'=>'Pendampingan orang tua pada aktivitas refleksi untuk anak usia lebih kecil.'],
             ['title'=>'English Fun Conversation','category'=>'languages','skill'=>'komunikasi','instructor'=>'maya@skillpath.test','min'=>7,'max'=>12,'duration'=>220,'icon'=>'Aa','price'=>229000,'sale'=>179000,'type'=>'live','interests'=>['komunikasi'],'description'=>'Kelas percakapan bahasa Inggris berbasis permainan, topik sehari-hari, dan role play.','outcomes'=>'Anak mampu menggunakan ungkapan dasar untuk memperkenalkan diri, bertanya, dan merespons percakapan sederhana.','requirements'=>'Mikrofon dan koneksi internet stabil.'],
             ['title'=>'Ritme dan Musik Dasar','category'=>'music','skill'=>'kreativitas','instructor'=>'dinda@skillpath.test','min'=>5,'max'=>11,'duration'=>180,'icon'=>'♫','price'=>169000,'sale'=>129000,'type'=>'hybrid','interests'=>['seni'],'description'=>'Mengenal ritme, tempo, pola bunyi, dan ekspresi musik melalui permainan sederhana.','outcomes'=>'Anak mengenali tempo, menirukan pola ketukan, dan membuat pola bunyi sendiri.','requirements'=>'Tidak wajib memiliki alat musik. Gunakan benda aman di rumah.'],
             ['title'=>'Gerak Aktif dan Sportivitas','category'=>'sports','skill'=>'kemandirian','instructor'=>'raka@skillpath.test','min'=>6,'max'=>14,'duration'=>150,'icon'=>'●','price'=>129000,'sale'=>99000,'type'=>'live','interests'=>['kehidupan-sehari-hari'],'description'=>'Melatih koordinasi gerak, kebiasaan aktif, disiplin, dan sportivitas.','outcomes'=>'Anak mampu mengikuti rangkaian gerak sederhana dan menunjukkan sikap sportif.','requirements'=>'Area aman untuk bergerak, pakaian nyaman, dan pendampingan orang tua untuk anak kecil.'],
@@ -106,6 +111,18 @@ class DatabaseSeeder extends Seeder
                 }
             }
 
+            $examQuestions = [
+                ['question'=>'Apa hasil belajar utama yang diharapkan dari course '.$path->title.'?','options'=>[$d['outcomes'],'Menghafal seluruh halaman tanpa praktik','Menyelesaikan course secepat mungkin tanpa memahami','Menghindari semua aktivitas yang menantang'],'correct'=>0],
+                ['question'=>'Saat menemui bagian yang sulit, langkah belajar yang paling tepat adalah...','options'=>['Mencoba kembali secara bertahap dan meminta bantuan bila diperlukan','Melewati semua latihan','Menyalin jawaban tanpa memahami','Berhenti belajar selamanya'],'correct'=>0],
+                ['question'=>'Mengapa latihan dan project penting dalam course ini?','options'=>['Agar keterampilan dapat diterapkan, bukan hanya diketahui','Agar halaman terlihat lebih panjang','Agar tidak perlu memahami konsep','Agar nilai selalu otomatis sempurna'],'correct'=>0],
+                ['question'=>'Apa cara yang baik untuk menilai perkembangan diri setelah belajar?','options'=>['Membandingkan kemampuan sekarang dengan kemampuan sebelum berlatih','Hanya membandingkan diri dengan teman','Mengabaikan semua umpan balik','Mengulang tanpa refleksi'],'correct'=>0],
+                ['question'=>'Jika aktivitas belum berhasil pada percobaan pertama, sikap yang paling tepat adalah...','options'=>['Mengevaluasi kesalahan, mencoba strategi lain, lalu berlatih lagi','Menganggap diri tidak mampu','Menghapus semua progres','Memilih jawaban secara acak terus-menerus'],'correct'=>0],
+            ];
+            FinalExam::updateOrCreate(
+                ['learning_path_id'=>$path->id],
+                ['title'=>'Ujian Akhir - '.$path->title,'passing_score'=>75,'max_attempts'=>3,'questions'=>$examQuestions,'is_active'=>true]
+            );
+
             if($path->live_class_enabled){
                 for($n=1;$n<=2;$n++){
                     LiveSession::updateOrCreate(
@@ -122,7 +139,7 @@ class DatabaseSeeder extends Seeder
         );
         $child=ChildProfile::updateOrCreate(
             ['user_id'=>$parent->id],
-            ['name'=>'Alya','age'=>10,'avatar'=>'spark']
+            ['name'=>'Alya','age'=>10,'avatar'=>'spark','favorite_interest_id'=>$interests['teknologi']->id,'learning_need'=>'digital_literacy','child_voice'=>'Aku suka membuat sesuatu dengan komputer dan ingin bisa membuat project sendiri.','co_design_completed_at'=>now()]
         );
         $child->interests()->sync([
             $interests['teknologi']->id,
@@ -182,7 +199,7 @@ class DatabaseSeeder extends Seeder
         );
         $bima=ChildProfile::updateOrCreate(
             ['user_id'=>$inactiveParent->id],
-            ['name'=>'Bima','age'=>9,'avatar'=>'spark']
+            ['name'=>'Bima','age'=>9,'avatar'=>'spark','favorite_interest_id'=>$interests['teknologi']->id,'learning_need'=>'problem_solving','child_voice'=>'Aku suka tantangan yang membuatku mencari cara sampai berhasil.','co_design_completed_at'=>now()]
         );
         $bima->interests()->sync([$interests['teknologi']->id]);
 
@@ -199,7 +216,7 @@ class DatabaseSeeder extends Seeder
         );
         $citra=ChildProfile::updateOrCreate(
             ['user_id'=>$completeParent->id],
-            ['name'=>'Citra','age'=>8,'avatar'=>'spark']
+            ['name'=>'Citra','age'=>8,'avatar'=>'spark','favorite_interest_id'=>$interests['seni']->id,'learning_need'=>'creativity','child_voice'=>'Aku suka menggambar dan membuat cerita dari ideku sendiri.','co_design_completed_at'=>now()]
         );
         $citra->interests()->sync([$interests['seni']->id]);
 
@@ -218,6 +235,15 @@ class DatabaseSeeder extends Seeder
                         'points_awarded'=>$activity->points,
                         'completed_at'=>now()->subDays(max(1, 7 - $index)),
                     ]
+                );
+            }
+
+
+            $artsExam = FinalExam::where('learning_path_id', $artsPath->id)->first();
+            if ($artsExam) {
+                ExamAttempt::updateOrCreate(
+                    ['final_exam_id'=>$artsExam->id,'child_profile_id'=>$citra->id,'attempt_number'=>1],
+                    ['score'=>90,'passed'=>true,'answers'=>[0,0,0,0,0],'completed_at'=>now()->subDay()]
                 );
             }
         }

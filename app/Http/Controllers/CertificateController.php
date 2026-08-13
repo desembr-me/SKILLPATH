@@ -25,6 +25,7 @@ class CertificateController extends Controller
                 ->where('child_profile_id', $child->id)
                 ->where('learning_path_id', $learningPath->id)
                 ->where('status', 'active')
+                ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))
                 ->exists(),
             403
         );
@@ -40,8 +41,25 @@ class CertificateController extends Controller
             'Sertifikat ini telah dicabut oleh administrator.'
         );
 
-        $certificate = $existing
-            ?? $certificateService->issue($child, $learningPath);
+        if (! $existing) {
+            $evaluation = $certificateService->evaluate($child, $learningPath);
+
+            if (! $evaluation['learning_complete']) {
+                return redirect()->route('learning.path', $learningPath)->withErrors([
+                    'certificate' => 'Selesaikan seluruh aktivitas course sebelum mengikuti ujian akhir.',
+                ]);
+            }
+
+            if (! $evaluation['exam_passed']) {
+                return redirect()->route('exams.show', $learningPath)->withErrors([
+                    'certificate' => 'Sertifikat diterbitkan setelah siswa lulus ujian akhir.',
+                ]);
+            }
+
+            $existing = $certificateService->issue($child, $learningPath);
+        }
+
+        $certificate = $existing;
 
         $learningPath->load(
             'modules.activities',

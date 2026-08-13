@@ -74,6 +74,21 @@
                 </div>
             </div>
 
+            @if($learningPath->certificate_enabled)
+                <div class="aside-card">
+                    <h3>Ujian & sertifikat</h3>
+                    @if($certificate)
+                        <p>Ujian akhir sudah lulus dan sertifikat telah tersedia.</p>
+                        <a class="btn btn-dark btn-full" href="{{ route('certificates.show',$learningPath) }}">Lihat Sertifikat</a>
+                    @elseif($certificateEvaluation['learning_complete'])
+                        <p>Selesaikan ujian akhir dengan nilai minimal {{ $learningPath->finalExam?->passing_score ?? 75 }} untuk memperoleh sertifikat.</p>
+                        <a class="btn btn-blue btn-full" href="{{ route('exams.show',$learningPath) }}">{{ $certificateEvaluation['attempts_used'] > 0 ? 'Retake Ujian Akhir' : 'Mulai Ujian Akhir' }}</a>
+                    @else
+                        <p>Sertifikat terbuka setelah semua aktivitas selesai dan ujian akhir dinyatakan lulus.</p>
+                    @endif
+                </div>
+            @endif
+
             <div class="aside-card tip-card">
                 <span class="tip-icon">i</span>
                 <h3>Tips belajar</h3>

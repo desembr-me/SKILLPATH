@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\LearningPath;
 use App\Models\LiveSession;
 use App\Models\User;
+use App\Services\ScheduleConflictService;
+use App\Services\SessionCreditService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -140,40 +143,100 @@ class AdminTeachingScheduleController extends Controller
         ));
     }
 
-    public function update(Request $request, LiveSession $liveSession)
-    {
+    public function update(
+        Request $request,
+        LiveSession $liveSession,
+        ScheduleConflictService $conflictService,
+        SessionCreditService $creditService
+    ) {
         $data = $this->validateSchedule($request);
-        $course = LearningPath::withTrashed()
-            ->findOrFail($data['learning_path_id']);
+        $course = LearningPath::withTrashed()->findOrFail($data['learning_path_id']);
 
         abort_unless($course->instructor_id, 422, 'Course belum memiliki pengajar.');
 
-        $this->ensureNoInstructorConflict(
-            instructorId: $course->instructor_id,
-            startsAt: $data['starts_at'],
-            endsAt: $data['ends_at'],
-            ignoreSessionId: $liveSession->id,
-        );
+        if ($data['status'] !== 'cancelled') {
+            $this->ensureNoInstructorConflict(
+                instructorId: $course->instructor_id,
+                startsAt: $data['starts_at'],
+                endsAt: $data['ends_at'],
+                ignoreSessionId: $liveSession->id,
+            );
+        }
 
-        $liveSession->update([
-            'learning_path_id' => $course->id,
-            'instructor_id' => $course->instructor_id,
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null,
-            'starts_at' => $data['starts_at'],
-            'ends_at' => $data['ends_at'],
-            'meeting_url' => $data['meeting_url'] ?? null,
-            'capacity' => $data['capacity'],
-            'status' => $data['status'],
-            'recording_url' => $data['recording_url'] ?? null,
-        ]);
+        DB::transaction(function () use ($liveSession, $course, $data, $creditService, $conflictService) {
+            // Lock sesi sebelum memeriksa booking. Request booking siswa juga
+            // mengunci baris sesi yang sama, sehingga perubahan jadwal tidak
+            // dapat menyelinap di antara pemeriksaan bentrok dan penyimpanan.
+            $lockedSession = LiveSession::query()
+                ->whereKey($liveSession->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        return redirect()
-            ->route('admin.schedules.index')
-            ->with('success', 'Jadwal pengajaran berhasil diperbarui.');
+            $activeBookings = $lockedSession->bookings()->where('status', 'booked')->count();
+
+            if ($activeBookings > 0 && (int) $course->id !== (int) $lockedSession->learning_path_id) {
+                throw ValidationException::withMessages([
+                    'learning_path_id' => 'Course tidak dapat diganti karena sesi sudah memiliki booking aktif. Batalkan sesi terlebih dahulu agar peserta memperoleh kredit.',
+                ]);
+            }
+
+            if ($data['status'] !== 'cancelled' && $activeBookings > (int) $data['capacity']) {
+                throw ValidationException::withMessages([
+                    'capacity' => 'Kapasitas tidak boleh lebih kecil dari jumlah peserta yang sudah booking ('.$activeBookings.').',
+                ]);
+            }
+
+            if ($data['status'] !== 'cancelled') {
+                $conflictedChildren = $conflictService->conflictingBookedChildrenForReschedule(
+                    $lockedSession,
+                    $data['starts_at'],
+                    $data['ends_at']
+                );
+
+                if ($conflictedChildren->isNotEmpty()) {
+                    throw ValidationException::withMessages([
+                        'starts_at' => 'Perubahan jadwal akan membuat '.$conflictedChildren->count().' siswa memiliki jadwal bentrok. Pilih waktu lain atau batalkan sesi agar kredit pengganti dapat diberikan.',
+                    ]);
+                }
+            }
+
+            $lockedSession->update([
+                'learning_path_id' => $course->id,
+                'instructor_id' => $course->instructor_id,
+                'title' => $data['title'],
+                'description' => $data['description'] ?? null,
+                'starts_at' => $data['starts_at'],
+                'ends_at' => $data['ends_at'],
+                'meeting_url' => $data['meeting_url'] ?? null,
+                'capacity' => $data['capacity'],
+                'status' => $data['status'],
+                'recording_url' => $data['recording_url'] ?? null,
+            ]);
+
+            if ($data['status'] === 'cancelled') {
+                $bookings = $lockedSession->bookings()
+                    ->where('status', 'booked')
+                    ->lockForUpdate()
+                    ->get();
+
+                foreach ($bookings as $booking) {
+                    $creditService->creditBooking(
+                        $booking,
+                        'sesi_dibatalkan',
+                        'Kredit otomatis karena jadwal dibatalkan oleh administrator.'
+                    );
+                }
+            }
+        });
+
+        $message = $data['status'] === 'cancelled'
+            ? 'Jadwal dibatalkan. Booking aktif otomatis dikonversi menjadi kredit sesi.'
+            : 'Jadwal pengajaran berhasil diperbarui tanpa menimbulkan bentrok pada peserta.';
+
+        return redirect()->route('admin.schedules.index')->with('success', $message);
     }
 
-    public function cancel(LiveSession $liveSession)
+    public function cancel(LiveSession $liveSession, SessionCreditService $creditService)
     {
         if ($liveSession->status === 'completed') {
             return back()->withErrors([
@@ -181,9 +244,26 @@ class AdminTeachingScheduleController extends Controller
             ]);
         }
 
-        $liveSession->update(['status' => 'cancelled']);
+        if ($liveSession->status === 'cancelled') {
+            return back()->with('success', 'Jadwal ini sudah dibatalkan sebelumnya.');
+        }
 
-        return back()->with('success', 'Jadwal pengajaran dibatalkan.');
+        DB::transaction(function () use ($liveSession, $creditService) {
+            $lockedSession = LiveSession::query()->whereKey($liveSession->id)->lockForUpdate()->firstOrFail();
+            $bookings = $lockedSession->bookings()->where('status', 'booked')->lockForUpdate()->get();
+
+            foreach ($bookings as $booking) {
+                $creditService->creditBooking(
+                    $booking,
+                    'sesi_dibatalkan',
+                    'Kredit otomatis karena jadwal dibatalkan oleh administrator.'
+                );
+            }
+
+            $lockedSession->update(['status' => 'cancelled']);
+        });
+
+        return back()->with('success', 'Jadwal dibatalkan. Booking aktif otomatis dikonversi menjadi kredit sesi.');
     }
 
     public function export(Request $request): StreamedResponse

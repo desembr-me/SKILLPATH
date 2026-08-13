@@ -5,6 +5,8 @@ use App\Models\Enrollment;
 use App\Models\LearningPath;
 use App\Models\Module;
 use App\Models\Progress;
+use App\Models\Certificate;
+use App\Services\CertificateService;
 use Illuminate\Http\Request;
 class LearningController extends Controller
 {
@@ -16,14 +18,20 @@ class LearningController extends Controller
         abort_unless(Enrollment::where('child_profile_id',$child->id)->where('learning_path_id',$course->id)->where('status','active')->where(fn($q)=>$q->whereNull('expires_at')->orWhere('expires_at','>',now()))->exists(),403,'Course belum dibeli atau akses sudah berakhir.');
         return $child;
     }
-    public function showPath(Request $request, LearningPath $learningPath){
+    public function showPath(Request $request, LearningPath $learningPath, CertificateService $certificateService){
         $child=$this->ensureAccess($request,$learningPath); if($child instanceof \Illuminate\Http\RedirectResponse) return $child;
         $learningPath->load(['skill','interests','modules.activities','instructor.instructorProfile']);
         $ids=$learningPath->modules->flatMap(fn($m)=>$m->activities->pluck('id'));
         $completedIds=Progress::where('child_profile_id',$child->id)->where('status','completed')->whereIn('activity_id',$ids)->pluck('activity_id');
         $total=$ids->count(); $completed=$completedIds->count(); $progressPercent=$total?(int)round($completed/$total*100):0;
         $nextActivity=$learningPath->modules->flatMap(fn($m)=>$m->activities)->first(fn($a)=>!$completedIds->contains($a->id));
-        return view('learning.path',compact('learningPath','completedIds','progressPercent','nextActivity'));
+        $certificateEvaluation = $learningPath->certificate_enabled
+            ? $certificateService->evaluate($child, $learningPath)
+            : null;
+        $certificate = $learningPath->certificate_enabled
+            ? Certificate::where('child_profile_id', $child->id)->where('learning_path_id', $learningPath->id)->first()
+            : null;
+        return view('learning.path',compact('learningPath','completedIds','progressPercent','nextActivity','certificateEvaluation','certificate'));
     }
     public function showModule(Request $request, Module $module){
         $module->load(['learningPath.skill','activities']);

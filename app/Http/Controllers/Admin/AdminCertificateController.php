@@ -313,6 +313,7 @@ class AdminCertificateController extends Controller
                 'learningPath.modules.activities',
             ])
             ->where('status', 'active')
+            ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))
             ->whereHas(
                 'learningPath',
                 fn ($query) => $query->where(

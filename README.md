@@ -255,8 +255,8 @@ Versi ini mengembangkan SKILLPATH menjadi marketplace course nonakademik untuk a
 - Course Saya dan progres
 - live class dan booking kursi
 - tanya pengajar
-- review course
-- sertifikat setelah seluruh aktivitas selesai
+- review mentor dan platform secara terpisah
+- sertifikat setelah seluruh aktivitas selesai **dan lulus ujian akhir**
 
 ### Fitur pengajar
 - profil pengajar publik
@@ -403,4 +403,16 @@ Dokumentasi lengkap:
 
 ```text
 docs/ADMIN_CERTIFICATES_STATISTICS.md
+```
+
+## Fitur Fleksibel, Co-Design, dan Ujian Akhir
+
+Project kini mendukung kredit sesi fleksibel, deteksi jadwal bentrok otomatis, sertifikat berbasis kelulusan ujian dengan retake, kategori Self-Improvement, review mentor dan platform secara terpisah, onboarding minat anak melalui co-design/Cooperative Inquiry, serta rekomendasi adaptif yang mempertimbangkan minat utama pilihan anak, riwayat co-design, suara anak, kebutuhan belajar, dan progres.
+
+Sertifikat **tidak lagi diterbitkan hanya karena seluruh aktivitas selesai**. Siswa harus menyelesaikan course dan lulus ujian akhir sesuai nilai minimum serta batas percobaan yang dikonfigurasi. Penyempurnaan terbaru juga menambahkan proteksi transaksi untuk booking/kredit, masa berlaku kredit, pengacakan soal per attempt, audit attempt, histori co-design, moderasi ulang review, dan sinkronisasi otomatis rating mentor.
+
+Dokumentasi teknis lengkap:
+
+```text
+docs/FITUR_FLEKSIBEL_CODESIGN_UJIAN.md
 ```

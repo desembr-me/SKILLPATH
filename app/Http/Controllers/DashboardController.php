@@ -12,7 +12,7 @@ class DashboardController extends Controller
     {
         $child = $request->user()->childProfile;
 
-        if (! $child) {
+        if (! $child || ! $child->co_design_completed_at) {
             return redirect()->route('onboarding.edit');
         }
 
