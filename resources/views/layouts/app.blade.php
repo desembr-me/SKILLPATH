@@ -28,6 +28,25 @@
                     <a href="{{ route('cart.index') }}">Keranjang</a>
                     <a href="{{ route('dashboard') }}">Dashboard</a>
                 @endif
+                @php($unreadNotifications = auth()->user()->unreadNotifications()->count())
+                <details class="notif-bell">
+                    <summary>🔔@if($unreadNotifications > 0)<span class="notif-badge">{{ $unreadNotifications }}</span>@endif</summary>
+                    <div class="notif-panel">
+                        @forelse(auth()->user()->notifications()->latest()->take(8)->get() as $notif)
+                            <div class="notif-item {{ $notif->read_at ? '' : 'unread' }}">
+                                <p>{{ $notif->data['message'] ?? 'Notifikasi baru' }}</p>
+                                <small>{{ $notif->created_at->diffForHumans() }}</small>
+                            </div>
+                        @empty
+                            <div class="notif-empty">Belum ada notifikasi.</div>
+                        @endforelse
+                        @if($unreadNotifications > 0)
+                            <div class="notif-footer">
+                                <form method="POST" action="{{ route('notifications.read-all') }}">@csrf<button class="text-button" type="submit">Tandai semua dibaca</button></form>
+                            </div>
+                        @endif
+                    </div>
+                </details>
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="nav-link-button" type="submit">Keluar</button></form>
             @else
                 <a href="{{ route('login') }}">Masuk</a>

@@ -23,9 +23,12 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\InstructorCourseController;
 use App\Http\Controllers\InstructorDashboardController;
 use App\Http\Controllers\InstructorLiveSessionController;
+use App\Http\Controllers\InstructorProgressController;
+use App\Http\Controllers\InstructorRevenueController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\LiveClassController;
 use App\Http\Controllers\MyCourseController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ParentController;
@@ -123,6 +126,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengajar-dashboard/course/{learningPath}/edit', [InstructorCourseController::class, 'edit'])->name('instructor.courses.edit');
     Route::put('/pengajar-dashboard/course/{learningPath}', [InstructorCourseController::class, 'update'])->name('instructor.courses.update');
     Route::post('/pengajar-dashboard/course/{learningPath}/live-session', [InstructorLiveSessionController::class, 'store'])->name('instructor.live.store');
+    Route::put('/pengajar-dashboard/live-session/{liveSession}', [InstructorLiveSessionController::class, 'update'])->name('instructor.live.update');
     Route::delete('/pengajar-dashboard/live-session/{liveSession}', [InstructorLiveSessionController::class, 'destroy'])->name('instructor.live.destroy');
     Route::post('/pengajar-dashboard/pertanyaan/{courseQuestion}/jawab', [CourseQuestionController::class, 'answer'])->name('instructor.questions.answer');
+    Route::get('/pengajar-dashboard/progres-siswa', [InstructorProgressController::class, 'index'])->name('instructor.progress.index');
+    Route::get('/pengajar-dashboard/progres-siswa/{enrollment}', [InstructorProgressController::class, 'show'])->name('instructor.progress.show');
+    Route::get('/pengajar-dashboard/pendapatan', [InstructorRevenueController::class, 'index'])->name('instructor.revenue.index');
+
+    Route::post('/notifikasi/{notification}/baca', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notifikasi/baca-semua', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 });
