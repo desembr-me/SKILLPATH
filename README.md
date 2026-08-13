@@ -280,3 +280,59 @@ php artisan serve
 ```
 
 Checkout pada starter ini masih berupa simulasi. Untuk produksi, sambungkan `CheckoutController` ke payment gateway seperti Midtrans/Xendit dan validasi callback server-to-server sebelum membuat enrollment aktif.
+
+
+## Admin Panel
+
+Akses administrator:
+
+```text
+URL      : /admin
+Email    : admin@skillpath.test
+Password : password
+```
+
+Fitur admin:
+
+- Dashboard statistik platform
+- Manajemen publikasi course
+- Verifikasi pengajar
+- Daftar pengguna dan peran
+- Monitoring pesanan
+- Pembaruan status transaksi
+- Manajemen kategori
+- Moderasi review
+
+Setelah mengambil versi ini, gunakan:
+
+```bash
+php artisan migrate:fresh --seed
+php artisan optimize:clear
+php artisan serve
+```
+
+## Recycle Bin Admin
+
+Admin memiliki fitur Recycle Bin pada:
+
+```text
+/admin/recycle-bin
+```
+
+Data yang mendukung Soft Delete:
+
+- Course
+- Kategori
+- Pengguna/Pengajar
+- Review
+
+Admin dapat memulihkan data, memulihkan semua data, atau menghapus permanen data yang aman untuk dihapus. Course dan pengguna yang memiliki riwayat transaksi/enrollment dilindungi dari penghapusan permanen.
+
+Setelah menambahkan fitur ini ke project lama, jalankan:
+
+```bash
+php artisan migrate
+php artisan optimize:clear
+```
+
+Dokumentasi lengkap tersedia di `docs/RECYCLE_BIN.md`.

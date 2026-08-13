@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LearningPath extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'skill_id','instructor_id','title','slug','description','price','sale_price','is_free','course_type',
         'min_age','max_age','level','duration_minutes','icon','thumbnail_url','promo_video_url','certificate_enabled',
@@ -16,7 +19,7 @@ class LearningPath extends Model
     {
         return [
             'is_published'=>'boolean','is_free'=>'boolean','certificate_enabled'=>'boolean','live_class_enabled'=>'boolean',
-            'price'=>'decimal:2','sale_price'=>'decimal:2','published_at'=>'datetime',
+            'price'=>'decimal:2','sale_price'=>'decimal:2','published_at'=>'datetime','deleted_at'=>'datetime',
         ];
     }
 

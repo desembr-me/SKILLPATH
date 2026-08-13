@@ -60,6 +60,7 @@ class CheckoutController extends Controller
             $order->load('items.learningPath');
             $order->update(['payment_status'=>'paid','status'=>'completed','paid_at'=>now()]);
             foreach($order->items as $item){
+                abort_if(! $item->learningPath || $item->learningPath->trashed() || ! $item->learningPath->is_published, 422, 'Salah satu course pada pesanan sudah tidak tersedia. Hubungi admin sebelum melanjutkan pembayaran.');
                 Enrollment::updateOrCreate(
                     ['child_profile_id'=>$child->id,'learning_path_id'=>$item->learning_path_id],
                     ['order_item_id'=>$item->id,'status'=>'active','enrolled_at'=>now(),'expires_at'=>$item->learningPath->access_days ? now()->addDays($item->learningPath->access_days) : null]

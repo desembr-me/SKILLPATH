@@ -45,6 +45,8 @@ class DatabaseSeeder extends Seeder
             ['name'=>'Technology','slug'=>'technology','icon'=>'</>','description'=>'Mengenal logika digital, coding, teknologi, dan pemecahan masalah secara bertahap.'],
         ])->mapWithKeys(function($item){$m=Category::updateOrCreate(['slug'=>$item['slug']],$item);return[$m->slug=>$m];});
 
+        User::updateOrCreate(['email'=>'admin@skillpath.test'],['name'=>'Admin SKILLPATH','password'=>Hash::make('password'),'role'=>'admin']);
+
         $instructorData=[
             ['name'=>'Naila Prameswari','email'=>'naila@skillpath.test','headline'=>'Pengajar seni visual dan creative storytelling anak','expertise'=>'Drawing, storytelling, visual creativity','years'=>6,'education'=>'S1 Pendidikan Seni','rating'=>4.9],
             ['name'=>'Arif Nugraha','email'=>'arif@skillpath.test','headline'=>'Mentor coding visual dan computational thinking','expertise'=>'Scratch, coding visual, problem solving','years'=>7,'education'=>'S1 Pendidikan Teknologi Informasi','rating'=>4.8],

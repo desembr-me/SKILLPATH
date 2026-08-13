@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 class WishlistController extends Controller
 {
     public function index(Request $request){
-        $items=Wishlist::where('user_id',$request->user()->id)->with('learningPath.skill','learningPath.instructor.instructorProfile')->latest()->get();
+        $items=Wishlist::where('user_id',$request->user()->id)
+            ->whereHas('learningPath', fn($query) => $query->where('is_published', true))
+            ->with('learningPath.skill','learningPath.instructor.instructorProfile')
+            ->latest()
+            ->get();
         return view('wishlist.index',compact('items'));
     }
     public function toggle(Request $request, LearningPath $learningPath){

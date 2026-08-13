@@ -18,7 +18,9 @@
             <a class="{{ request()->routeIs('instructors.*') ? 'is-active' : '' }}" href="{{ route('instructors.index') }}">Pengajar</a>
             <a class="{{ request()->routeIs('parents') ? 'is-active' : '' }}" href="{{ route('parents') }}">Orang Tua</a>
             @auth
-                @if(auth()->user()->role === 'instructor')
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}">Admin</a>
+                @elseif(auth()->user()->role === 'instructor')
                     <a href="{{ route('instructor.dashboard') }}">Dashboard Pengajar</a>
                 @else
                     <a href="{{ route('my-courses.index') }}">Course Saya</a>
@@ -41,7 +43,7 @@
     <div class="container footer-grid">
         <div><div class="brand footer-brand"><span class="brand-mark">S</span><span>SKILLPATH</span></div><p>Marketplace course nonakademik untuk anak usia 5–14 tahun dengan pengajar, live class, progres, dan rekomendasi adaptif.</p></div>
         <div><strong>Belajar</strong><a href="{{ route('explore.index') }}">Semua Course</a><a href="{{ route('categories.index') }}">Kategori</a><a href="{{ route('instructors.index') }}">Pengajar</a></div>
-        <div><strong>Akun</strong>@auth<a href="{{ auth()->user()->role==='instructor' ? route('instructor.dashboard') : route('my-courses.index') }}">Dashboard</a><a href="{{ route('orders.index') }}">Pesanan</a>@else<a href="{{ route('login') }}">Masuk</a><a href="{{ route('register') }}">Daftar</a>@endauth</div>
+        <div><strong>Akun</strong>@auth<a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : (auth()->user()->role === 'instructor' ? route('instructor.dashboard') : route('my-courses.index')) }}">Dashboard</a>@if(auth()->user()->role === 'parent')<a href="{{ route('orders.index') }}">Pesanan</a>@endif @else<a href="{{ route('login') }}">Masuk</a><a href="{{ route('register') }}">Daftar</a>@endauth</div>
     </div>
     <div class="container footer-bottom"><small>© {{ date('Y') }} SKILLPATH. Prototype marketplace edukasi.</small></div>
 </footer>

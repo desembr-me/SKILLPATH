@@ -8,7 +8,12 @@ class MyCourseController extends Controller
     public function index(Request $request){
         $child=$request->user()->childProfile;
         if(!$child) return redirect()->route('onboarding.edit');
-        $enrollments=Enrollment::where('child_profile_id',$child->id)->where('status','active')->with('learningPath.skill','learningPath.instructor.instructorProfile','learningPath.modules.activities')->latest('enrolled_at')->get();
+        $enrollments=Enrollment::where('child_profile_id',$child->id)
+            ->where('status','active')
+            ->whereHas('learningPath', fn($query) => $query->where('is_published', true))
+            ->with('learningPath.skill','learningPath.instructor.instructorProfile','learningPath.modules.activities')
+            ->latest('enrolled_at')
+            ->get();
         $completedIds=Progress::where('child_profile_id',$child->id)->where('status','completed')->pluck('activity_id');
         $courses=$enrollments->map(function($e) use($completedIds){
             $ids=$e->learningPath->modules->flatMap(fn($m)=>$m->activities->pluck('id'));

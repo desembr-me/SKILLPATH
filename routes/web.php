@@ -1,5 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminCourseController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminInstructorController;
+use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminReviewController;
+use App\Http\Controllers\Admin\AdminRecycleBinController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -42,6 +50,42 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+        Route::get('/course', [AdminCourseController::class, 'index'])->name('courses.index');
+        Route::patch('/course/{learningPath}/publikasi', [AdminCourseController::class, 'togglePublish'])->name('courses.toggle-publish');
+        Route::delete('/course/{learningPath}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
+
+        Route::get('/pengajar', [AdminInstructorController::class, 'index'])->name('instructors.index');
+        Route::patch('/pengajar/{instructor}/verifikasi', [AdminInstructorController::class, 'toggleVerify'])->name('instructors.toggle-verify');
+        Route::delete('/pengajar/{instructor}', [AdminInstructorController::class, 'destroy'])->name('instructors.destroy');
+
+        Route::get('/pengguna', [AdminUserController::class, 'index'])->name('users.index');
+        Route::delete('/pengguna/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/pesanan', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/pesanan/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+        Route::patch('/pesanan/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+
+        Route::get('/kategori', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/kategori', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::delete('/kategori/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        Route::get('/review', [AdminReviewController::class, 'index'])->name('reviews.index');
+        Route::patch('/review/{courseReview}/moderasi', [AdminReviewController::class, 'toggleApprove'])->name('reviews.toggle-approve');
+        Route::delete('/review/{courseReview}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
+        Route::get('/recycle-bin', [AdminRecycleBinController::class, 'index'])->name('recycle-bin.index');
+        Route::patch('/recycle-bin/restore-all', [AdminRecycleBinController::class, 'restoreAll'])->name('recycle-bin.restore-all');
+        Route::patch('/recycle-bin/{type}/{id}/restore', [AdminRecycleBinController::class, 'restore'])->name('recycle-bin.restore');
+        Route::delete('/recycle-bin/{type}/{id}', [AdminRecycleBinController::class, 'forceDelete'])->name('recycle-bin.force-delete');
+    });
 
 Route::middleware('auth')->group(function () {
     Route::get('/onboarding', [OnboardingController::class, 'edit'])->name('onboarding.edit');
