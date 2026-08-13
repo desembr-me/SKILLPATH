@@ -30,4 +30,5 @@ class User extends Authenticatable
     public function wishlists(){ return $this->hasMany(Wishlist::class); }
     public function reviews(){ return $this->hasMany(CourseReview::class); }
     public function questions(){ return $this->hasMany(CourseQuestion::class); }
+    public function issuedCertificates(){ return $this->hasMany(Certificate::class, 'issued_by'); }
 }

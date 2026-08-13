@@ -4,12 +4,16 @@ namespace Database\Seeders;
 
 use App\Models\Activity;
 use App\Models\Category;
+use App\Models\Certificate;
 use App\Models\ChildProfile;
+use App\Models\Enrollment;
 use App\Models\InstructorProfile;
 use App\Models\Interest;
 use App\Models\LearningPath;
 use App\Models\LiveSession;
 use App\Models\Module;
+use App\Models\Order;
+use App\Models\Progress;
 use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -45,7 +49,7 @@ class DatabaseSeeder extends Seeder
             ['name'=>'Technology','slug'=>'technology','icon'=>'</>','description'=>'Mengenal logika digital, coding, teknologi, dan pemecahan masalah secara bertahap.'],
         ])->mapWithKeys(function($item){$m=Category::updateOrCreate(['slug'=>$item['slug']],$item);return[$m->slug=>$m];});
 
-        User::updateOrCreate(['email'=>'admin@skillpath.test'],['name'=>'Admin SKILLPATH','password'=>Hash::make('password'),'role'=>'admin']);
+        $admin=User::updateOrCreate(['email'=>'admin@skillpath.test'],['name'=>'Admin SKILLPATH','password'=>Hash::make('password'),'role'=>'admin']);
 
         $instructorData=[
             ['name'=>'Naila Prameswari','email'=>'naila@skillpath.test','headline'=>'Pengajar seni visual dan creative storytelling anak','expertise'=>'Drawing, storytelling, visual creativity','years'=>6,'education'=>'S1 Pendidikan Seni','rating'=>4.9],
@@ -112,8 +116,211 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $parent=User::updateOrCreate(['email'=>'parent@skillpath.test'],['name'=>'Orang Tua Demo','password'=>Hash::make('password'),'role'=>'parent']);
-        $child=ChildProfile::updateOrCreate(['user_id'=>$parent->id],['name'=>'Alya','age'=>10,'avatar'=>'spark']);
-        $child->interests()->sync([$interests['teknologi']->id,$interests['seni']->id,$interests['komunikasi']->id]);
+        $parent=User::updateOrCreate(
+            ['email'=>'parent@skillpath.test'],
+            ['name'=>'Orang Tua Demo','password'=>Hash::make('password'),'role'=>'parent']
+        );
+        $child=ChildProfile::updateOrCreate(
+            ['user_id'=>$parent->id],
+            ['name'=>'Alya','age'=>10,'avatar'=>'spark']
+        );
+        $child->interests()->sync([
+            $interests['teknologi']->id,
+            $interests['seni']->id,
+            $interests['komunikasi']->id,
+        ]);
+
+        $codingPath = LearningPath::where('slug', 'penjelajah-coding-visual')
+            ->with('modules.activities')
+            ->first();
+
+        $artsPath = LearningPath::where('slug', 'studio-cerita-kreatif')
+            ->with('modules.activities')
+            ->first();
+
+        if ($codingPath) {
+            Enrollment::updateOrCreate(
+                ['child_profile_id'=>$child->id,'learning_path_id'=>$codingPath->id],
+                ['status'=>'active','enrolled_at'=>now()->subDays(18)]
+            );
+
+            foreach ($codingPath->modules->flatMap->activities->take(4)->values() as $index => $activity) {
+                Progress::updateOrCreate(
+                    ['child_profile_id'=>$child->id,'activity_id'=>$activity->id],
+                    [
+                        'status'=>'completed',
+                        'score'=>82 + ($index * 3),
+                        'points_awarded'=>$activity->points,
+                        'completed_at'=>now()->subDays(8 - ($index * 2)),
+                    ]
+                );
+            }
+        }
+
+        if ($artsPath) {
+            Enrollment::updateOrCreate(
+                ['child_profile_id'=>$child->id,'learning_path_id'=>$artsPath->id],
+                ['status'=>'active','enrolled_at'=>now()->subDays(9)]
+            );
+
+            foreach ($artsPath->modules->flatMap->activities->take(2)->values() as $index => $activity) {
+                Progress::updateOrCreate(
+                    ['child_profile_id'=>$child->id,'activity_id'=>$activity->id],
+                    [
+                        'status'=>'completed',
+                        'score'=>88 + ($index * 2),
+                        'points_awarded'=>$activity->points,
+                        'completed_at'=>now()->subDays(3 - $index),
+                    ]
+                );
+            }
+        }
+
+        $inactiveParent=User::updateOrCreate(
+            ['email'=>'parent.bima@skillpath.test'],
+            ['name'=>'Orang Tua Bima','password'=>Hash::make('password'),'role'=>'parent']
+        );
+        $bima=ChildProfile::updateOrCreate(
+            ['user_id'=>$inactiveParent->id],
+            ['name'=>'Bima','age'=>9,'avatar'=>'spark']
+        );
+        $bima->interests()->sync([$interests['teknologi']->id]);
+
+        if ($codingPath) {
+            Enrollment::updateOrCreate(
+                ['child_profile_id'=>$bima->id,'learning_path_id'=>$codingPath->id],
+                ['status'=>'active','enrolled_at'=>now()->subDays(20)]
+            );
+        }
+
+        $completeParent=User::updateOrCreate(
+            ['email'=>'parent.citra@skillpath.test'],
+            ['name'=>'Orang Tua Citra','password'=>Hash::make('password'),'role'=>'parent']
+        );
+        $citra=ChildProfile::updateOrCreate(
+            ['user_id'=>$completeParent->id],
+            ['name'=>'Citra','age'=>8,'avatar'=>'spark']
+        );
+        $citra->interests()->sync([$interests['seni']->id]);
+
+        if ($artsPath) {
+            Enrollment::updateOrCreate(
+                ['child_profile_id'=>$citra->id,'learning_path_id'=>$artsPath->id],
+                ['status'=>'active','enrolled_at'=>now()->subDays(25)]
+            );
+
+            foreach ($artsPath->modules->flatMap->activities->values() as $index => $activity) {
+                Progress::updateOrCreate(
+                    ['child_profile_id'=>$citra->id,'activity_id'=>$activity->id],
+                    [
+                        'status'=>'completed',
+                        'score'=>90,
+                        'points_awarded'=>$activity->points,
+                        'completed_at'=>now()->subDays(max(1, 7 - $index)),
+                    ]
+                );
+            }
+        }
+
+
+        // Data demo untuk fitur Manajemen Sertifikat Admin.
+        if ($artsPath) {
+            Certificate::updateOrCreate(
+                [
+                    'child_profile_id' => $citra->id,
+                    'learning_path_id' => $artsPath->id,
+                ],
+                [
+                    'certificate_number' => 'CERT-SP-DEMO-CITRA',
+                    'final_score' => 90,
+                    'issued_at' => now()->subDay(),
+                    'status' => 'active',
+                    'issued_by' => $admin->id,
+                    'revoked_at' => null,
+                    'revoked_reason' => null,
+                ]
+            );
+        }
+
+
+        // Data demo untuk fitur Jadwal Pengajaran Admin.
+        if ($codingPath) {
+            LiveSession::updateOrCreate(
+                ['learning_path_id'=>$codingPath->id,'title'=>'Sesi Review Coding - Selesai'],
+                [
+                    'instructor_id'=>$codingPath->instructor_id,
+                    'description'=>'Sesi demo historis untuk monitoring jadwal admin.',
+                    'starts_at'=>now()->subDays(5)->setTime(16,0),
+                    'ends_at'=>now()->subDays(5)->setTime(17,0),
+                    'meeting_url'=>'https://meet.google.com/',
+                    'capacity'=>20,
+                    'status'=>'completed',
+                ]
+            );
+        }
+
+        if ($artsPath) {
+            LiveSession::updateOrCreate(
+                ['learning_path_id'=>$artsPath->id,'title'=>'Studio Kreatif Hari Ini'],
+                [
+                    'instructor_id'=>$artsPath->instructor_id,
+                    'description'=>'Sesi demo hari ini untuk monitoring jadwal admin.',
+                    'starts_at'=>now()->setTime(14,0),
+                    'ends_at'=>now()->setTime(15,0),
+                    'meeting_url'=>'https://meet.google.com/',
+                    'capacity'=>18,
+                    'status'=>'scheduled',
+                ]
+            );
+        }
+
+        // Data transaksi PAID demo untuk menampilkan Laporan Pendapatan Admin.
+        $createPaidDemoOrder = function (string $number, User $buyer, LearningPath $course, int $daysAgo, string $method) {
+            $normalPrice = (float) $course->price;
+            $finalPrice = $course->effectivePrice();
+            $discount = max(0, $normalPrice - $finalPrice);
+            $paidAt = now()->subDays($daysAgo)->setTime(10 + ($daysAgo % 5), 15);
+
+            $order = Order::updateOrCreate(
+                ['order_number'=>$number],
+                [
+                    'user_id'=>$buyer->id,
+                    'subtotal'=>$finalPrice,
+                    'discount'=>0,
+                    'total'=>$finalPrice,
+                    'payment_method'=>$method,
+                    'payment_status'=>'paid',
+                    'status'=>'completed',
+                    'paid_at'=>$paidAt,
+                    'created_at'=>$paidAt->copy()->subMinutes(10),
+                    'updated_at'=>$paidAt,
+                ]
+            );
+
+            $order->items()->updateOrCreate(
+                ['learning_path_id'=>$course->id],
+                [
+                    'title_snapshot'=>$course->title,
+                    'price'=>$normalPrice,
+                    'discount'=>$discount,
+                    'final_price'=>$finalPrice,
+                ]
+            );
+        };
+
+        if ($codingPath) {
+            $createPaidDemoOrder('SP-DEMO-001', $parent, $codingPath, 3, 'qris');
+            $createPaidDemoOrder('SP-DEMO-002', $inactiveParent, $codingPath, 12, 'virtual_account');
+        }
+
+        if ($artsPath) {
+            $createPaidDemoOrder('SP-DEMO-003', $parent, $artsPath, 6, 'ewallet');
+            $createPaidDemoOrder('SP-DEMO-004', $completeParent, $artsPath, 25, 'bank_transfer');
+        }
+
+        $englishPath = LearningPath::where('slug', 'english-fun-conversation')->first();
+        if ($englishPath) {
+            $createPaidDemoOrder('SP-DEMO-005', $parent, $englishPath, 35, 'qris');
+        }
     }
 }

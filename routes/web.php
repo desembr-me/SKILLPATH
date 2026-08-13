@@ -1,11 +1,16 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminPlatformStatisticsController;
+use App\Http\Controllers\Admin\AdminCertificateController;
 use App\Http\Controllers\Admin\AdminCourseController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminInstructorController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminReviewController;
+use App\Http\Controllers\Admin\AdminStudentProgressController;
+use App\Http\Controllers\Admin\AdminTeachingScheduleController;
+use App\Http\Controllers\Admin\AdminRevenueReportController;
 use App\Http\Controllers\Admin\AdminRecycleBinController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\AuthController;
@@ -68,6 +73,34 @@ Route::middleware(['auth', 'admin'])
 
         Route::get('/pengguna', [AdminUserController::class, 'index'])->name('users.index');
         Route::delete('/pengguna/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/progres-siswa', [AdminStudentProgressController::class, 'index'])->name('progress.index');
+        Route::get('/progres-siswa/export', [AdminStudentProgressController::class, 'export'])->name('progress.export');
+        Route::get('/progres-siswa/{childProfile}', [AdminStudentProgressController::class, 'show'])->name('progress.show');
+
+
+        Route::get('/jadwal-pengajaran', [AdminTeachingScheduleController::class, 'index'])->name('schedules.index');
+        Route::get('/jadwal-pengajaran/export', [AdminTeachingScheduleController::class, 'export'])->name('schedules.export');
+        Route::get('/jadwal-pengajaran/tambah', [AdminTeachingScheduleController::class, 'create'])->name('schedules.create');
+        Route::post('/jadwal-pengajaran', [AdminTeachingScheduleController::class, 'store'])->name('schedules.store');
+        Route::get('/jadwal-pengajaran/{liveSession}/edit', [AdminTeachingScheduleController::class, 'edit'])->name('schedules.edit');
+        Route::put('/jadwal-pengajaran/{liveSession}', [AdminTeachingScheduleController::class, 'update'])->name('schedules.update');
+        Route::patch('/jadwal-pengajaran/{liveSession}/batalkan', [AdminTeachingScheduleController::class, 'cancel'])->name('schedules.cancel');
+
+        Route::get('/laporan-pendapatan', [AdminRevenueReportController::class, 'index'])->name('revenue.index');
+        Route::get('/laporan-pendapatan/export', [AdminRevenueReportController::class, 'export'])->name('revenue.export');
+
+
+        Route::get('/sertifikat', [AdminCertificateController::class, 'index'])->name('certificates.index');
+        Route::get('/sertifikat/export', [AdminCertificateController::class, 'export'])->name('certificates.export');
+        Route::get('/sertifikat/terbitkan', [AdminCertificateController::class, 'create'])->name('certificates.create');
+        Route::post('/sertifikat', [AdminCertificateController::class, 'store'])->name('certificates.store');
+        Route::get('/sertifikat/{certificate}', [AdminCertificateController::class, 'show'])->name('certificates.show');
+        Route::patch('/sertifikat/{certificate}/cabut', [AdminCertificateController::class, 'revoke'])->name('certificates.revoke');
+        Route::patch('/sertifikat/{certificate}/aktifkan', [AdminCertificateController::class, 'reactivate'])->name('certificates.reactivate');
+
+        Route::get('/statistik-platform', [AdminPlatformStatisticsController::class, 'index'])->name('statistics.index');
+        Route::get('/statistik-platform/export', [AdminPlatformStatisticsController::class, 'export'])->name('statistics.export');
 
         Route::get('/pesanan', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('/pesanan/{order}', [AdminOrderController::class, 'show'])->name('orders.show');

@@ -33,6 +33,7 @@ class LearningPath extends Model
     public function enrollments(){ return $this->hasMany(Enrollment::class); }
     public function liveSessions(){ return $this->hasMany(LiveSession::class)->orderBy('starts_at'); }
     public function questions(){ return $this->hasMany(CourseQuestion::class)->latest(); }
+    public function certificates(){ return $this->hasMany(Certificate::class); }
 
     public function effectivePrice(): float
     {
