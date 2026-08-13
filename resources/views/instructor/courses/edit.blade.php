@@ -1,3 +1,27 @@
-@extends('layouts.app')
+@extends('layouts.instructor')
 @section('title','Kelola '.$learningPath->title)
-@section('content')<section class="simple-hero"><div class="container"><span class="eyebrow">Kelola Course</span><h1>{{ $learningPath->title }}</h1></div></section><section class="section"><div class="container two-column-section"><div class="content-card"><h2>Informasi penjualan</h2><form method="POST" action="{{ route('instructor.courses.update',$learningPath) }}" class="form-stack">@csrf @method('PUT')<label><span>Harga</span><input type="number" name="price" min="0" value="{{ old('price',$learningPath->price) }}"></label><label><span>Harga promo</span><input type="number" name="sale_price" min="0" value="{{ old('sale_price',$learningPath->sale_price) }}"></label><label><span>Tipe course</span><select name="course_type"><option value="self_paced" @selected($learningPath->course_type==='self_paced')>Video & aktivitas</option><option value="live" @selected($learningPath->course_type==='live')>Live</option><option value="hybrid" @selected($learningPath->course_type==='hybrid')>Hybrid</option></select></label><label class="check-row"><input type="checkbox" name="live_class_enabled" value="1" @checked($learningPath->live_class_enabled)><span>Aktifkan live class</span></label><label><span>Hasil belajar</span><textarea name="learning_outcomes" rows="5">{{ old('learning_outcomes',$learningPath->learning_outcomes) }}</textarea></label><label><span>Persyaratan</span><textarea name="requirements" rows="4">{{ old('requirements',$learningPath->requirements) }}</textarea></label><button class="btn btn-dark" type="submit">Simpan Course</button></form></div><div><div class="content-card"><h2>Buat live class</h2><form method="POST" action="{{ route('instructor.live.store',$learningPath) }}" class="form-stack">@csrf<label><span>Judul sesi</span><input name="title" required></label><label><span>Deskripsi</span><textarea name="description" rows="3"></textarea></label><label><span>Mulai</span><input type="datetime-local" name="starts_at" required></label><label><span>Selesai</span><input type="datetime-local" name="ends_at" required></label><label><span>Meeting URL</span><input type="url" name="meeting_url"></label><label><span>Kapasitas</span><input type="number" name="capacity" value="20" min="1" max="100"></label><button class="btn btn-blue" type="submit">Tambah Jadwal</button></form></div><div class="content-card"><h2>Jadwal aktif</h2>@foreach($learningPath->liveSessions as $s)<div class="schedule-row"><div><strong>{{ $s->title }}</strong><span>{{ $s->starts_at->format('d M Y H:i') }}</span></div><form method="POST" action="{{ route('instructor.live.destroy',$s) }}">@csrf @method('DELETE')<button class="text-button" type="submit">Hapus</button></form></div>@endforeach</div></div></div></section>@endsection
+@section('content')
+<div class="instructor-page-header">
+    <span class="eyebrow">Kelola Course</span>
+    <h1>{{ $learningPath->title }}</h1>
+</div>
+<div class="content-card" style="max-width: 640px;">
+    <h2>Informasi penjualan</h2>
+    <form method="POST" action="{{ route('instructor.courses.update', $learningPath) }}" class="form-stack">
+        @csrf
+        @method('PUT')
+        <label><span>Harga</span><input type="number" name="price" min="0" value="{{ old('price', $learningPath->price) }}"></label>
+        <label><span>Harga promo</span><input type="number" name="sale_price" min="0" value="{{ old('sale_price', $learningPath->sale_price) }}"></label>
+        <label><span>Tipe course</span>
+            <select name="course_type">
+                <option value="self_paced" @selected($learningPath->course_type === 'self_paced')>Video & aktivitas</option>
+                <option value="live" @selected($learningPath->course_type === 'live')>Live</option>
+                <option value="hybrid" @selected($learningPath->course_type === 'hybrid')>Hybrid</option>
+            </select>
+        </label>
+        <label><span>Hasil belajar</span><textarea name="learning_outcomes" rows="5">{{ old('learning_outcomes', $learningPath->learning_outcomes) }}</textarea></label>
+        <label><span>Persyaratan</span><textarea name="requirements" rows="4">{{ old('requirements', $learningPath->requirements) }}</textarea></label>
+        <button class="btn btn-dark" type="submit">Simpan Course</button>
+    </form>
+</div>
+@endsection

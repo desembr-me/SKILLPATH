@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#ffd21a">
     <title>@yield('title', 'SKILLPATH')</title>
     <link rel="stylesheet" href="{{ asset('css/skillpath.css') }}">
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -30,7 +31,7 @@
                 @endif
                 @php($unreadNotifications = auth()->user()->unreadNotifications()->count())
                 <details class="notif-bell">
-                    <summary>🔔@if($unreadNotifications > 0)<span class="notif-badge">{{ $unreadNotifications }}</span>@endif</summary>
+                    <summary><iconify-icon icon="mdi:bell-outline"></iconify-icon>@if($unreadNotifications > 0)<span class="notif-badge">{{ $unreadNotifications }}</span>@endif</summary>
                     <div class="notif-panel">
                         @forelse(auth()->user()->notifications()->latest()->take(8)->get() as $notif)
                             <div class="notif-item {{ $notif->read_at ? '' : 'unread' }}">

@@ -22,7 +22,6 @@ use App\Http\Controllers\HowItWorksController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\InstructorCourseController;
 use App\Http\Controllers\InstructorDashboardController;
-use App\Http\Controllers\InstructorLiveSessionController;
 use App\Http\Controllers\InstructorProgressController;
 use App\Http\Controllers\InstructorRevenueController;
 use App\Http\Controllers\LearningController;
@@ -125,9 +124,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengajar-dashboard', InstructorDashboardController::class)->name('instructor.dashboard');
     Route::get('/pengajar-dashboard/course/{learningPath}/edit', [InstructorCourseController::class, 'edit'])->name('instructor.courses.edit');
     Route::put('/pengajar-dashboard/course/{learningPath}', [InstructorCourseController::class, 'update'])->name('instructor.courses.update');
-    Route::post('/pengajar-dashboard/course/{learningPath}/live-session', [InstructorLiveSessionController::class, 'store'])->name('instructor.live.store');
-    Route::put('/pengajar-dashboard/live-session/{liveSession}', [InstructorLiveSessionController::class, 'update'])->name('instructor.live.update');
-    Route::delete('/pengajar-dashboard/live-session/{liveSession}', [InstructorLiveSessionController::class, 'destroy'])->name('instructor.live.destroy');
     Route::post('/pengajar-dashboard/pertanyaan/{courseQuestion}/jawab', [CourseQuestionController::class, 'answer'])->name('instructor.questions.answer');
     Route::get('/pengajar-dashboard/progres-siswa', [InstructorProgressController::class, 'index'])->name('instructor.progress.index');
     Route::get('/pengajar-dashboard/progres-siswa/{enrollment}', [InstructorProgressController::class, 'show'])->name('instructor.progress.show');

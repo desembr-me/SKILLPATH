@@ -1,16 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.instructor')
 @section('title','Laporan Progres · '.$enrollment->childProfile->name)
 @section('content')
-<section class="simple-hero">
-    <div class="container">
-        <a class="back-link" href="{{ route('instructor.progress.index') }}">← Kembali ke Progres Siswa</a>
-        <span class="eyebrow">Laporan Progres Siswa</span>
-        <h1>{{ $enrollment->childProfile->name }}</h1>
-        <p>{{ $enrollment->learningPath->title }}</p>
-    </div>
-</section>
-<section class="section">
-    <div class="container two-column-section">
+<div class="instructor-page-header">
+    <a class="back-link" href="{{ route('instructor.progress.index') }}">← Kembali ke Progres Siswa</a>
+    <span class="eyebrow">Laporan Progres Siswa</span>
+    <h1>{{ $enrollment->childProfile->name }}</h1>
+    <p>{{ $enrollment->learningPath->title }}</p>
+</div>
+
+<div class="two-column-section" style="margin-top: 0;">
         <div>
             <div class="content-card">
                 <h2>Ringkasan</h2>
@@ -37,7 +35,11 @@
                                         <strong>{{ $activity->title }}</strong>
                                         <span>{{ $activity->type }}@if($activityProgress?->score !== null) · Nilai {{ $activityProgress->score }}@endif</span>
                                     </div>
-                                    <span class="done-label">{{ $activityProgress && $activityProgress->status === 'completed' ? '✓ Selesai' : 'Belum selesai' }}</span>
+                                    @if($activityProgress && $activityProgress->status === 'completed')
+                                        <span class="done-label"><iconify-icon icon="mdi:check-circle-outline"></iconify-icon> Selesai</span>
+                                    @else
+                                        <span class="done-label pending"><iconify-icon icon="mdi:circle-outline"></iconify-icon> Belum selesai</span>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
@@ -55,9 +57,8 @@
                 <p><strong>Umur:</strong> {{ $enrollment->childProfile->age ?? '-' }} tahun</p>
                 <p><strong>Orang Tua:</strong> {{ $enrollment->childProfile->user->name }}</p>
                 <p><strong>Terdaftar:</strong> {{ ($enrollment->enrolled_at ?? $enrollment->created_at)->format('d M Y') }}</p>
-                <button class="btn btn-dark btn-full" type="button" onclick="window.print()">🖨️ Cetak Laporan</button>
+                <button class="btn btn-dark btn-full" type="button" onclick="window.print()"><iconify-icon icon="mdi:printer-outline"></iconify-icon> Cetak Laporan</button>
             </div>
         </aside>
     </div>
-</section>
 @endsection
