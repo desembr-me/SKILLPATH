@@ -115,6 +115,7 @@ class AdminCertificateController extends Controller
         $certificate->load([
             'childProfile.user',
             'learningPath.instructor',
+            'learningPath.categories',
             'issuedBy',
         ]);
 

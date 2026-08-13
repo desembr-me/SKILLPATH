@@ -43,7 +43,11 @@ class CertificateController extends Controller
         $certificate = $existing
             ?? $certificateService->issue($child, $learningPath);
 
-        $learningPath->load('modules.activities', 'instructor.instructorProfile');
+        $learningPath->load(
+            'modules.activities',
+            'instructor.instructorProfile',
+            'categories'
+        );
 
         return view('certificates.show', compact(
             'certificate',

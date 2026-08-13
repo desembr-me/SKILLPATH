@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#1f2430">
     <title>@yield('title', 'Admin SKILLPATH')</title>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/certificate.css') }}">
 </head>
 <body class="admin-body">
 <div class="admin-shell">

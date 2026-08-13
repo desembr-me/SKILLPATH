@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#ffd21a">
     <title>@yield('title', 'SKILLPATH')</title>
     <link rel="stylesheet" href="{{ asset('css/skillpath.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/certificate.css') }}">
 </head>
 <body>
 <header class="site-header">
