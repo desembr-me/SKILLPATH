@@ -100,6 +100,59 @@ class CourseCatalogSeeder extends Seeder
             ],
         ];
 
+        // Foto asli (public/foto) yang benar-benar menggambarkan track tersebut.
+        // Track tanpa foto yang sesuai dibiarkan memakai ilustrasi SVG default.
+        $trackPhotos = [
+            'arts' => [
+                0 => 'foto/arts-01.jpg', // Menggambar/Ilustrasi - sketsa pensil
+                1 => 'foto/arts-05.jpg', // Melukis/Painting - kuas di atas kanvas
+                2 => 'foto/arts-03.jpg', // Craft - pot botol daur ulang
+                3 => 'foto/arts-06.jpg', // Seni Digital - ilustrasi digital di tablet
+                4 => 'foto/advanced-animation.jpg', // Comic & Character Design - desain karakter animasi
+                5 => 'foto/advanced-animation.jpg', // Animasi
+            ],
+            'music' => [
+                0 => 'foto/music-02.jpg', // Piano - anak belajar piano
+                1 => 'foto/music-01.jpg', // Gitar
+                2 => 'foto/music-07.jpg', // Keyboard - studio dengan keyboard controller
+                3 => 'foto/music-03.jpg', // Vocal - kelas vokal dengan mic
+                4 => 'foto/music-04.jpg', // Drum
+                5 => 'foto/music-06.jpg', // Musik & Ritme/Teori - lembar not balok
+            ],
+            'sports' => [
+                0 => 'foto/sports-01-sepakbola.jpg',
+                1 => 'foto/sports-02-basket.jpg',
+                2 => 'foto/sports-04-bulutangkis.jpg',
+                3 => 'foto/sports-06-karate.jpg', // Bela Diri
+                4 => 'foto/sports-05-senam.jpg', // Senam
+                5 => 'foto/dance.jpg', // Dance
+            ],
+            'technology' => [
+                0 => 'foto/tech-04.jpg', // Coding for Kids - visual block coding
+                1 => 'foto/tech-01.jpg', // Web Design/Development - buku pemrograman web
+                2 => 'foto/tech-06.jpg', // Robotika
+                3 => 'foto/tech-05.jpg', // Digital/Graphic Design
+                4 => 'foto/advanced-animation.jpg', // Animasi Dasar/2D Animation/Advanced Animation
+                5 => 'foto/tech-07.jpg', // Internet Safety - cyber security
+            ],
+            'languages' => [
+                0 => 'foto/english-convo.jpg', // English for Kids/Conversation/Advanced
+                1 => 'foto/japanese-convo.jpg', // Japanese
+                2 => 'foto/mandarin.jpg', // Mandarin
+                3 => 'foto/korean-convo.jpg', // Korean
+                4 => 'foto/arts-01.jpg', // Storytelling - sketsa karakter cerita
+                5 => 'foto/english-convo.jpg', // Vocabulary/Speaking - word cloud vocabulary
+            ],
+            'self-improvement' => [
+                0 => 'foto/confidence-building.jpg', // Confidence Building/Self-Confidence/Leadership
+                1 => 'foto/emotional-intelligence.jpg', // Creative Thinking/Creative Problem Solving/Innovation & Critical Thinking
+                2 => 'foto/emotional-intelligence.jpg', // Basic Problem Solving/Problem Solving/Advanced Decision Making
+                3 => 'foto/effective-communication.jpg', // Basic Communication/Communication Skills/Effective Communication
+                4 => 'foto/time-management.jpg', // Time Awareness/Time Management/Personal Productivity
+                5 => 'foto/emotional-intelligence.jpg', // Emotional Awareness/Emotional Management/Emotional Intelligence
+            ],
+        ];
+
         $categoryConfig = [
             'arts' => [
                 'instructor' => 'naila@skillpath.test',
@@ -182,7 +235,9 @@ class CourseCatalogSeeder extends Seeder
                 throw new RuntimeException("Data skill atau pengajar untuk kategori {$categorySlug} belum lengkap.");
             }
 
-            foreach ($tracks as $track) {
+            foreach ($tracks as $trackIndex => $track) {
+                $photo = $trackPhotos[$categorySlug][$trackIndex] ?? null;
+
                 foreach ($track as $levelIndex => $title) {
                     $sequence++;
                     $level = $levelNames[$levelIndex];
@@ -210,7 +265,7 @@ class CourseCatalogSeeder extends Seeder
                             'level' => $level,
                             'duration_minutes' => $levelData['duration'],
                             'icon' => $config['icon'],
-                            'thumbnail_url' => 'images/courses/'.$slug.'.svg',
+                            'thumbnail_url' => $photo ?? 'images/courses/'.$slug.'.svg',
                             'certificate_enabled' => true,
                             'live_class_enabled' => true,
                             'access_days' => null,
