@@ -7,7 +7,7 @@
 <x-admin.feature-header
     eyebrow="Operasional Kelas"
     title="Jadwal pengajaran"
-    description="Kelola sesi live, pengajar, kapasitas, keterisian peserta, tautan meeting, dan status kelas."
+    description="Kelola sesi tatap muka, pengajar, waktu, lokasi, kapasitas, keterisian peserta, dan status kelas."
 >
     <x-slot:actions>
         <a class="admin-btn secondary" href="{{ route('admin.schedules.export', request()->query()) }}">Ekspor CSV</a>
@@ -17,8 +17,8 @@
 
 <div class="admin-metric-grid">
     <x-admin.metric-card label="Kelas Hari Ini" :value="number_format($stats['today'])" hint="Tidak termasuk sesi dibatalkan" tone="blue" />
-    <x-admin.metric-card label="Sedang Live" :value="number_format($stats['live_now'])" hint="Status sesi LIVE" tone="red" />
-    <x-admin.metric-card label="Akan Datang" :value="number_format($stats['upcoming'])" hint="Scheduled atau live" tone="yellow" />
+    <x-admin.metric-card label="Sedang Berlangsung" :value="number_format($stats['live_now'])" hint="Status sesi berlangsung" tone="red" />
+    <x-admin.metric-card label="Akan Datang" :value="number_format($stats['upcoming'])" hint="Terjadwal atau berlangsung" tone="yellow" />
     <x-admin.metric-card
         label="Rata-rata Keterisian"
         :value="number_format($stats['avg_occupancy'], 1).'%'" 
@@ -42,13 +42,13 @@
         <div class="admin-filter-grid schedule-filter-grid">
             <label class="admin-filter-field">
                 <span>Cari jadwal</span>
-                <input type="search" name="q" value="{{ request('q') }}" placeholder="Judul sesi, course, atau pengajar">
+                <input type="search" name="q" value="{{ request('q') }}" placeholder="Judul sesi, kelas, atau pengajar">
             </label>
 
             <label class="admin-filter-field">
-                <span>Course</span>
+                <span>Kelas</span>
                 <select name="course_id">
-                    <option value="">Semua course</option>
+                    <option value="">Semua kelas</option>
                     @foreach($courses as $course)
                         <option value="{{ $course->id }}" @selected((string) request('course_id') === (string) $course->id)>
                             {{ $course->title }}
@@ -73,10 +73,10 @@
                 <span>Status</span>
                 <select name="status">
                     <option value="">Semua status</option>
-                    <option value="scheduled" @selected(request('status') === 'scheduled')>Scheduled</option>
-                    <option value="live" @selected(request('status') === 'live')>Live</option>
-                    <option value="completed" @selected(request('status') === 'completed')>Completed</option>
-                    <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
+                    <option value="scheduled" @selected(request('status') === 'scheduled')>Terjadwal</option>
+                    <option value="live" @selected(request('status') === 'live')>Berlangsung</option>
+                    <option value="completed" @selected(request('status') === 'completed')>Selesai</option>
+                    <option value="cancelled" @selected(request('status') === 'cancelled')>Dibatalkan</option>
                 </select>
             </label>
 
@@ -112,11 +112,11 @@
             <thead>
             <tr>
                 <th>Waktu</th>
-                <th>Sesi & Course</th>
+                <th>Sesi & Kelas</th>
                 <th>Pengajar</th>
                 <th>Keterisian</th>
                 <th>Status</th>
-                <th>Meeting</th>
+                <th>Lokasi</th>
                 <th></th>
             </tr>
             </thead>
@@ -132,7 +132,7 @@
                     </td>
                     <td>
                         <strong>{{ $session->title }}</strong>
-                        <small class="admin-cell-help">{{ $session->learningPath?->title ?? 'Course tidak tersedia' }}</small>
+                        <small class="admin-cell-help">{{ $session->learningPath?->title ?? 'Kelas tidak tersedia' }}</small>
                     </td>
                     <td>
                         <div class="admin-identity-cell compact">
@@ -155,13 +155,16 @@
                         </div>
                     </td>
                     <td>
-                        <span class="admin-status {{ $session->status }}">{{ strtoupper($session->status) }}</span>
+                        <span class="admin-status {{ $session->status }}">{{ ['scheduled'=>'TERJADWAL','live'=>'BERLANGSUNG','completed'=>'SELESAI','cancelled'=>'DIBATALKAN'][$session->status] ?? strtoupper($session->status) }}</span>
                     </td>
                     <td>
-                        @if($session->meeting_url)
-                            <a class="admin-inline-link" href="{{ $session->meeting_url }}" target="_blank" rel="noopener">Buka meeting</a>
+                        @if($session->location)
+                            <strong>{{ $session->location }}</strong>
                         @else
-                            <span class="admin-muted">Belum tersedia</span>
+                            <span class="admin-muted">Lokasi belum diisi</span>
+                        @endif
+                        @if($session->meeting_url)
+                            <small><a class="admin-inline-link" href="{{ $session->meeting_url }}" target="_blank" rel="noopener">Buka peta</a></small>
                         @endif
                     </td>
                     <td>

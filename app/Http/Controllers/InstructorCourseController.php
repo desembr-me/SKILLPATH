@@ -17,7 +17,7 @@ class InstructorCourseController extends Controller
     {
         abort_unless($request->user()->role === 'instructor' && $learningPath->instructor_id === $request->user()->id, 403);
         $learningPath->load('modules.activities', 'finalExam', 'categories', 'interests');
-        $categories = Category::query()->orderBy('name')->get();
+        $categories = Category::orderedCore(Category::whereIn('slug', Category::coreSlugs())->get());
         $interests = Interest::query()->orderBy('name')->get();
 
         return view('instructor.courses.edit', compact('learningPath', 'categories', 'interests'));
@@ -31,7 +31,6 @@ class InstructorCourseController extends Controller
         $rules = [
             'price' => ['required', 'numeric', 'min:0'],
             'sale_price' => ['nullable', 'numeric', 'min:0'],
-            'course_type' => ['required', 'in:self_paced,live,hybrid'],
             'learning_outcomes' => ['nullable', 'string', 'max:3000'],
             'requirements' => ['nullable', 'string', 'max:3000'],
             'category_ids' => ['required', 'array', 'min:1'],
@@ -89,9 +88,11 @@ class InstructorCourseController extends Controller
 
         DB::transaction(function () use ($learningPath, $data) {
             $courseData = collect($data)->only([
-                'price', 'sale_price', 'course_type', 'learning_outcomes', 'requirements',
+                'price', 'sale_price', 'learning_outcomes', 'requirements',
             ])->all();
             $courseData['is_free'] = (float) $courseData['price'] === 0.0;
+            $courseData['course_type'] = 'offline';
+            $courseData['live_class_enabled'] = true;
             $learningPath->update($courseData);
             $learningPath->categories()->sync(array_map('intval', $data['category_ids']));
             $learningPath->interests()->sync(array_map('intval', $data['interest_ids']));

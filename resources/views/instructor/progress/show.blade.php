@@ -45,7 +45,7 @@
                         </div>
                     </div>
                 @empty
-                    <p>Course ini belum memiliki modul.</p>
+                    <p>Kelas ini belum memiliki rangkaian aktivitas.</p>
                 @endforelse
             </div>
         </div>

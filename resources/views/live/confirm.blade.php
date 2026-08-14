@@ -3,9 +3,10 @@
 @section('content')
 <section class="simple-hero">
     <div class="container">
-        <span class="eyebrow">Konfirmasi Booking</span>
+        <span class="eyebrow">Konfirmasi Kelas Tatap Muka</span>
         <h1>{{ $liveSession->title }}</h1>
         <p>{{ $liveSession->starts_at->format('d M Y, H:i') }}–{{ $liveSession->ends_at->format('H:i') }} · {{ $liveSession->learningPath->title }}</p>
+        @if($liveSession->location)<p><strong>Lokasi:</strong> {{ $liveSession->location }}</p>@endif
     </div>
 </section>
 <section class="section">
@@ -27,13 +28,13 @@
                 <p>Jadwal aman untuk dikonfirmasi.</p>
                 <form method="POST" action="{{ route('live.book',$liveSession) }}">
                     @csrf
-                    <button class="btn btn-blue" type="submit">Konfirmasi Booking</button>
+                    <button class="btn btn-blue" type="submit">Konfirmasi Kelas Tatap Muka</button>
                 </form>
 
                 @if($availableCredits->isNotEmpty())
                     <hr>
                     <h3>Jadwalkan ulang dengan kredit sesi</h3>
-                    <p>Gunakan kredit dari sesi sebelumnya pada course yang sama.</p>
+                    <p>Gunakan kredit dari sesi sebelumnya pada kelas yang sama.</p>
                     @foreach($availableCredits as $credit)
                         <div class="schedule-row">
                             <div>

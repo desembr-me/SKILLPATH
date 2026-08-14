@@ -9,6 +9,8 @@ class LearningPath extends Model
 {
     use SoftDeletes;
 
+    public const LEVELS = ['Beginner', 'Intermediate', 'Expert'];
+
     protected $fillable = [
         'skill_id','instructor_id','title','slug','description','price','sale_price','is_free','course_type',
         'min_age','max_age','level','duration_minutes','icon','thumbnail_url','promo_video_url','certificate_enabled',
@@ -36,6 +38,20 @@ class LearningPath extends Model
     public function certificates(){ return $this->hasMany(Certificate::class); }
     public function finalExam(){ return $this->hasOne(FinalExam::class); }
     public function sessionCredits(){ return $this->hasMany(SessionCredit::class); }
+
+
+    public function thumbnailSrc(): ?string
+    {
+        if (! $this->thumbnail_url) {
+            return null;
+        }
+
+        if (preg_match('/^https?:\/\//i', $this->thumbnail_url)) {
+            return $this->thumbnail_url;
+        }
+
+        return asset(ltrim($this->thumbnail_url, '/'));
+    }
 
     public function effectivePrice(): float
     {

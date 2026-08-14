@@ -2,7 +2,7 @@
 @section('title','Kelola '.$learningPath->title)
 @section('content')
 <div class="instructor-page-header">
-    <span class="eyebrow">Kelola Course</span>
+    <span class="eyebrow">Kelola Kelas</span>
     <h1>{{ $learningPath->title }}</h1>
 </div>
 <div class="content-card" style="max-width: 640px;">
@@ -12,18 +12,15 @@
         @method('PUT')
         <label><span>Harga</span><input type="number" name="price" min="0" value="{{ old('price', $learningPath->price) }}"></label>
         <label><span>Harga promo</span><input type="number" name="sale_price" min="0" value="{{ old('sale_price', $learningPath->sale_price) }}"></label>
-        <label><span>Tipe course</span>
-            <select name="course_type">
-                <option value="self_paced" @selected(old('course_type', $learningPath->course_type) === 'self_paced')>Video & aktivitas</option>
-                <option value="live" @selected(old('course_type', $learningPath->course_type) === 'live')>Live</option>
-                <option value="hybrid" @selected(old('course_type', $learningPath->course_type) === 'hybrid')>Hybrid</option>
-            </select>
-        </label>
+        <div class="content-card" style="margin:0; background:var(--yellow-soft);">
+            <strong>Kelas Offline · {{ $learningPath->level }}</strong>
+            <p style="margin-bottom:0;">Format kelas SKILLPATH adalah tatap muka. Kategori dan level utama dikelola bersama Admin agar katalog tetap konsisten.</p>
+        </div>
         <label><span>Hasil belajar</span><textarea name="learning_outcomes" rows="5">{{ old('learning_outcomes', $learningPath->learning_outcomes) }}</textarea></label>
         <label><span>Persyaratan</span><textarea name="requirements" rows="4">{{ old('requirements', $learningPath->requirements) }}</textarea></label>
 
         <fieldset>
-            <legend>Kategori course</legend>
+            <legend>Kategori kelas</legend>
             <div class="payment-form">
                 @php($selectedCategories = array_map('intval', old('category_ids', $learningPath->categories->pluck('id')->all())))
                 @foreach($categories as $category)
@@ -37,7 +34,7 @@
 
         <fieldset>
             <legend>Tag minat untuk rekomendasi</legend>
-            <p>Pilih minat yang benar-benar relevan dengan isi course agar rekomendasi co-design lebih akurat.</p>
+            <p>Pilih minat yang benar-benar relevan dengan isi kelas agar rekomendasi co-design lebih akurat.</p>
             <div class="payment-form">
                 @php($selectedInterests = array_map('intval', old('interest_ids', $learningPath->interests->pluck('id')->all())))
                 @foreach($interests as $interest)
@@ -92,7 +89,7 @@
             @endforeach
         @endif
 
-        <button class="btn btn-dark" type="submit">Simpan Course</button>
+        <button class="btn btn-dark" type="submit">Simpan Kelas</button>
     </form>
 </div>
 @endsection

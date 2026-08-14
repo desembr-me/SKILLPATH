@@ -7,15 +7,15 @@
     <div class="container info-hero-grid">
         <div>
             <span class="eyebrow">Cara Kerja</span>
-            <h1>Dari minat anak menjadi jalur belajar yang terarah.</h1>
+            <h1>Dari minat anak menjadi pengalaman kelas yang terarah.</h1>
             <p>
-                SKILLPATH menggunakan data usia, minat, dan progres untuk menyederhanakan pilihan dan menjaga kesinambungan belajar.
+                SKILLPATH membantu orang tua menemukan kelas nonakademik tatap muka berdasarkan usia, minat, pengajar, lokasi, dan jadwal.
             </p>
         </div>
         <div class="info-hero-card">
-            <span class="info-card-label">Alur Adaptif</span>
-            <strong>Usia + Minat + Progres</strong>
-            <span>→ rekomendasi jalur</span>
+            <span class="info-card-label">Alur Kelas Offline</span>
+            <strong>Usia + Minat + Lokasi</strong>
+            <span>→ kelas tatap muka yang sesuai</span>
         </div>
     </div>
 </section>
@@ -53,7 +53,7 @@
             <article><strong>5–7 tahun</strong><span>Pendampingan lebih tinggi dan instruksi singkat.</span></article>
             <article><strong>8–10 tahun</strong><span>Pilihan mandiri dengan arahan visual yang jelas.</span></article>
             <article><strong>11–14 tahun</strong><span>Kontrol lebih besar terhadap jalur dan target belajar.</span></article>
-            <article><strong>Orang tua</strong><span>Memantau aktivitas, minat, poin, dan progres.</span></article>
+            <article><strong>Orang tua</strong><span>Memantau jadwal, aktivitas, kehadiran, dan progres.</span></article>
         </div>
     </div>
 </section>
@@ -62,12 +62,12 @@
     <div class="container cta-panel">
         <div>
             <span class="eyebrow">Mulai</span>
-            <h2>Siapkan profil anak dan dapatkan rekomendasi pertama.</h2>
+            <h2>Siapkan profil anak dan temukan kelas tatap muka yang sesuai.</h2>
         </div>
         @auth
             <a class="btn btn-dark" href="{{ route('dashboard') }}">Buka Dashboard</a>
         @else
-            <a class="btn btn-dark" href="{{ route('register') }}">Mulai Gratis</a>
+            <a class="btn btn-dark" href="{{ route('register') }}">Cari Kelas</a>
         @endauth
     </div>
 </section>

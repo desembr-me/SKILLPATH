@@ -29,6 +29,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\InstructorCourseController;
 use App\Http\Controllers\InstructorDashboardController;
 use App\Http\Controllers\InstructorProgressController;
+use App\Http\Controllers\InstructorProfileController;
 use App\Http\Controllers\InstructorRevenueController;
 use App\Http\Controllers\LearningController;
 use App\Http\Controllers\LiveClassController;
@@ -67,6 +68,12 @@ Route::middleware(['auth', 'admin'])
         Route::get('/', AdminDashboardController::class)->name('dashboard');
 
         Route::get('/course', [AdminCourseController::class, 'index'])->name('courses.index');
+        Route::get('/course/tambah', [AdminCourseController::class, 'create'])->name('courses.create');
+        Route::post('/course', [AdminCourseController::class, 'store'])->name('courses.store');
+        Route::get('/course/{learningPath}/edit', [AdminCourseController::class, 'edit'])->name('courses.edit');
+        Route::put('/course/{learningPath}', [AdminCourseController::class, 'update'])->name('courses.update');
+        Route::get('/course/{learningPath}/gambar', [AdminCourseController::class, 'editImage'])->name('courses.image.edit');
+        Route::patch('/course/{learningPath}/gambar', [AdminCourseController::class, 'updateImage'])->name('courses.image.update');
         Route::patch('/course/{learningPath}/publikasi', [AdminCourseController::class, 'togglePublish'])->name('courses.toggle-publish');
         Route::delete('/course/{learningPath}', [AdminCourseController::class, 'destroy'])->name('courses.destroy');
 
@@ -160,6 +167,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/aktivitas/{activity}/selesai', [LearningController::class, 'completeActivity'])->name('learning.activity.complete');
 
     Route::get('/pengajar-dashboard', InstructorDashboardController::class)->name('instructor.dashboard');
+    Route::get('/pengajar-dashboard/profil', [InstructorProfileController::class, 'edit'])->name('instructor.profile.edit');
+    Route::put('/pengajar-dashboard/profil', [InstructorProfileController::class, 'update'])->name('instructor.profile.update');
     Route::get('/pengajar-dashboard/course/{learningPath}/edit', [InstructorCourseController::class, 'edit'])->name('instructor.courses.edit');
     Route::put('/pengajar-dashboard/course/{learningPath}', [InstructorCourseController::class, 'update'])->name('instructor.courses.update');
     Route::post('/pengajar-dashboard/pertanyaan/{courseQuestion}/jawab', [CourseQuestionController::class, 'answer'])->name('instructor.questions.answer');

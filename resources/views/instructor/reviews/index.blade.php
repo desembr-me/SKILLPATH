@@ -4,8 +4,8 @@
 @section('content')
 <div class="instructor-page-header">
     <span class="eyebrow">Feedback kursus</span>
-    <h1>Ulasan siswa untuk course Anda</h1>
-    <p>Tinjau komentar dan atur apakah review bisa ditampilkan di halaman course.</p>
+    <h1>Ulasan siswa untuk kelas Anda</h1>
+    <p>Tinjau komentar dan atur apakah review bisa ditampilkan di halaman kelas.</p>
 </div>
 
 <div class="toolbar-row" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
@@ -44,7 +44,7 @@
             </div>
         </article>
     @empty
-        <div class="empty-state">Belum ada ulasan untuk course Anda.</div>
+        <div class="empty-state">Belum ada ulasan untuk kelas Anda.</div>
     @endforelse
 </div>
 

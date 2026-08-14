@@ -55,6 +55,11 @@ class AdminRecycleBinController extends Controller
     public function restore(string $type, int $id, ReviewRatingService $ratingService)
     {
         $model = $this->findTrashed($type, $id);
+
+        if ($type === 'category' && $model instanceof Category && ! in_array($model->slug, Category::coreSlugs(), true)) {
+            return back()->withErrors(['recycle_bin' => 'Kategori lama tidak dapat dipulihkan karena katalog SKILLPATH dikunci menjadi 6 kategori utama.']);
+        }
+
         $model->restore();
 
         if ($type === 'review' && $model instanceof CourseReview) {
@@ -70,7 +75,7 @@ class AdminRecycleBinController extends Controller
     public function restoreAll(ReviewRatingService $ratingService)
     {
         LearningPath::onlyTrashed()->restore();
-        Category::onlyTrashed()->restore();
+        Category::onlyTrashed()->whereIn('slug', Category::coreSlugs())->restore();
         User::onlyTrashed()->restore();
         CourseReview::onlyTrashed()->restore();
         $ratingService->recalculateAll();

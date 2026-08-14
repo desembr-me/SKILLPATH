@@ -20,6 +20,9 @@
             <a class="{{ request()->routeIs('instructor.dashboard', 'instructor.courses.*', 'instructor.live.*') ? 'is-active' : '' }}" href="{{ route('instructor.dashboard') }}">
                 <iconify-icon class="instructor-nav-icon" icon="mdi:view-dashboard-outline"></iconify-icon> Dashboard
             </a>
+            <a class="{{ request()->routeIs('instructor.profile.*') ? 'is-active' : '' }}" href="{{ route('instructor.profile.edit') }}">
+                <iconify-icon class="instructor-nav-icon" icon="mdi:account-edit-outline"></iconify-icon> Profil Saya
+            </a>
             <a class="{{ request()->routeIs('instructor.progress.*') ? 'is-active' : '' }}" href="{{ route('instructor.progress.index') }}">
                 <iconify-icon class="instructor-nav-icon" icon="mdi:chart-line"></iconify-icon> Progres Siswa
             </a>
@@ -61,10 +64,16 @@
                         @endif
                     </div>
                 </details>
-                <span class="instructor-profile">
-                    <span class="instructor-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                <a class="instructor-profile" href="{{ route('instructor.profile.edit') }}">
+                    <span class="instructor-avatar">
+                        @if(auth()->user()->instructorProfile?->photoSrc())
+                            <img src="{{ auth()->user()->instructorProfile->photoSrc() }}" alt="Foto {{ auth()->user()->name }}">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        @endif
+                    </span>
                     <strong>{{ auth()->user()->name }}</strong>
-                </span>
+                </a>
             </div>
         </header>
 

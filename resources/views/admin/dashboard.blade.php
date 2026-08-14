@@ -10,7 +10,7 @@
         <h2>Selamat datang, {{ auth()->user()->name }}.</h2>
         <p>Pantau course, transaksi, pengajar, pengguna, dan aktivitas platform dari satu halaman.</p>
     </div>
-    <a class="admin-btn primary" href="{{ route('admin.courses.index') }}">Kelola Course</a>
+    <div class="admin-head-actions"><a class="admin-btn primary" href="{{ route('admin.courses.create') }}">+ Tambah Course</a><a class="admin-btn outline" href="{{ route('admin.courses.index') }}">Kelola Course</a></div>
 </div>
 
 <div class="admin-stat-grid">
@@ -130,7 +130,7 @@
 </section>
 
 <div class="admin-quick-grid">
-    <a href="{{ route('admin.courses.index') }}" class="admin-quick-card"><span>▤</span><strong>Course</strong><small>Publikasi dan katalog</small></a>
+    <a href="{{ route('admin.courses.create') }}" class="admin-quick-card"><span>＋</span><strong>Tambah Course</strong><small>6 kategori · 3 level</small></a><a href="{{ route('admin.courses.index') }}" class="admin-quick-card"><span>▤</span><strong>Course</strong><small>Publikasi dan katalog</small></a>
     <a href="{{ route('admin.instructors.index') }}" class="admin-quick-card"><span>♙</span><strong>Pengajar</strong><small>Verifikasi profil</small></a>
     <a href="{{ route('admin.progress.index') }}" class="admin-quick-card"><span>↗</span><strong>Progres Siswa</strong><small>{{ $stats['student_profiles'] }} siswa termonitor</small></a>
     <a href="{{ route('admin.schedules.index') }}" class="admin-quick-card"><span>◷</span><strong>Jadwal Pengajaran</strong><small>{{ $stats['upcoming_teaching'] }} sesi akan datang</small></a>

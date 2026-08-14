@@ -4,7 +4,7 @@
 <div class="instructor-page-header">
     <span class="eyebrow">Dashboard Pengajar</span>
     <h1>Pendapatan Saya</h1>
-    <p>Ringkasan pendapatan dari penjualan course yang Anda ampu.</p>
+    <p>Ringkasan pendapatan dari pendaftaran kelas yang Anda ampu.</p>
 </div>
 
 <div class="stat-grid" style="margin-top: 0; grid-template-columns: repeat(3, 1fr);">
@@ -24,7 +24,7 @@
 
 <div class="two-column-section">
     <div class="content-card">
-        <h2>Pendapatan per Course</h2>
+        <h2>Pendapatan per Kelas</h2>
         @forelse($revenueByCourse as $row)
             <div class="summary-line">
                 <span>{{ $row->title }} <small>({{ $row->sales }}x)</small></span>

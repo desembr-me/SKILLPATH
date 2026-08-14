@@ -1,35 +1,25 @@
 @extends('layouts.app')
-
-@section('title', 'Kategori Skill | SKILLPATH')
-
+@section('title', '6 Kategori | SKILLPATH')
 @section('content')
-<section class="category-hero">
+<section class="category-hero kid-category-hero">
     <div class="container">
-        <span class="eyebrow">Kategori Skill</span>
-        <h1>Pilih bidang yang paling menarik.</h1>
-        <p>
-            Jelajahi jalur belajar berdasarkan kategori. Setiap kategori berisi kegiatan nonakademik
-            yang dapat dipilih sesuai minat dan usia anak.
-        </p>
+        <span class="eyebrow">6 Kategori Kelas</span>
+        <h1>Enam cara seru untuk menemukan minat anak.</h1>
+        <p>Setiap kategori tersedia dalam tiga level: Beginner, Intermediate, dan Expert.</p>
     </div>
 </section>
-
 <section class="section category-page-section">
     <div class="container">
-        <div class="category-grid">
+        <div class="category-grid kid-category-grid">
             @foreach ($categories as $category)
-                <a class="category-card" href="{{ route('categories.show', $category) }}">
-                    <div class="category-icon">{{ $category->icon }}</div>
-
+                <a class="category-card kid-category-card category-{{ $category->slug }}" href="{{ route('categories.show', $category) }}">
+                    <div class="category-icon kid-category-icon">{{ $category->icon }}</div>
                     <div class="category-card-copy">
-                        <span class="category-count">
-                            {{ $category->learning_paths_count }} jalur belajar
-                        </span>
-
+                        <span class="category-count">{{ $category->learning_paths_count }} kelas</span>
                         <h2>{{ $category->name }}</h2>
                         <p>{{ $category->description }}</p>
-
-                        <span class="category-link">Lihat kategori →</span>
+                        <div class="kid-level-chips"><span>Beginner</span><span>Intermediate</span><span>Expert</span></div>
+                        <span class="category-link">Lihat kelas →</span>
                     </div>
                 </a>
             @endforeach

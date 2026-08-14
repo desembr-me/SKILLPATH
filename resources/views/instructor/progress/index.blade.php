@@ -4,7 +4,7 @@
 <div class="instructor-page-header">
     <span class="eyebrow">Dashboard Pengajar</span>
     <h1>Progres Siswa</h1>
-    <p>Pantau progres belajar siswa pada course yang Anda ampu.</p>
+    <p>Pantau progres belajar siswa pada kelas yang Anda ampu.</p>
 </div>
 
 <div class="progress-student-list">
@@ -21,7 +21,7 @@
             <a class="btn btn-ghost btn-small" href="{{ route('instructor.progress.show', $enrollment) }}">Lihat Laporan</a>
         </div>
     @empty
-        <div class="empty-card"><h2>Belum ada siswa yang terdaftar pada course Anda.</h2></div>
+        <div class="empty-card"><h2>Belum ada siswa yang terdaftar pada kelas Anda.</h2></div>
     @endforelse
 </div>
 @endsection

@@ -8,7 +8,7 @@
     <div>
         <span class="admin-eyebrow">Analitik platform</span>
         <h2>Pahami pertumbuhan dan aktivitas SKILLPATH.</h2>
-        <p>Statistik menggabungkan data pengguna, enrollment, aktivitas belajar, course, sertifikat, live class, review, dan transaksi.</p>
+        <p>Statistik menggabungkan data pengguna, enrollment, aktivitas belajar, course, sertifikat, kelas tatap muka, review, dan transaksi.</p>
     </div>
 
     <a class="admin-btn secondary" href="{{ route('admin.statistics.export', ['period' => $period]) }}">Ekspor CSV</a>
@@ -220,15 +220,15 @@
                 <strong>{{ number_format($engagement['new_enrollments']) }}</strong>
             </div>
             <div>
-                <span>Live class</span>
+                <span>Kelas tatap muka</span>
                 <strong>{{ number_format($engagement['live_sessions']) }}</strong>
             </div>
             <div>
-                <span>Booking live</span>
+                <span>Booking kelas</span>
                 <strong>{{ number_format($engagement['live_bookings']) }}</strong>
             </div>
             <div>
-                <span>Keterisian live</span>
+                <span>Keterisian kelas</span>
                 <strong>{{ number_format($engagement['live_fill_rate'], 1) }}%</strong>
             </div>
             <div>

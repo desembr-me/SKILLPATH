@@ -97,7 +97,7 @@ class AdminTeachingScheduleController extends Controller
         $data = $this->validateSchedule($request);
         $course = LearningPath::query()->findOrFail($data['learning_path_id']);
 
-        abort_unless($course->instructor_id, 422, 'Course belum memiliki pengajar.');
+        abort_unless($course->instructor_id, 422, 'Kelas belum memiliki pengajar.');
 
         $this->ensureNoInstructorConflict(
             instructorId: $course->instructor_id,
@@ -112,6 +112,7 @@ class AdminTeachingScheduleController extends Controller
             'description' => $data['description'] ?? null,
             'starts_at' => $data['starts_at'],
             'ends_at' => $data['ends_at'],
+            'location' => $data['location'] ?? null,
             'meeting_url' => $data['meeting_url'] ?? null,
             'capacity' => $data['capacity'],
             'status' => $data['status'],
@@ -152,7 +153,7 @@ class AdminTeachingScheduleController extends Controller
         $data = $this->validateSchedule($request);
         $course = LearningPath::withTrashed()->findOrFail($data['learning_path_id']);
 
-        abort_unless($course->instructor_id, 422, 'Course belum memiliki pengajar.');
+        abort_unless($course->instructor_id, 422, 'Kelas belum memiliki pengajar.');
 
         if ($data['status'] !== 'cancelled') {
             $this->ensureNoInstructorConflict(
@@ -176,7 +177,7 @@ class AdminTeachingScheduleController extends Controller
 
             if ($activeBookings > 0 && (int) $course->id !== (int) $lockedSession->learning_path_id) {
                 throw ValidationException::withMessages([
-                    'learning_path_id' => 'Course tidak dapat diganti karena sesi sudah memiliki booking aktif. Batalkan sesi terlebih dahulu agar peserta memperoleh kredit.',
+                    'learning_path_id' => 'Kelas tidak dapat diganti karena sesi sudah memiliki booking aktif. Batalkan sesi terlebih dahulu agar peserta memperoleh kredit.',
                 ]);
             }
 
@@ -207,6 +208,7 @@ class AdminTeachingScheduleController extends Controller
                 'description' => $data['description'] ?? null,
                 'starts_at' => $data['starts_at'],
                 'ends_at' => $data['ends_at'],
+                'location' => $data['location'] ?? null,
                 'meeting_url' => $data['meeting_url'] ?? null,
                 'capacity' => $data['capacity'],
                 'status' => $data['status'],
@@ -292,14 +294,15 @@ class AdminTeachingScheduleController extends Controller
                 'Tanggal',
                 'Jam Mulai',
                 'Jam Selesai',
-                'Course',
+                'Kelas',
                 'Pengajar',
                 'Judul Sesi',
                 'Status',
                 'Peserta Booking',
                 'Kapasitas',
                 'Keterisian (%)',
-                'Meeting URL',
+                'Lokasi',
+                'Tautan Lokasi',
             ], ';', '"', '');
 
             foreach ($rows as $session) {
@@ -311,13 +314,14 @@ class AdminTeachingScheduleController extends Controller
                     $session->starts_at?->format('Y-m-d'),
                     $session->starts_at?->format('H:i'),
                     $session->ends_at?->format('H:i'),
-                    $session->learningPath?->title ?? 'Course tidak tersedia',
+                    $session->learningPath?->title ?? 'Kelas tidak tersedia',
                     $session->instructor?->name ?? 'Pengajar tidak tersedia',
                     $session->title,
                     $session->status,
                     $session->booked_count,
                     $session->capacity,
                     $occupancy,
+                    $session->location,
                     $session->meeting_url,
                 ], ';', '"', '');
             }
@@ -390,6 +394,7 @@ class AdminTeachingScheduleController extends Controller
             'description' => ['nullable', 'string', 'max:2000'],
             'starts_at' => ['required', 'date'],
             'ends_at' => ['required', 'date', 'after:starts_at'],
+            'location' => ['nullable', 'string', 'max:255'],
             'meeting_url' => ['nullable', 'url', 'max:255'],
             'capacity' => ['required', 'integer', 'min:1', 'max:500'],
             'status' => ['required', 'in:scheduled,live,completed,cancelled'],

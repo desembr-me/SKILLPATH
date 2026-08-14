@@ -24,7 +24,7 @@
         @forelse($instructors as $instructor)
             @php($profile = $instructor->instructorProfile)
             <article class="admin-person-card">
-                <div class="admin-person-avatar">{{ strtoupper(substr($instructor->name, 0, 1)) }}</div>
+                <div class="admin-person-avatar admin-person-photo">@if($profile?->photoSrc())<img src="{{ $profile->photoSrc() }}" alt="Foto {{ $instructor->name }}">@else{{ strtoupper(substr($instructor->name, 0, 1)) }}@endif</div>
                 <div class="admin-person-main">
                     <div class="admin-person-title">
                         <div>

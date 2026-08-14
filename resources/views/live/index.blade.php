@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title','Live Class | SKILLPATH')
+@section('title','Jadwal Kelas | SKILLPATH')
 @section('content')
 <section class="simple-hero">
     <div class="container">
-        <span class="eyebrow">Live Class</span>
+        <span class="eyebrow">Jadwal Kelas</span>
         <h1>Belajar langsung bersama pengajar.</h1>
-        <p>Jadwal hanya menampilkan live class dari course yang sudah aktif.</p>
+        <p>Pilih sesi tatap muka dari kelas yang sudah aktif, cek waktu dan lokasi, lalu pesan kursi.</p>
     </div>
 </section>
 <section class="section">
@@ -13,7 +13,7 @@
         @if($availableCredits->isNotEmpty())
             <div class="content-card">
                 <h2>Kredit sesi tersedia</h2>
-                <p>Anda memiliki {{ $availableCredits->count() }} kredit sesi yang dapat digunakan untuk menjadwalkan ulang sesi pada course yang sama.</p>
+                <p>Anda memiliki {{ $availableCredits->count() }} kredit sesi yang dapat digunakan untuk menjadwalkan ulang sesi pada kelas yang sama.</p>
                 @foreach($availableCredits as $credit)
                     <div class="schedule-row">
                         <div>
@@ -32,7 +32,7 @@
                 @foreach($recentCredits as $credit)
                     <div class="schedule-row">
                         <div>
-                            <strong>{{ $credit->learningPath?->title ?? 'Course tidak tersedia' }}</strong>
+                            <strong>{{ $credit->learningPath?->title ?? 'Kelas tidak tersedia' }}</strong>
                             <span>
                                 Asal: {{ $credit->sourceLiveSession?->title ?? 'sesi sebelumnya' }}
                                 @if($credit->usedLiveSession) · Dipakai untuk: {{ $credit->usedLiveSession->title }}@endif
@@ -61,6 +61,7 @@
                         <span class="path-skill">{{ $s->learningPath->title }}</span>
                         <h2>{{ $s->title }}</h2>
                         <p>{{ $s->starts_at->format('H:i') }}–{{ $s->ends_at->format('H:i') }} · {{ $s->instructor->name }}</p>
+                        @if($s->location)<p><strong>Lokasi:</strong> {{ $s->location }}</p>@endif
                         <small>{{ $s->bookings->where('status','booked')->count() }}/{{ $s->capacity }} kursi terisi</small>
                         @if($conflictIds->contains($s->id))
                             <small> · Jadwal berpotensi bentrok, periksa sebelum booking</small>
@@ -77,7 +78,7 @@
                     </div>
                 </article>
             @empty
-                <div class="empty-card"><h2>Belum ada jadwal live class.</h2></div>
+                <div class="empty-card"><h2>Belum ada jadwal kelas tatap muka.</h2><p>Jadwal baru akan muncul saat pengajar membuka sesi.</p></div>
             @endforelse
         </div>
     </div>

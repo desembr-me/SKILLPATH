@@ -1,41 +1,29 @@
 @extends('admin.layouts.app')
-
 @section('title', 'Kategori | Admin SKILLPATH')
 @section('page-title', 'Kategori')
-
 @section('content')
-<div class="admin-detail-grid category-admin-grid">
-    <section class="admin-panel">
-        <div class="admin-panel-head">
-            <div><span class="admin-eyebrow">Struktur katalog</span><h2>Kategori course</h2></div>
+<section class="admin-panel">
+    <div class="admin-panel-head admin-panel-head-wrap">
+        <div>
+            <span class="admin-eyebrow">Struktur katalog tetap</span>
+            <h2>6 kategori utama SKILLPATH</h2>
+            <p>Kategori dikunci agar katalog konsisten. Setiap kategori menggunakan level Beginner, Intermediate, dan Expert.</p>
         </div>
+        <a class="admin-btn primary" href="{{ route('admin.courses.create') }}">+ Tambah Course</a>
+    </div>
 
-        <div class="admin-category-list">
-            @foreach($categories as $category)
-                <div class="admin-category-row">
-                    <span class="admin-category-icon">{{ $category->icon }}</span>
-                    <div><strong>{{ $category->name }}</strong><small>{{ $category->description ?: 'Tanpa deskripsi' }}</small></div>
-                    <span class="admin-category-count">{{ $category->learning_paths_count }} course</span>
-                    <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" onsubmit="return confirm('Pindahkan kategori ini ke Recycle Bin?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="admin-icon-btn danger" type="submit">Hapus</button>
-                    </form>
+    <div class="admin-fixed-category-grid">
+        @foreach($categories as $category)
+            <article class="admin-fixed-category-card">
+                <span class="admin-category-icon">{{ $category->icon }}</span>
+                <div>
+                    <strong>{{ $category->name }}</strong>
+                    <p>{{ $category->description }}</p>
+                    <div class="admin-level-chips"><span>Beginner</span><span>Intermediate</span><span>Expert</span></div>
                 </div>
-            @endforeach
-        </div>
-    </section>
-
-    <aside class="admin-panel admin-side-form">
-        <span class="admin-eyebrow">Kategori baru</span>
-        <h2>Tambah kategori</h2>
-        <form method="POST" action="{{ route('admin.categories.store') }}">
-            @csrf
-            <label><span>Nama kategori</span><input name="name" value="{{ old('name') }}" placeholder="Contoh: Dance" required></label>
-            <label><span>Ikon singkat</span><input name="icon" value="{{ old('icon') }}" placeholder="Contoh: ♪" maxlength="20"></label>
-            <label><span>Deskripsi</span><textarea name="description" rows="5" placeholder="Jelaskan fokus kategori...">{{ old('description') }}</textarea></label>
-            <button class="admin-btn primary full" type="submit">Tambah Kategori</button>
-        </form>
-    </aside>
-</div>
+                <span class="admin-category-count">{{ $category->learning_paths_count }} course</span>
+            </article>
+        @endforeach
+    </div>
+</section>
 @endsection

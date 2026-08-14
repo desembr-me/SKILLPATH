@@ -1,17 +1,18 @@
 @extends('layouts.app')
-@section('title',$liveSession->title.' | Live Class')
+@section('title',$liveSession->title.' | Jadwal Kelas')
 @section('content')
 <section class="simple-hero">
     <div class="container">
         <span class="eyebrow">{{ $liveSession->learningPath->title }}</span>
         <h1>{{ $liveSession->title }}</h1>
         <p>{{ $liveSession->starts_at->format('d M Y H:i') }}–{{ $liveSession->ends_at->format('H:i') }} bersama {{ $liveSession->instructor->name }}</p>
+        @if($liveSession->location)<p><strong>Lokasi:</strong> {{ $liveSession->location }}</p>@endif
     </div>
 </section>
 <section class="section">
     <div class="container narrow">
         <div class="content-card">
-            <h2>Detail sesi</h2>
+            <h2>Detail sesi tatap muka</h2>
             <p>{{ $liveSession->description }}</p>
 
             @if(!$booking && $liveSession->status === 'scheduled' && $liveSession->starts_at->isFuture())
@@ -29,11 +30,14 @@
                 <a class="btn btn-blue" href="{{ route('live.confirm',$liveSession) }}">Periksa & Pesan Kursi</a>
             @elseif($booking)
                 <div class="done-label">✓ Kursi sudah dipesan</div>
+                @if($liveSession->location)
+                    <p class="meeting-note">Lokasi kelas:</p>
+                    <p>{{ $liveSession->location }}</p>
+                @endif
                 @if($liveSession->meeting_url)
-                    <p class="meeting-note">Tautan kelas:</p>
-                    <a class="btn btn-dark" href="{{ $liveSession->meeting_url }}" target="_blank" rel="noopener">Masuk Ruang Live</a>
+                    <a class="btn btn-dark" href="{{ $liveSession->meeting_url }}" target="_blank" rel="noopener">Buka Petunjuk Lokasi</a>
                 @else
-                    <p>Tautan live akan ditambahkan pengajar sebelum sesi dimulai.</p>
+                    <p>Petunjuk lokasi akan diinformasikan pengajar sebelum kelas dimulai.</p>
                 @endif
             @else
                 <p>Sesi ini tidak tersedia untuk booking baru.</p>
@@ -42,8 +46,8 @@
 
         @if($booking && !$liveSession->ends_at->isPast())
             <div class="content-card">
-                <h2>Tidak dapat mengikuti sesi?</h2>
-                <p>Konversi booking menjadi kredit sesi. Kredit dapat dipakai untuk menjadwalkan ulang pada course yang sama tanpa proses refund dan mengikuti masa aktif akses course.</p>
+                <h2>Tidak dapat hadir?</h2>
+                <p>Konversi booking menjadi kredit sesi. Kredit dapat dipakai untuk menjadwalkan ulang pada kelas yang sama tanpa proses refund dan mengikuti masa aktif pendaftaran.</p>
                 <form method="POST" action="{{ route('live.credit',$liveSession) }}" class="form-stack">
                     @csrf
                     <label>
