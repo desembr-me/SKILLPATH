@@ -157,6 +157,10 @@ a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit;c
 .profile-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:15px}
 .profile-card,.profile-summary-card{padding:22px}
 .profile-form{display:grid;gap:15px}
+.profile-form>label{display:flex;flex-direction:column;gap:6px;font-size:10px;font-weight:900;color:#596176}
+.profile-form textarea{border:1px solid #dfe2eb;background:#fff;border-radius:11px;padding:10px 11px;outline:none;font-size:11px;font-family:inherit;resize:vertical;width:100%;transition:border .15s,box-shadow .15s}
+.profile-form textarea:focus{border-color:#a99df1;box-shadow:0 0 0 3px #f0edff}
+.notes-field textarea{min-height:78px}
 .profile-photo-block{display:flex;align-items:center;gap:14px;padding:14px;border-radius:15px;background:#faf9ff;border:1px solid #ece8fb}
 .profile-photo{width:64px;height:64px;border-radius:17px;background:#ece8ff;color:#5b4ebd;display:grid;place-items:center;overflow:hidden;flex:0 0 auto;font-family:"Fredoka";font-size:23px;font-weight:700}
 .profile-photo.large{width:76px;height:76px}

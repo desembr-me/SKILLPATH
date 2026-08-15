@@ -78,8 +78,12 @@
                         @endforeach
                     </div>
 
-                    <label>Catatan tambahan
-                        <textarea name="notes" rows="3" placeholder="Catatan yang perlu diketahui mentor...">{{ $child->notes }}</textarea>
+                    <div class="form-section-title compact">
+                        <div><span>03</span><h3>Catatan tambahan</h3></div>
+                        <small>Opsional, untuk mentor</small>
+                    </div>
+                    <label class="notes-field">
+                        <textarea name="notes" rows="3" placeholder="Catatan yang perlu diketahui mentor, misalnya alergi, kebiasaan belajar, atau hal lain yang perlu diperhatikan...">{{ $child->notes }}</textarea>
                     </label>
 
                     <div class="form-actions">
