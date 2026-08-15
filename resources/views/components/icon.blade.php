@@ -73,6 +73,18 @@
     @case('arrow-left')
         <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M10 7l-5 5 5 5"/></svg>
         @break
+    @case('heart')
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 20.5S3.5 15.4 3.5 9.4A4.9 4.9 0 0 1 12 6.3a4.9 4.9 0 0 1 8.5 3.1c0 6-8.5 11.1-8.5 11.1Z"/></svg>
+        @break
+    @case('cart')
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.2 11.4A2 2 0 0 0 9.2 17H18a2 2 0 0 0 2-1.6L21.5 8H6"/><circle cx="9.5" cy="20.5" r="1.3"/><circle cx="17.5" cy="20.5" r="1.3"/></svg>
+        @break
+    @case('book')
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15.5H6.5A2.5 2.5 0 0 0 4 21V5.5Z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/></svg>
+        @break
+    @case('receipt')
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-2.5-1.5L13 21l-1-1.5L11 21l-2.5-1.5L6 21V3Z"/><path d="M9 8h6M9 12h6"/></svg>
+        @break
     @case('spark')
     @default
         <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.8 13.6 8l5.2 1.6-5.2 1.6L12 16.4l-1.6-5.2-5.2-1.6L10.4 8 12 2.8Z"/><path d="m18 15 .8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8L18 15Z"/></svg>

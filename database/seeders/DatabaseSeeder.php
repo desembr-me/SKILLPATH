@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\{Attendance,Category,Child,CoDesignSession,Course,CourseSchedule,CourseSession,Enrollment,Exam,ExamAttempt,LearningPath,Review,SessionCredit,Transaction,User};
+use App\Models\{ActivityCompletion,Attendance,Category,Child,CoDesignSession,Course,CourseModule,CourseSchedule,CourseSession,Enrollment,Exam,ExamAttempt,LearningPath,Review,SessionCredit,Transaction,User,Wishlist};
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -55,16 +55,24 @@ class DatabaseSeeder extends Seeder
                 CourseSchedule::create(['course_id'=>$course->id,'instructor_id'=>$course->instructor_id,'day_of_week'=>$s[0],'start_time'=>$s[1],'end_time'=>$s[2],'start_date'=>now()->addDays(7+$j)->toDateString(),'end_date'=>now()->addMonths(3)->toDateString(),'capacity'=>10,'room'=>'Room '.($j+1),'status'=>'open']);
             }
             Exam::create(['course_id'=>$course->id,'title'=>'Final Challenge: '.$course->title,'passing_score'=>75,'max_attempts'=>2,'is_active'=>true]);
+            foreach([['Pengenalan','Mengenal dasar dan tujuan course.'],['Latihan Inti','Praktik langsung bersama mentor.'],['Proyek Akhir','Menerapkan keterampilan pada proyek nyata.']] as $mi=>$m){
+                $module=$course->modules()->create(['title'=>'Modul '.($mi+1).': '.$m[0],'description'=>$m[1],'sequence'=>$mi+1]);
+                foreach([['Materi: '.$m[0],'materi'],['Latihan: '.$m[0],'latihan'],['Refleksi: '.$m[0],'refleksi']] as $ai=>$a){
+                    $module->activities()->create(['title'=>$a[0],'type'=>$a[1],'sequence'=>$ai+1]);
+                }
+            }
             $courses[$x[1]]=$course;
         }
 
         $alya=Child::create(['parent_id'=>$parent->id,'name'=>'Alya Putri','nickname'=>'Alya','birth_date'=>now()->subYears(9)->subMonths(2)->toDateString(),'avatar'=>'🧒🏻','interests'=>['Technology','Arts','Self Improvement'],'learning_preferences'=>['hands_on','group','step_by_step']]);
         Child::create(['parent_id'=>$parent->id,'name'=>'Raka Putra','nickname'=>'Raka','birth_date'=>now()->subYears(6)->subMonths(1)->toDateString(),'avatar'=>'👦🏻','interests'=>['Arts','Sports'],'learning_preferences'=>['play','hands_on']]);
         CoDesignSession::create(['child_id'=>$alya->id,'parent_id'=>$parent->id,'child_choices'=>['Technology','Arts','Self Improvement'],'parent_observations'=>['child_voice'=>'Aku suka membuat robot dan suka cerita saat bikin karya seni.','discussed_with_child'=>true],'agreed_interests'=>['Technology','Arts','Self Improvement'],'learning_preferences'=>['hands_on','group','step_by_step'],'completed_at'=>now()]);
+        Wishlist::create(['parent_id'=>$parent->id,'course_id'=>$courses['English Adventure']->id]);
+        Wishlist::create(['parent_id'=>$parent->id,'course_id'=>$courses['Junior Badminton']->id]);
 
         $robot=$courses['Junior Robotics Lab']; $piano=$courses['Piano Starter'];
         $robotSchedule=$robot->schedules()->first(); $pianoSchedule=$piano->schedules()->first();
-        $enroll=Enrollment::create(['parent_id'=>$parent->id,'child_id'=>$alya->id,'course_id'=>$piano->id,'schedule_id'=>$pianoSchedule->id,'status'=>'active','progress'=>50,'enrolled_at'=>now()->subMonth()]);
+        $enroll=Enrollment::create(['parent_id'=>$parent->id,'child_id'=>$alya->id,'course_id'=>$piano->id,'schedule_id'=>$pianoSchedule->id,'status'=>'active','progress'=>0,'enrolled_at'=>now()->subMonth()]);
         Transaction::create(['parent_id'=>$parent->id,'enrollment_id'=>$enroll->id,'invoice_code'=>'SP-DEMO-001','subtotal'=>$piano->price,'platform_fee'=>15000,'total'=>$piano->price+15000,'payment_method'=>'virtual_account','status'=>'paid','paid_at'=>now()->subMonth()]);
         for($i=1;$i<=2;$i++) CourseSession::create(['course_id'=>$piano->id,'schedule_id'=>$pianoSchedule->id,'session_no'=>$i,'session_date'=>now()->addDays($i*7)->toDateString(),'start_time'=>$pianoSchedule->start_time,'end_time'=>$pianoSchedule->end_time,'topic'=>'Piano Foundation '.$i]);
         $s1=CourseSession::where('schedule_id',$pianoSchedule->id)->first();
@@ -73,6 +81,10 @@ class DatabaseSeeder extends Seeder
         $exam=$piano->exams()->first();
         ExamAttempt::create(['exam_id'=>$exam->id,'enrollment_id'=>$enroll->id,'attempt_no'=>1,'score'=>68,'status'=>'failed','mentor_feedback'=>'Perlu menguatkan tempo dan koordinasi.','taken_at'=>now()->subDays(3)]);
         Review::create(['parent_id'=>$parent->id,'enrollment_id'=>$enroll->id,'course_id'=>$piano->id,'instructor_id'=>$piano->instructor_id,'mentor_rating'=>5,'mentor_review'=>'Mentor sabar dan feedback jelas.','platform_rating'=>4,'platform_review'=>'Booking mudah. Filter lokasi masih bisa dibuat lebih detail.']);
+
+        $pianoActivities=$piano->modules()->with('activities')->get()->flatMap->activities;
+        foreach($pianoActivities->take(4) as $activity)ActivityCompletion::create(['enrollment_id'=>$enroll->id,'module_activity_id'=>$activity->id,'completed_at'=>now()->subDays(rand(1,25))]);
+        $enroll->update(['progress'=>(int)round(4/$pianoActivities->count()*100)]);
 
         $path=LearningPath::create(['child_id'=>$alya->id,'title'=>'Creative Explorer Path','rationale'=>'Gabungan Technology, Arts, dan Self Improvement dari hasil co-design.','status'=>'active','generated_at'=>now()]);
         foreach([$robot,$courses['Confident Kids Club'],$courses['Young Illustrator']] as $i=>$c)$path->items()->create(['course_id'=>$c->id,'sequence'=>$i+1,'reason'=>'Sesuai minat dan usia Alya','status'=>$i===0?'recommended':'locked','match_score'=>95-$i*8]);

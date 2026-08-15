@@ -14,5 +14,6 @@ class Child extends Model
     public function credits(): HasMany { return $this->hasMany(SessionCredit::class); }
     public function coDesignSessions(): HasMany { return $this->hasMany(CoDesignSession::class); }
     public function learningPaths(): HasMany { return $this->hasMany(LearningPath::class); }
+    public function cartItems(): HasMany { return $this->hasMany(CartItem::class); }
     public function getAgeAttribute(): int { return $this->birth_date?->age ?? 0; }
 }

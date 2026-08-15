@@ -5,7 +5,14 @@
     <div class="detail-grid">
         <div class="detail-visual"><x-course-art :course="$course" class="detail-art" /></div>
         <div class="detail-copy">
-            <span class="eyebrow">{{ $course->category->name }}</span>
+            <div class="detail-head-row">
+                <span class="eyebrow">{{ $course->category->name }}</span>
+                @auth
+                    @if(auth()->user()->role==='parent')
+                    <form method="POST" action="{{ route('parent.wishlist.toggle',$course) }}">@csrf<button class="wishlist-btn {{ $isWishlisted ? 'active' : '' }}" title="{{ $isWishlisted ? 'Hapus dari wishlist' : 'Tambah ke wishlist' }}"><x-icon name="heart" /></button></form>
+                    @endif
+                @endauth
+            </div>
             <h1>{{ $course->title }}</h1>
             <p class="lead">{{ $course->subtitle }}</p>
             <div class="meta meta-lg">
@@ -30,22 +37,14 @@
         <article><x-icon name="certificate" /><div><b>Sertifikat berbasis kelulusan</b><small>Sertifikat terbit setelah anak mencapai passing grade.</small></div></article>
     </div>
 
-    @if(session('conflicts'))
-    <div class="conflict-box">
-        <div class="conflict-title"><span><x-icon name="conflict" /></span><div><h3>Jadwal bentrok terdeteksi</h3><p>Jadwal pilihan bertabrakan dengan course anak yang sudah aktif.</p></div></div>
-        @foreach(session('conflicts') as $conflict)<div class="conflict-line"><b>{{ $conflict['course'] }}</b><span>{{ $conflict['schedule'] }}</span></div>@endforeach
-        @if(session('alternatives'))<p><b>Jadwal alternatif yang tersedia:</b></p>@foreach(session('alternatives') as $alt)<span class="alt-chip">Hari {{ $alt->day_of_week }} • {{ substr($alt->start_time,0,5) }}-{{ substr($alt->end_time,0,5) }}</span>@endforeach @endif
-    </div>
-    @endif
-
     <div class="booking-panel">
-        <div class="booking-copy"><span class="eyebrow">Pilih jadwal offline</span><h2>Booking course untuk anak</h2><p>SkillPath akan memeriksa jadwal course aktif sebelum transaksi dibuat.</p><div class="booking-note"><x-icon name="conflict" /><span>Pengecekan bentrok dilakukan otomatis sebelum booking dikonfirmasi.</span></div></div>
+        <div class="booking-copy"><span class="eyebrow">Pilih jadwal offline</span><h2>Tambahkan ke keranjang</h2><p>Course akan masuk keranjang. Pengecekan jadwal bentrok dilakukan otomatis saat checkout.</p><div class="booking-note"><x-icon name="conflict" /><span>Pengecekan bentrok dilakukan otomatis sebelum checkout dikonfirmasi.</span></div></div>
         @auth
             @if(auth()->user()->role==='parent')
-            <form method="POST" action="{{ route('parent.bookings.store') }}" class="booking-form">@csrf
+            <form method="POST" action="{{ route('parent.cart.store') }}" class="booking-form">@csrf
                 <label>Anak<select name="child_id" required>@foreach(auth()->user()->children as $child)<option value="{{ $child->id }}">{{ $child->name }} • {{ $child->age }} tahun</option>@endforeach</select></label>
                 <label>Jadwal<select name="schedule_id" required>@foreach($course->schedules as $schedule)<option value="{{ $schedule->id }}">Hari {{ $schedule->day_of_week }} • {{ substr($schedule->start_time,0,5) }}-{{ substr($schedule->end_time,0,5) }} • {{ $schedule->room }}</option>@endforeach</select></label>
-                <button class="btn btn-primary btn-lg">Cek Jadwal & Booking <x-icon name="arrow-right" /></button>
+                <button class="btn btn-primary btn-lg">Tambah ke Keranjang <x-icon name="cart" /></button>
             </form>
             @else<p class="muted-box">Booking hanya dapat dilakukan melalui akun orang tua.</p>@endif
         @else<a class="btn btn-primary btn-lg" href="{{ route('login') }}">Masuk sebagai Orang Tua <x-icon name="arrow-right" /></a>@endauth

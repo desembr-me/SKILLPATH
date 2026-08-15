@@ -15,5 +15,7 @@ class Course extends Model
     public function enrollments(): HasMany { return $this->hasMany(Enrollment::class); }
     public function exams(): HasMany { return $this->hasMany(Exam::class); }
     public function reviews(): HasMany { return $this->hasMany(Review::class); }
+    public function modules(): HasMany { return $this->hasMany(CourseModule::class)->orderBy('sequence'); }
+    public function wishlistedBy(): HasMany { return $this->hasMany(Wishlist::class); }
     public function getRouteKeyName(): string { return 'slug'; }
 }

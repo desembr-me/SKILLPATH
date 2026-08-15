@@ -23,6 +23,8 @@ class User extends Authenticatable
     public function transactions(): HasMany { return $this->hasMany(Transaction::class, 'parent_id'); }
     public function reviews(): HasMany { return $this->hasMany(Review::class, 'parent_id'); }
     public function enrollments(): HasMany { return $this->hasMany(Enrollment::class, 'parent_id'); }
+    public function wishlists(): HasMany { return $this->hasMany(Wishlist::class, 'parent_id'); }
+    public function cartItems(): HasMany { return $this->hasMany(CartItem::class, 'parent_id'); }
 
     public function isParent(): bool { return $this->role === self::ROLE_PARENT; }
     public function isMentor(): bool { return $this->role === self::ROLE_MENTOR; }
