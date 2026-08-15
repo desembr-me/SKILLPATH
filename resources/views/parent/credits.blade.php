@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title','Kredit Sesi')
 @section('content')
+<x-parent-nav />
 <section class="dashboard-page">
     <div class="dash-title"><div><span class="eyebrow">Sistem Kredit Sesi Fleksibel</span><h1>Kredit Sesi</h1><p>Gunakan kredit untuk memilih sesi pengganti tanpa proses refund manual.</p></div><a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a></div>
     <div class="info-banner"><span><x-icon name="credit" /></span><div><b>Bagaimana kredit bekerja?</b><p>Kredit dibuat untuk sesi yang memenuhi kebijakan, misalnya sakit atau perubahan jadwal yang disetujui. Kredit memiliki masa berlaku dan dapat digunakan pada sesi pengganti yang tersedia.</p></div></div>

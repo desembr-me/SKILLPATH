@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title','Keranjang')
 @section('content')
+<x-parent-nav />
 <section class="dashboard-page">
     <div class="dash-title"><div><span class="eyebrow">Keranjang</span><h1>Keranjang Booking</h1><p>Tinjau course sebelum checkout. Jadwal diperiksa otomatis saat checkout.</p></div><a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a></div>
     @if(session('error'))<div class="flash error"><strong>{{ session('error') }}</strong></div>@endif

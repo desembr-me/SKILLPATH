@@ -1,19 +1,11 @@
 @extends('layouts.app')
 @section('title','Dashboard Orang Tua')
 @section('content')
+<x-parent-nav />
 <section class="dashboard-page">
     <div class="dash-title">
         <div><span class="eyebrow">Dashboard Orang Tua</span><h1>Halo, {{ auth()->user()->name }}</h1><p>Pantau anak, course, jadwal, kredit, ujian, dan transaksi dari satu tempat.</p></div>
         <div class="dash-actions"><a class="btn btn-primary" href="{{ route('parent.onboarding') }}">Tambah Anak</a></div>
-    </div>
-
-    <div class="quick-menu">
-        <a class="quick-tile" href="{{ route('parent.my-courses') }}"><span class="quick-icon"><x-icon name="book" /></span><b>Course Saya</b></a>
-        <a class="quick-tile" href="{{ route('parent.cart') }}"><span class="quick-icon"><x-icon name="cart" /></span><b>Keranjang</b>@if($cartCount)<i class="quick-badge">{{ $cartCount }}</i>@endif</a>
-        <a class="quick-tile" href="{{ route('parent.wishlist') }}"><span class="quick-icon"><x-icon name="heart" /></span><b>Wishlist</b></a>
-        <a class="quick-tile" href="{{ route('parent.orders') }}"><span class="quick-icon"><x-icon name="receipt" /></span><b>Riwayat Pesanan</b></a>
-        <a class="quick-tile" href="{{ route('parent.exams') }}"><span class="quick-icon"><x-icon name="certificate" /></span><b>Ujian & Sertifikat</b></a>
-        <a class="quick-tile" href="{{ route('parent.credits') }}"><span class="quick-icon"><x-icon name="credit" /></span><b>Kredit Sesi</b></a>
     </div>
 
     <div class="stat-grid">

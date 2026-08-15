@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title','Sertifikat '.$certificate->enrollment->course->title)
 @section('content')
+<x-parent-nav />
 <section class="dashboard-page certificate-page">
     <div class="dash-title no-print"><div><span class="eyebrow">Sertifikat Kelulusan</span><h1>{{ $certificate->enrollment->course->title }}</h1><p>Diterbitkan untuk {{ $certificate->enrollment->child->name }} setelah mencapai passing grade.</p></div>
         <div class="dash-actions"><a class="btn btn-soft" href="{{ route('parent.exams') }}"><x-icon name="arrow-left" /> Ujian & Sertifikat</a><button class="btn btn-primary" onclick="window.print()"><x-icon name="certificate" /> Cetak / Simpan PDF</button></div>

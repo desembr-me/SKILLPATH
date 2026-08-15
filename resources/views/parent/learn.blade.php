@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title','Belajar - '.$enrollment->course->title)
 @section('content')
+<x-parent-nav />
 <section class="dashboard-page">
     <div class="dash-title"><div><span class="eyebrow">Belajar</span><h1>{{ $enrollment->course->title }}</h1><p>{{ $enrollment->child->name }} • Jalur belajar, modul, dan aktivitas course ini.</p></div><a class="btn btn-soft" href="{{ route('parent.my-courses') }}"><x-icon name="arrow-left" /> Course Saya</a></div>
 

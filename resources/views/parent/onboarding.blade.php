@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title','Co-Design Minat Anak')
 @section('content')
+<x-parent-nav />
 <section class="onboarding-wrap">
     <div class="onboarding-card">
         <div class="onboarding-header">
