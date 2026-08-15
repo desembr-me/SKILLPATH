@@ -10,6 +10,7 @@ use App\Http\Controllers\Parent\CreditController;
 use App\Http\Controllers\Parent\ReviewController;
 use App\Http\Controllers\Parent\PaymentController;
 use App\Http\Controllers\Parent\ExamController as ParentExamController;
+use App\Http\Controllers\Parent\CertificateController;
 use App\Http\Controllers\Mentor\AttendanceController;
 use App\Http\Controllers\Mentor\ExamController as MentorExamController;
 use App\Http\Controllers\Mentor\DashboardController as MentorDashboard;
@@ -40,6 +41,7 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
  Route::post('/enrollments/{enrollment}/review',[ReviewController::class,'store'])->name('reviews.store');
  Route::post('/transactions/{transaction}/pay',[PaymentController::class,'pay'])->name('transactions.pay');
  Route::get('/exams',[ParentExamController::class,'index'])->name('exams');
+ Route::get('/certificates/{certificate}',[CertificateController::class,'show'])->name('certificates.show');
 });
 Route::prefix('mentor')->name('mentor.')->middleware(['auth','role:mentor'])->group(function(){
  Route::get('/dashboard',MentorDashboard::class)->name('dashboard');
