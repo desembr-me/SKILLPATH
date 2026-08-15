@@ -14,7 +14,7 @@ class User extends Authenticatable
     public const ROLE_MENTOR = 'mentor';
     public const ROLE_ADMIN = 'admin';
 
-    protected $fillable = ['name','email','phone','password','role','avatar'];
+    protected $fillable = ['name','email','phone','password','role','avatar','headline','bio'];
     protected $hidden = ['password','remember_token'];
     protected function casts(): array { return ['email_verified_at'=>'datetime','password'=>'hashed']; }
 

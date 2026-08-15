@@ -2,6 +2,14 @@
 namespace App\Http\Controllers\Parent;
 use App\Http\Controllers\Controller; use App\Models\CartItem; use App\Services\ScheduleConflictService; use Illuminate\Http\Request; use Illuminate\Support\Facades\DB; use Illuminate\Support\Str;
 class CheckoutController extends Controller {
+ public function index(Request $r){
+  $items=CartItem::with(['child','schedule.course.category'])->where('parent_id',$r->user()->id)->latest()->get();
+  if($items->isEmpty()) return redirect()->route('parent.cart')->with('error','Keranjang masih kosong.');
+  $subtotal=$items->sum(fn($i)=>$i->schedule->course->price);
+  $platformFee=$items->count()*15000;
+  $total=$subtotal+$platformFee;
+  return view('parent.checkout',compact('items','subtotal','platformFee','total'));
+ }
  public function store(Request $r, ScheduleConflictService $svc){
   $items=CartItem::with(['child','schedule.course'])->where('parent_id',$r->user()->id)->get();
   if($items->isEmpty())return back()->with('error','Keranjang masih kosong.');

@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('title','Riwayat Pesanan')
 @section('content')
-<x-parent-nav />
 <section class="dashboard-page">
     <div class="dash-title"><div><span class="eyebrow">Riwayat Pesanan</span><h1>Pesanan Saya</h1><p>Lihat status dan detail pembayaran setiap pesanan course.</p></div><a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a></div>
     <div class="panel admin-table-panel">

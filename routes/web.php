@@ -3,6 +3,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Parent\DashboardController as ParentDashboard;
+use App\Http\Controllers\Parent\ProfileController;
 use App\Http\Controllers\Parent\OnboardingController;
 use App\Http\Controllers\Parent\LearningPathController;
 use App\Http\Controllers\Parent\CreditController;
@@ -19,6 +20,9 @@ use App\Http\Controllers\Parent\LearnController;
 use App\Http\Controllers\Mentor\AttendanceController;
 use App\Http\Controllers\Mentor\ExamController as MentorExamController;
 use App\Http\Controllers\Mentor\DashboardController as MentorDashboard;
+use App\Http\Controllers\Mentor\ProfileController as MentorProfileController;
+use App\Http\Controllers\Mentor\StudentController as MentorStudentController;
+use App\Http\Controllers\Mentor\ReviewController as MentorReviewController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +41,10 @@ Route::post('/logout',[AuthController::class,'logout'])->middleware('auth')->nam
 
 Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->group(function(){
  Route::get('/dashboard',ParentDashboard::class)->name('dashboard');
+ Route::get('/profile',[ProfileController::class,'show'])->name('profile');
+ Route::put('/profile',[ProfileController::class,'update'])->name('profile.update');
+ Route::post('/profile/children',[ProfileController::class,'storeChild'])->name('profile.children.store');
+ Route::put('/profile/children/{child}',[ProfileController::class,'updateChild'])->name('profile.children.update');
  Route::get('/onboarding',[OnboardingController::class,'create'])->name('onboarding');
  Route::post('/onboarding',[OnboardingController::class,'store'])->name('onboarding.store');
  Route::get('/children/{child}/learning-path',[LearningPathController::class,'show'])->name('learning-path');
@@ -45,12 +53,14 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
  Route::post('/enrollments/{enrollment}/review',[ReviewController::class,'store'])->name('reviews.store');
  Route::post('/transactions/{transaction}/pay',[PaymentController::class,'pay'])->name('transactions.pay');
  Route::get('/exams',[ParentExamController::class,'index'])->name('exams');
+ Route::put('/learning-path/items/{item}/voice',[LearningPathController::class,'updateVoice'])->name('learning-path.voice');
  Route::get('/certificates/{certificate}',[CertificateController::class,'show'])->name('certificates.show');
  Route::get('/wishlist',[WishlistController::class,'index'])->name('wishlist');
  Route::post('/wishlist/{course}',[WishlistController::class,'toggle'])->name('wishlist.toggle');
  Route::get('/cart',[CartController::class,'index'])->name('cart');
  Route::post('/cart',[CartController::class,'store'])->name('cart.store');
  Route::delete('/cart/{cartItem}',[CartController::class,'destroy'])->name('cart.destroy');
+ Route::get('/checkout',[CheckoutController::class,'index'])->name('checkout');
  Route::post('/checkout',[CheckoutController::class,'store'])->name('checkout.store');
  Route::get('/orders',[OrderController::class,'index'])->name('orders');
  Route::get('/my-courses',[MyCourseController::class,'index'])->name('my-courses');
@@ -59,6 +69,10 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
 });
 Route::prefix('mentor')->name('mentor.')->middleware(['auth','role:mentor'])->group(function(){
  Route::get('/dashboard',MentorDashboard::class)->name('dashboard');
+ Route::get('/profile',[MentorProfileController::class,'show'])->name('profile');
+ Route::put('/profile',[MentorProfileController::class,'update'])->name('profile.update');
+ Route::get('/enrollments/{enrollment}/student',[MentorStudentController::class,'show'])->name('students.show');
+ Route::get('/reviews',[MentorReviewController::class,'index'])->name('reviews');
  Route::post('/attendance',[AttendanceController::class,'store'])->name('attendance.store');
  Route::post('/exam-attempts',[MentorExamController::class,'storeAttempt'])->name('exam-attempts.store');
 });

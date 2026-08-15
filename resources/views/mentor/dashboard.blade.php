@@ -2,7 +2,7 @@
 @section('title','Dashboard Pengajar')
 @section('content')
 <section class="dashboard-page">
-    <div class="dash-title"><div><span class="eyebrow">Dashboard Pengajar</span><h1>Halo, {{ auth()->user()->name }}</h1><p>Kelola course, kehadiran, kredit sesi, ujian, retake, dan evaluasi siswa.</p></div></div>
+    <div class="dash-title"><div><span class="eyebrow">Dashboard Pengajar</span><h1>Halo, {{ auth()->user()->name }}</h1><p>Kelola course, kehadiran, kredit sesi, ujian, retake, dan evaluasi siswa.</p></div><div class="dash-actions"><a class="btn btn-soft" href="{{ route('mentor.reviews') }}"><x-icon name="review" /> Ulasan</a><a class="btn btn-soft" href="{{ route('mentor.profile') }}"><x-icon name="child" /> Profil</a></div></div>
     <div class="stat-grid">
         <article><span class="stat-icon"><x-icon name="sessions" /></span><div><span>Course aktif</span><b>{{ $courses->count() }}</b><small>Course yang sedang berjalan</small></div></article>
         <article><span class="stat-icon"><x-icon name="child" /></span><div><span>Siswa aktif</span><b>{{ $students }}</b><small>Siswa dalam course aktif</small></div></article>
@@ -14,6 +14,17 @@
             @foreach($courses as $course)<div class="course-admin-row"><div class="row-icon-vector" style="--row-accent:{{ $course->accent }}"><x-icon :name="$course->category->slug" /></div><div><h3>{{ $course->title }}</h3><p>{{ $course->category->name }} • {{ $course->schedules->count() }} jadwal</p></div><span class="status-chip active">Aktif</span></div>@endforeach
         </div>
         <div class="panel mentor-principle"><span class="principle-icon"><x-icon name="credit" /></span><h2>Prinsip Kredit Sesi</h2><p class="mentor-note">Tandai <b>credit eligible</b> hanya saat sesi memenuhi kebijakan, misalnya sakit atau perubahan jadwal yang disetujui. Sistem akan membuat kredit otomatis.</p></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-heading"><div><span class="panel-kicker">Siswa</span><h2>Daftar Siswa</h2></div></div>
+        @forelse($enrollments as $enrollment)
+            <div class="child-row">
+                <div class="child-avatar">{{ strtoupper(substr($enrollment->child->name,0,1)) }}</div>
+                <div><h3>{{ $enrollment->child->name }}</h3><p>{{ $enrollment->course->title }}</p><div class="mini-tags"><span>{{ ucfirst($enrollment->status) }}</span><span>{{ $enrollment->progress }}% progres</span></div></div>
+                <a class="btn btn-soft" href="{{ route('mentor.students.show', $enrollment) }}">Lihat Detail</a>
+            </div>
+        @empty<div class="empty-state"><x-icon name="child" /><div><b>Belum ada siswa aktif</b><span>Siswa akan muncul setelah enrollment aktif tersedia.</span></div></div>@endforelse
     </div>
 
     <div class="panel mentor-tools">

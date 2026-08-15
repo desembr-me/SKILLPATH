@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
         User::create(['name'=>'Admin SkillPath','email'=>'admin@skillpath.test','password'=>Hash::make('password'),'role'=>'admin']);
 
         $categories = collect([
-            ['Arts','arts','🎨','Kreativitas visual, craft, drawing, dan ekspresi artistik.','#FFE6D8'],
-            ['Music','music','🎵','Piano, ritme, vokal, dan eksplorasi musikal.','#FFF2B9'],
-            ['Languages','languages','💬','Komunikasi, speaking, storytelling, dan bahasa asing.','#DDF2FF'],
-            ['Sports','sports','⚽','Gerak aktif, koordinasi, kebugaran, dan sportivitas.','#DFF4E5'],
-            ['Self Improvement','self-improvement','🌱','Percaya diri, kemampuan sosial, emosi, dan komunikasi.','#FFE3EC'],
-            ['Technology','technology','🤖','Coding, robotik, logika, dan kreasi digital.','#EAE5FF'],
+            ['Arts','arts','Kreativitas visual, craft, drawing, dan ekspresi artistik.','#FFE6D8'],
+            ['Music','music','Piano, ritme, vokal, dan eksplorasi musikal.','#FFF2B9'],
+            ['Languages','languages','Komunikasi, speaking, storytelling, dan bahasa asing.','#DDF2FF'],
+            ['Sports','sports','Gerak aktif, koordinasi, kebugaran, dan sportivitas.','#DFF4E5'],
+            ['Self Improvement','self-improvement','Percaya diri, kemampuan sosial, emosi, dan komunikasi.','#FFE3EC'],
+            ['Technology','technology','Coding, robotik, logika, dan kreasi digital.','#EAE5FF'],
         ])->mapWithKeys(function($x){$c=Category::create(['name'=>$x[0],'slug'=>$x[1],'emoji'=>$x[2],'description'=>$x[3],'accent'=>$x[4]]);return [$x[0]=>$c];});
 
         $courseData = [

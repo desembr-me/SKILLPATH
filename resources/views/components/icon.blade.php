@@ -85,6 +85,10 @@
     @case('receipt')
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-2.5-1.5L13 21l-1-1.5L11 21l-2.5-1.5L6 21V3Z"/><path d="M9 8h6M9 12h6"/></svg>
         @break
+    @case('mic')
+    @case('voice')
+        <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/></svg>
+        @break
     @case('spark')
     @default
         <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.8 13.6 8l5.2 1.6-5.2 1.6L12 16.4l-1.6-5.2-5.2-1.6L10.4 8 12 2.8Z"/><path d="m18 15 .8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8L18 15Z"/></svg>

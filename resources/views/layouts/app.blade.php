@@ -26,22 +26,68 @@
     <button class="nav-toggle" type="button" aria-label="Buka navigasi" aria-expanded="false" data-nav-toggle>
         <span></span><span></span><span></span>
     </button>
-    <nav class="main-nav" data-main-nav>
-        <a href="{{ route('explore.index') }}">Kursus</a>
-        <a href="{{ route('home') }}#categories">Kategori</a>
-        <a href="{{ route('how-it-works') }}">Cara Kerja</a>
-        <a href="{{ route('home') }}#features">Fitur</a>
-    </nav>
-    <div class="header-actions">
-        @auth
-            @php($dashboard = auth()->user()->role === 'admin' ? 'admin.dashboard' : (auth()->user()->role === 'mentor' ? 'mentor.dashboard' : 'parent.dashboard'))
-            <a class="btn btn-soft" href="{{ route($dashboard) }}">Dashboard</a>
-            <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-ghost">Keluar</button></form>
+    @auth
+        @if(auth()->user()->isParent())
+            <nav class="main-nav parent-main-nav" data-main-nav aria-label="Navigasi orang tua">
+                <a href="{{ route('parent.dashboard') }}" class="{{ request()->routeIs('parent.dashboard') ? 'active' : '' }}"><x-icon name="sessions" /> Dashboard</a>
+                <a href="{{ route('explore.index') }}" class="{{ request()->routeIs('explore.index') || request()->routeIs('courses.show') ? 'active' : '' }}"><x-icon name="path" /> Semua Course</a>
+                <a href="{{ route('parent.my-courses') }}" class="{{ request()->routeIs('parent.my-courses') || request()->routeIs('parent.learn') ? 'active' : '' }}"><x-icon name="book" /> Course Saya</a>
+                <a href="{{ route('parent.cart') }}" class="{{ request()->routeIs('parent.cart') ? 'active' : '' }}"><x-icon name="cart" /> Keranjang @if(auth()->user()->cartItems()->count())<i class="nav-badge">{{ auth()->user()->cartItems()->count() }}</i>@endif</a>
+                <a href="{{ route('parent.orders') }}" class="{{ request()->routeIs('parent.orders') ? 'active' : '' }}"><x-icon name="receipt" /> Pesanan</a>
+                <a href="{{ route('parent.exams') }}" class="{{ request()->routeIs('parent.exams') || request()->routeIs('parent.certificates.*') ? 'active' : '' }}"><x-icon name="certificate" /> Ujian & Sertifikat</a>
+                <a href="{{ route('parent.credits') }}" class="{{ request()->routeIs('parent.credits') ? 'active' : '' }}"><x-icon name="credit" /> Kredit</a>
+                <a href="{{ route('parent.profile') }}" class="{{ request()->routeIs('parent.profile*') ? 'active' : '' }}"><x-icon name="child" /> Profil Keluarga</a>
+            </nav>
+            <div class="header-actions parent-header-actions">
+                <a class="header-profile" href="{{ route('parent.profile') }}" aria-label="Profil keluarga">
+                    @if(auth()->user()->avatar)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
+                    @else
+                        <span>{{ strtoupper(substr(auth()->user()->name,0,1)) }}</span>
+                    @endif
+                </a>
+                <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-ghost">Keluar</button></form>
+            </div>
+        @elseif(auth()->user()->isMentor())
+            <nav class="main-nav parent-main-nav" data-main-nav aria-label="Navigasi pengajar">
+                <a href="{{ route('mentor.dashboard') }}" class="{{ request()->routeIs('mentor.dashboard') || request()->routeIs('mentor.students.show') ? 'active' : '' }}"><x-icon name="sessions" /> Dashboard</a>
+                <a href="{{ route('mentor.reviews') }}" class="{{ request()->routeIs('mentor.reviews') ? 'active' : '' }}"><x-icon name="review" /> Ulasan</a>
+                <a href="{{ route('mentor.profile') }}" class="{{ request()->routeIs('mentor.profile*') ? 'active' : '' }}"><x-icon name="child" /> Profil</a>
+            </nav>
+            <div class="header-actions parent-header-actions">
+                <a class="header-profile" href="{{ route('mentor.profile') }}" aria-label="Profil pengajar">
+                    @if(auth()->user()->avatar)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
+                    @else
+                        <span>{{ strtoupper(substr(auth()->user()->name,0,1)) }}</span>
+                    @endif
+                </a>
+                <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-ghost">Keluar</button></form>
+            </div>
         @else
+            <nav class="main-nav" data-main-nav>
+                <a href="{{ route('explore.index') }}">Kursus</a>
+                <a href="{{ route('home') }}#categories">Kategori</a>
+                <a href="{{ route('how-it-works') }}">Cara Kerja</a>
+                <a href="{{ route('home') }}#features">Fitur</a>
+            </nav>
+            <div class="header-actions">
+                <a class="btn btn-soft" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-ghost">Keluar</button></form>
+            </div>
+        @endif
+    @else
+        <nav class="main-nav" data-main-nav>
+            <a href="{{ route('explore.index') }}">Kursus</a>
+            <a href="{{ route('home') }}#categories">Kategori</a>
+            <a href="{{ route('how-it-works') }}">Cara Kerja</a>
+            <a href="{{ route('home') }}#features">Fitur</a>
+        </nav>
+        <div class="header-actions">
             <a class="btn btn-ghost" href="{{ route('login') }}">Masuk</a>
             <a class="btn btn-primary" href="{{ route('register') }}">Daftar Orang Tua</a>
-        @endauth
-    </div>
+        </div>
+    @endauth
 </header>
 
 @if(session('success'))

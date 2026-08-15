@@ -1,17 +1,25 @@
 @extends('layouts.app')
 @section('title','Dashboard Orang Tua')
 @section('content')
-<x-parent-nav />
 <section class="dashboard-page">
     <div class="dashboard-hero">
         <div class="dashboard-hero-copy">
             <span class="eyebrow">Dashboard Orang Tua</span>
             <h1>Halo, {{ auth()->user()->name }}</h1>
             <p>Pantau anak, course, jadwal, kredit, ujian, dan transaksi dari satu tempat.</p>
-            <a class="btn btn-white" href="{{ route('parent.onboarding') }}">Tambah Anak <x-icon name="arrow-right" /></a>
+            <div class="hero-action-group">
+                <a class="btn btn-white" href="{{ route('parent.profile') }}"><x-icon name="child" /> Profil Keluarga</a>
+                <a class="btn btn-white" href="{{ route('parent.profile') }}#tambah-anak">Tambah Anak <x-icon name="arrow-right" /></a>
+            </div>
         </div>
         <div class="dashboard-hero-side">
-            <div class="dashboard-hero-avatar">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+            <a class="dashboard-hero-avatar profile-hero-avatar" href="{{ route('parent.profile') }}" aria-label="Edit profil keluarga">
+                @if(auth()->user()->avatar)
+                    <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
+                @else
+                    {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+                @endif
+            </a>
         </div>
     </div>
 
@@ -24,10 +32,16 @@
 
     <div class="dashboard-grid">
         <div class="panel">
-            <div class="panel-heading"><div><span class="panel-kicker">Profil keluarga</span><h2>Anak Saya</h2></div><a class="text-link" href="{{ route('parent.onboarding') }}">Tambah profil <x-icon name="arrow-right" /></a></div>
+            <div class="panel-heading"><div><span class="panel-kicker">Profil keluarga</span><h2>Anak Saya</h2></div><a class="text-link" href="{{ route('parent.profile') }}">Kelola profil <x-icon name="arrow-right" /></a></div>
             @forelse($children as $child)
             <div class="child-row">
-                <div class="child-avatar">{{ strtoupper(substr($child->name,0,1)) }}</div>
+                <div class="child-avatar">
+                    @if($child->avatar)
+                        <img src="{{ \Illuminate\Support\Facades\Storage::url($child->avatar) }}" alt="Foto {{ $child->name }}">
+                    @else
+                        {{ strtoupper(substr($child->name,0,1)) }}
+                    @endif
+                </div>
                 <div><h3>{{ $child->name }}</h3><p>{{ $child->age }} tahun • {{ implode(', ',$child->interests ?: []) ?: 'Minat belum dipilih' }}</p><div class="mini-tags"><span>{{ $child->enrollments->where('status','active')->count() }} course aktif</span><span>{{ $child->credits->where('status','available')->count() }} kredit</span></div></div>
                 <a class="btn btn-soft" href="{{ route('parent.learning-path',$child) }}">Jalur Belajar</a>
             </div>
