@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up():void{Schema::create('co_design_sessions',function(Blueprint $t){$t->id();$t->foreignId('child_id')->constrained()->cascadeOnDelete();$t->foreignId('parent_id')->constrained('users')->cascadeOnDelete();$t->json('child_choices');$t->json('parent_observations')->nullable();$t->json('agreed_interests');$t->json('learning_preferences')->nullable();$t->timestamp('completed_at');$t->timestamps();});} public function down():void{Schema::dropIfExists('co_design_sessions');} };

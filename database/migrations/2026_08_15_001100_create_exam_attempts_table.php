@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up():void{Schema::create('exam_attempts',function(Blueprint $t){$t->id();$t->foreignId('exam_id')->constrained()->cascadeOnDelete();$t->foreignId('enrollment_id')->constrained()->cascadeOnDelete();$t->unsignedTinyInteger('attempt_no');$t->unsignedTinyInteger('score');$t->enum('status',['passed','failed'])->default('failed');$t->text('mentor_feedback')->nullable();$t->timestamp('taken_at')->nullable();$t->timestamps();$t->unique(['exam_id','enrollment_id','attempt_no']);});} public function down():void{Schema::dropIfExists('exam_attempts');} };

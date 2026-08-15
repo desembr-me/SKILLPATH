@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up():void{Schema::create('course_sessions',function(Blueprint $t){$t->id();$t->foreignId('course_id')->constrained()->cascadeOnDelete();$t->foreignId('schedule_id')->constrained('course_schedules')->cascadeOnDelete();$t->unsignedSmallInteger('session_no');$t->date('session_date');$t->time('start_time');$t->time('end_time');$t->string('topic')->nullable();$t->enum('status',['scheduled','completed','cancelled'])->default('scheduled');$t->timestamps();$t->unique(['schedule_id','session_no']);});} public function down():void{Schema::dropIfExists('course_sessions');} };

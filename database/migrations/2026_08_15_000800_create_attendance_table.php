@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up():void{Schema::create('attendance',function(Blueprint $t){$t->id();$t->foreignId('enrollment_id')->constrained()->cascadeOnDelete();$t->foreignId('course_session_id')->constrained()->cascadeOnDelete();$t->enum('status',['present','absent','excused','rescheduled'])->default('present');$t->string('absence_reason')->nullable();$t->boolean('credit_eligible')->default(false);$t->text('mentor_note')->nullable();$t->timestamps();$t->unique(['enrollment_id','course_session_id']);});} public function down():void{Schema::dropIfExists('attendance');} };

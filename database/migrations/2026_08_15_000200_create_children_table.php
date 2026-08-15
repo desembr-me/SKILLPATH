@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up(): void { Schema::create('children',function(Blueprint $t){$t->id();$t->foreignId('parent_id')->constrained('users')->cascadeOnDelete();$t->string('name');$t->string('nickname')->nullable();$t->date('birth_date');$t->string('avatar')->nullable();$t->json('interests')->nullable();$t->json('learning_preferences')->nullable();$t->text('notes')->nullable();$t->timestamps();}); } public function down():void{Schema::dropIfExists('children');} };
