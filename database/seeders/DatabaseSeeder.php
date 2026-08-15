@@ -36,9 +36,21 @@ class DatabaseSeeder extends Seeder
             ['Arts','Young Illustrator','young-illustrator','Turn ideas into visual stories.','Ilustrasi karakter, komposisi, warna, dan proyek akhir berupa karya personal.',11,14,740000,8,90,'Creative Lab Rawamangun','Jakarta Timur','✏️','#FFE6D8',$mentor2,false],
         ];
 
+        $coverImages = [
+            'junior-robotics-lab'=>'tech-06.jpg',
+            'little-canvas-club'=>'arts-01.jpg',
+            'confident-kids-club'=>'Confidence Building.jpg',
+            'piano-starter'=>'music-Piano.jpg',
+            'english-adventure'=>'english convo.jpg',
+            'junior-badminton'=>'Junior Sports Skills.jpg',
+            'mini-coding-explorer'=>'tech-08.jpg',
+            'social-skills-playgroup'=>'Effective Communication.jpg',
+            'young-illustrator'=>'Young Artist Portfolio.jpg',
+        ];
+
         $courses=[];
         foreach($courseData as $i=>$x){
-            $course=Course::create(['category_id'=>$categories[$x[0]]->id,'instructor_id'=>$x[14]->id,'title'=>$x[1],'slug'=>$x[2],'subtitle'=>$x[3],'description'=>$x[4],'age_min'=>$x[5],'age_max'=>$x[6],'price'=>$x[7],'sessions_count'=>$x[8],'duration_minutes'=>$x[9],'location_name'=>$x[10],'city'=>$x[11],'cover_emoji'=>$x[12],'accent'=>$x[13],'is_featured'=>$x[15],'status'=>'active']);
+            $course=Course::create(['category_id'=>$categories[$x[0]]->id,'instructor_id'=>$x[14]->id,'title'=>$x[1],'slug'=>$x[2],'subtitle'=>$x[3],'description'=>$x[4],'age_min'=>$x[5],'age_max'=>$x[6],'price'=>$x[7],'sessions_count'=>$x[8],'duration_minutes'=>$x[9],'location_name'=>$x[10],'city'=>$x[11],'cover_emoji'=>$x[12],'cover_image'=>$coverImages[$x[2]]??null,'accent'=>$x[13],'is_featured'=>$x[15],'status'=>'active']);
             foreach([[6,'10:00:00','11:30:00'],[6,'13:00:00','14:30:00'],[0,'10:00:00','11:30:00']] as $j=>$s){
                 CourseSchedule::create(['course_id'=>$course->id,'instructor_id'=>$course->instructor_id,'day_of_week'=>$s[0],'start_time'=>$s[1],'end_time'=>$s[2],'start_date'=>now()->addDays(7+$j)->toDateString(),'end_date'=>now()->addMonths(3)->toDateString(),'capacity'=>10,'room'=>'Room '.($j+1),'status'=>'open']);
             }
@@ -48,7 +60,7 @@ class DatabaseSeeder extends Seeder
 
         $alya=Child::create(['parent_id'=>$parent->id,'name'=>'Alya Putri','nickname'=>'Alya','birth_date'=>now()->subYears(9)->subMonths(2)->toDateString(),'avatar'=>'🧒🏻','interests'=>['Technology','Arts','Self Improvement'],'learning_preferences'=>['hands_on','group','step_by_step']]);
         Child::create(['parent_id'=>$parent->id,'name'=>'Raka Putra','nickname'=>'Raka','birth_date'=>now()->subYears(6)->subMonths(1)->toDateString(),'avatar'=>'👦🏻','interests'=>['Arts','Sports'],'learning_preferences'=>['play','hands_on']]);
-        CoDesignSession::create(['child_id'=>$alya->id,'parent_id'=>$parent->id,'child_choices'=>['Technology','Arts','Self Improvement'],'parent_observations'=>['Suka membuat benda','Suka bercerita'],'agreed_interests'=>['Technology','Arts','Self Improvement'],'learning_preferences'=>['hands_on','group','step_by_step'],'completed_at'=>now()]);
+        CoDesignSession::create(['child_id'=>$alya->id,'parent_id'=>$parent->id,'child_choices'=>['Technology','Arts','Self Improvement'],'parent_observations'=>['child_voice'=>'Aku suka membuat robot dan suka cerita saat bikin karya seni.','discussed_with_child'=>true],'agreed_interests'=>['Technology','Arts','Self Improvement'],'learning_preferences'=>['hands_on','group','step_by_step'],'completed_at'=>now()]);
 
         $robot=$courses['Junior Robotics Lab']; $piano=$courses['Piano Starter'];
         $robotSchedule=$robot->schedules()->first(); $pianoSchedule=$piano->schedules()->first();

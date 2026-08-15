@@ -32,5 +32,33 @@
             @empty<div class="empty-state compact-empty"><x-icon name="payment" /><div><b>Belum ada transaksi</b><span>Transaksi akan muncul setelah course dibooking.</span></div></div>@endforelse
         </div>
     </div>
+
+    <div class="panel review-panel">
+        <div class="panel-heading"><div><span class="panel-kicker">Ulasan Terpisah</span><h2>Nilai Mentor & Platform</h2></div></div>
+        @forelse($reviewable as $enrollment)
+        <form method="POST" action="{{ route('parent.reviews.store',$enrollment) }}" class="review-form">@csrf
+            <div class="review-form-head"><b>{{ $enrollment->course->title }}</b><small>{{ $enrollment->child->name ?? '' }}</small></div>
+            <div class="review-form-grid">
+                <label>Rating Mentor
+                    <select name="mentor_rating" required>
+                        <option value="">Pilih nilai</option>
+                        @for($i=5;$i>=1;$i--)<option value="{{ $i }}">{{ $i }} - {{ ['Kurang','Cukup','Baik','Sangat baik','Istimewa'][$i-1] }}</option>@endfor
+                    </select>
+                </label>
+                <label>Rating Platform
+                    <select name="platform_rating" required>
+                        <option value="">Pilih nilai</option>
+                        @for($i=5;$i>=1;$i--)<option value="{{ $i }}">{{ $i }} - {{ ['Kurang','Cukup','Baik','Sangat baik','Istimewa'][$i-1] }}</option>@endfor
+                    </select>
+                </label>
+            </div>
+            <div class="review-form-grid">
+                <label>Ulasan mentor (opsional)<textarea name="mentor_review" rows="2" placeholder="Pengalaman belajar bersama mentor..."></textarea></label>
+                <label>Ulasan platform (opsional)<textarea name="platform_review" rows="2" placeholder="Pengalaman booking, jadwal, transaksi..."></textarea></label>
+            </div>
+            <button class="btn btn-soft btn-sm">Kirim Ulasan</button>
+        </form>
+        @empty<div class="empty-state compact-empty"><x-icon name="review" /><div><b>Belum ada course yang perlu diulas</b><span>Ulasan tersedia setelah course aktif atau selesai.</span></div></div>@endforelse
+    </div>
 </section>
 @endsection

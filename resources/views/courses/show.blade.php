@@ -34,7 +34,7 @@
     <div class="conflict-box">
         <div class="conflict-title"><span><x-icon name="conflict" /></span><div><h3>Jadwal bentrok terdeteksi</h3><p>Jadwal pilihan bertabrakan dengan course anak yang sudah aktif.</p></div></div>
         @foreach(session('conflicts') as $conflict)<div class="conflict-line"><b>{{ $conflict['course'] }}</b><span>{{ $conflict['schedule'] }}</span></div>@endforeach
-        @if(session('alternatives'))<p><b>Jadwal alternatif yang tersedia:</b></p>@foreach(session('alternatives') as $alt)<span class="alt-chip">Hari {{ $alt->day_of_week }} • {{ substr($alt->start_time,0,5) }}-{{ substr($alt->end_time,0,5) }}</span>@endforeach@endif
+        @if(session('alternatives'))<p><b>Jadwal alternatif yang tersedia:</b></p>@foreach(session('alternatives') as $alt)<span class="alt-chip">Hari {{ $alt->day_of_week }} • {{ substr($alt->start_time,0,5) }}-{{ substr($alt->end_time,0,5) }}</span>@endforeach @endif
     </div>
     @endif
 

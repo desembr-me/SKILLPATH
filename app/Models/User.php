@@ -22,6 +22,7 @@ class User extends Authenticatable
     public function courses(): HasMany { return $this->hasMany(Course::class, 'instructor_id'); }
     public function transactions(): HasMany { return $this->hasMany(Transaction::class, 'parent_id'); }
     public function reviews(): HasMany { return $this->hasMany(Review::class, 'parent_id'); }
+    public function enrollments(): HasMany { return $this->hasMany(Enrollment::class, 'parent_id'); }
 
     public function isParent(): bool { return $this->role === self::ROLE_PARENT; }
     public function isMentor(): bool { return $this->role === self::ROLE_MENTOR; }

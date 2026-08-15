@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/skillpath.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/skillpath-icon.png') }}">
     @stack('styles')
 </head>
 <body>
@@ -20,8 +21,7 @@
 </div>
 <header class="site-header" id="siteHeader">
     <a class="brand" href="{{ route('home') }}" aria-label="SkillPath home">
-        <span class="brand-mark">S</span>
-        <span>SkillPath</span>
+        <img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath">
     </a>
     <button class="nav-toggle" type="button" aria-label="Buka navigasi" aria-expanded="false" data-nav-toggle>
         <span></span><span></span><span></span>
@@ -55,7 +55,7 @@
 
 <footer class="site-footer">
     <div class="footer-brand">
-        <a class="brand" href="{{ route('home') }}"><span class="brand-mark">S</span><span>SkillPath</span></a>
+        <a class="brand" href="{{ route('home') }}"><img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath"></a>
         <p>Kursus offline non-akademik yang membantu anak menemukan minat, mencoba keterampilan baru, dan berkembang melalui pengalaman nyata.</p>
         <span class="footer-note">Untuk keluarga dengan anak usia 5-14 tahun</span>
     </div>

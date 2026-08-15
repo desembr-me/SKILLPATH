@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Attendance extends Model
 {
+    protected $table = 'attendance';
     protected $fillable = ['enrollment_id','course_session_id','status','absence_reason','credit_eligible','mentor_note'];
     protected function casts(): array { return ['credit_eligible'=>'boolean']; }
     public function enrollment(): BelongsTo { return $this->belongsTo(Enrollment::class); }

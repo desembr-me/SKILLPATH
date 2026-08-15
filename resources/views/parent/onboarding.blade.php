@@ -25,6 +25,9 @@
                 <label><input type="checkbox" name="learning_preferences[]" value="{{ $k }}"><span><b>{{ $v[0] }}</b><small>{{ $v[1] }}</small></span></label>
                 @endforeach
             </div>
+            <div class="form-section-title"><div><span>03</span><h3>Suara Anak</h3></div><small>Cooperative Inquiry</small></div>
+            <div class="form-grid"><label>Apa kata anak tentang pilihannya? (opsional)<textarea name="child_voice" rows="3" placeholder="Tuliskan dengan kata-kata anak sendiri, misalnya alasan mereka memilih minat ini...">{{ old('child_voice') }}</textarea></label></div>
+            <label class="confirm-check"><input type="checkbox" name="discussed_with_child" value="1" required @checked(old('discussed_with_child'))> <span>Saya (orang tua) sudah mendiskusikan pilihan ini bersama anak, bukan memutuskan sendiri.</span></label>
             <div class="onboarding-submit"><p>Jawaban anak digunakan untuk membuat rekomendasi awal. Orang tua tetap dapat memilih course yang paling sesuai.</p><button class="btn btn-primary btn-lg">Buat Jalur Belajar <x-icon name="arrow-right" /></button></div>
         </form>
     </div>
