@@ -3,16 +3,23 @@
 @section('content')
 <x-parent-nav />
 <section class="dashboard-page">
-    <div class="dash-title">
-        <div><span class="eyebrow">Dashboard Orang Tua</span><h1>Halo, {{ auth()->user()->name }}</h1><p>Pantau anak, course, jadwal, kredit, ujian, dan transaksi dari satu tempat.</p></div>
-        <div class="dash-actions"><a class="btn btn-primary" href="{{ route('parent.onboarding') }}">Tambah Anak</a></div>
+    <div class="dashboard-hero">
+        <div class="dashboard-hero-copy">
+            <span class="eyebrow">Dashboard Orang Tua</span>
+            <h1>Halo, {{ auth()->user()->name }}</h1>
+            <p>Pantau anak, course, jadwal, kredit, ujian, dan transaksi dari satu tempat.</p>
+            <a class="btn btn-white" href="{{ route('parent.onboarding') }}">Tambah Anak <x-icon name="arrow-right" /></a>
+        </div>
+        <div class="dashboard-hero-side">
+            <div class="dashboard-hero-avatar">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+        </div>
     </div>
 
     <div class="stat-grid">
-        <article><span class="stat-icon"><x-icon name="child" /></span><div><span>Anak terdaftar</span><b>{{ $children->count() }}</b><small>Profil anak dalam akun keluarga</small></div></article>
-        <article><span class="stat-icon"><x-icon name="sessions" /></span><div><span>Course aktif</span><b>{{ $children->sum(fn($c)=>$c->enrollments->where('status','active')->count()) }}</b><small>Kursus yang sedang berjalan</small></div></article>
-        <article><span class="stat-icon"><x-icon name="credit" /></span><div><span>Kredit tersedia</span><b>{{ $children->sum(fn($c)=>$c->credits->where('status','available')->count()) }}</b><small>Dapat digunakan untuk reschedule</small></div></article>
-        <article><span class="stat-icon"><x-icon name="payment" /></span><div><span>Transaksi terakhir</span><b>{{ $transactions->count() }}</b><small>Riwayat pembayaran terbaru</small></div></article>
+        <article><span class="stat-icon tone-blue"><x-icon name="child" /></span><div><span>Anak terdaftar</span><b>{{ $children->count() }}</b><small>Profil anak dalam akun keluarga</small></div></article>
+        <article><span class="stat-icon tone-green"><x-icon name="sessions" /></span><div><span>Course aktif</span><b>{{ $children->sum(fn($c)=>$c->enrollments->where('status','active')->count()) }}</b><small>Kursus yang sedang berjalan</small></div></article>
+        <article><span class="stat-icon tone-orange"><x-icon name="credit" /></span><div><span>Kredit tersedia</span><b>{{ $children->sum(fn($c)=>$c->credits->where('status','available')->count()) }}</b><small>Dapat digunakan untuk reschedule</small></div></article>
+        <article><span class="stat-icon tone-pink"><x-icon name="payment" /></span><div><span>Transaksi terakhir</span><b>{{ $transactions->count() }}</b><small>Riwayat pembayaran terbaru</small></div></article>
     </div>
 
     <div class="dashboard-grid">

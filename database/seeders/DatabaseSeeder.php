@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\{ActivityCompletion,Attendance,Category,Child,CoDesignSession,Course,CourseModule,CourseSchedule,CourseSession,Enrollment,Exam,ExamAttempt,LearningPath,Review,SessionCredit,Transaction,User,Wishlist};
+use App\Models\{ActivityCompletion,Attendance,Category,Certificate,Child,CoDesignSession,Course,CourseModule,CourseSchedule,CourseSession,Enrollment,Exam,ExamAttempt,LearningPath,Review,SessionCredit,Transaction,User,Wishlist};
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -86,7 +86,16 @@ class DatabaseSeeder extends Seeder
         foreach($pianoActivities->take(4) as $activity)ActivityCompletion::create(['enrollment_id'=>$enroll->id,'module_activity_id'=>$activity->id,'completed_at'=>now()->subDays(rand(1,25))]);
         $enroll->update(['progress'=>(int)round(4/$pianoActivities->count()*100)]);
 
+        $robotEnroll=Enrollment::create(['parent_id'=>$parent->id,'child_id'=>$alya->id,'course_id'=>$robot->id,'schedule_id'=>$robotSchedule->id,'status'=>'completed','progress'=>100,'enrolled_at'=>now()->subMonths(2),'completed_at'=>now()->subDays(5),'final_status'=>'passed']);
+        Transaction::create(['parent_id'=>$parent->id,'enrollment_id'=>$robotEnroll->id,'invoice_code'=>'SP-DEMO-002','subtotal'=>$robot->price,'platform_fee'=>15000,'total'=>$robot->price+15000,'payment_method'=>'virtual_account','status'=>'paid','paid_at'=>now()->subMonths(2)]);
+        $robotActivities=$robot->modules()->with('activities')->get()->flatMap->activities;
+        foreach($robotActivities as $activity)ActivityCompletion::create(['enrollment_id'=>$robotEnroll->id,'module_activity_id'=>$activity->id,'completed_at'=>now()->subDays(rand(6,50))]);
+        $robotExam=$robot->exams()->first();
+        $robotAttempt=ExamAttempt::create(['exam_id'=>$robotExam->id,'enrollment_id'=>$robotEnroll->id,'attempt_no'=>1,'score'=>88,'status'=>'passed','mentor_feedback'=>'Konsisten dan detail dalam merakit sensor.','taken_at'=>now()->subDays(5)]);
+        Certificate::create(['enrollment_id'=>$robotEnroll->id,'exam_attempt_id'=>$robotAttempt->id,'certificate_no'=>'CERT-SP-'.now()->format('Ym').'-DEMO0001','issued_at'=>now()->subDays(5)]);
+        Review::create(['parent_id'=>$parent->id,'enrollment_id'=>$robotEnroll->id,'course_id'=>$robot->id,'instructor_id'=>$robot->instructor_id,'mentor_rating'=>5,'mentor_review'=>'Anak jadi lebih percaya diri membongkar dan merakit ulang.','platform_rating'=>5,'platform_review'=>'Jadwal dan sertifikat langsung muncul di dashboard.']);
+
         $path=LearningPath::create(['child_id'=>$alya->id,'title'=>'Creative Explorer Path','rationale'=>'Gabungan Technology, Arts, dan Self Improvement dari hasil co-design.','status'=>'active','generated_at'=>now()]);
-        foreach([$robot,$courses['Confident Kids Club'],$courses['Young Illustrator']] as $i=>$c)$path->items()->create(['course_id'=>$c->id,'sequence'=>$i+1,'reason'=>'Sesuai minat dan usia Alya','status'=>$i===0?'recommended':'locked','match_score'=>95-$i*8]);
+        foreach([$courses['Confident Kids Club'],$courses['Mini Coding Explorer'],$courses['Young Illustrator']] as $i=>$c)$path->items()->create(['course_id'=>$c->id,'sequence'=>$i+1,'reason'=>'Sesuai minat dan usia Alya','status'=>$i===0?'recommended':'locked','match_score'=>95-$i*8]);
     }
 }
