@@ -99,6 +99,13 @@
 
 <main>@yield('content')</main>
 
+@if(auth()->check() && auth()->user()->isParent())
+<footer class="site-footer-compact">
+    <a class="brand" href="{{ route('home') }}"><img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath"></a>
+    <p>SkillPath membantu orang tua menemukan dan mendaftarkan course offline non-akademik untuk anak usia 5-14 tahun.</p>
+    <span>&copy; {{ now()->year }} SkillPath. Seluruh hak cipta dilindungi.</span>
+</footer>
+@else
 <footer class="site-footer">
     <div class="footer-brand">
         <a class="brand" href="{{ route('home') }}"><img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath"></a>
@@ -109,6 +116,7 @@
     <div><strong>Untuk Keluarga</strong><a href="{{ route('register') }}">Daftar Orang Tua</a><a href="{{ route('login') }}">Masuk</a><a href="{{ route('home') }}#features">Fitur SkillPath</a></div>
     <div><strong>Pengalaman</strong><span>Kelas offline</span><span>Mentor terpilih</span><span>Jalur belajar adaptif</span></div>
 </footer>
+@endif
 <script src="{{ asset('js/skillpath.js') }}"></script>
 @stack('scripts')
 </body>
