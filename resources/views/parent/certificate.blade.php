@@ -8,14 +8,38 @@
 
     <div class="certificate-sheet">
         <div class="certificate-border">
-            <div class="certificate-brand"><img src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath"></div>
-            <span class="certificate-kicker">Sertifikat Kelulusan</span>
-            <h2 class="certificate-child">{{ $certificate->enrollment->child->name }}</h2>
-            <p class="certificate-desc">telah menyelesaikan course <b>{{ $certificate->enrollment->course->title }}</b> ({{ $certificate->enrollment->course->category->name }}) dan dinyatakan lulus ujian akhir dengan nilai <b>{{ $certificate->examAttempt->score }}</b> dari passing grade <b>{{ $certificate->examAttempt->exam->passing_score }}</b>.</p>
-            <div class="certificate-meta">
-                <div><small>Nomor Sertifikat</small><b>{{ $certificate->certificate_no }}</b></div>
-                <div><small>Tanggal Terbit</small><b>{{ $certificate->issued_at->translatedFormat('d F Y') }}</b></div>
-                <div><small>Mentor</small><b>{{ $certificate->enrollment->course->instructor->name }}</b></div>
+            <span class="certificate-corner corner-tl"></span>
+            <span class="certificate-corner corner-tr"></span>
+            <span class="certificate-corner corner-bl"></span>
+            <span class="certificate-corner corner-br"></span>
+
+            <div class="certificate-zone certificate-head">
+                <img class="certificate-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath">
+                <span class="certificate-title">Sertifikat Kelulusan</span>
+                <span class="certificate-divider"></span>
+            </div>
+
+            <div class="certificate-zone certificate-body">
+                <span class="certificate-eyebrow">Dengan bangga diberikan kepada</span>
+                <h2 class="certificate-child">{{ $certificate->enrollment->child->name }}</h2>
+                <p class="certificate-desc">telah menyelesaikan course <b>{{ $certificate->enrollment->course->title }}</b> ({{ $certificate->enrollment->course->category->name }}) dan dinyatakan lulus ujian akhir dengan nilai <b>{{ $certificate->examAttempt->score }}</b> dari passing grade <b>{{ $certificate->examAttempt->exam->passing_score }}</b>.</p>
+            </div>
+
+            <div class="certificate-zone certificate-foot">
+                <div class="certificate-signatures">
+                    <div class="signature-block">
+                        <span class="signature-line"></span>
+                        <b>{{ $certificate->enrollment->course->instructor->name }}</b>
+                        <small>Mentor</small>
+                    </div>
+                    <div class="certificate-seal"><x-icon name="certificate" /></div>
+                    <div class="signature-block">
+                        <span class="signature-line"></span>
+                        <b>{{ $certificate->issued_at->translatedFormat('d F Y') }}</b>
+                        <small>Tanggal Terbit</small>
+                    </div>
+                </div>
+                <span class="certificate-serial">No. Sertifikat {{ $certificate->certificate_no }}</span>
             </div>
         </div>
     </div>

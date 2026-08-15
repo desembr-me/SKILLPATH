@@ -53,7 +53,7 @@
 <section class="trust-strip">
     <div>
         <span class="trust-icon"><x-icon name="payment" /></span>
-        <p><b>Orang tua mengelola keputusan penting.</b><br>Booking, pembayaran, kredit sesi, dan jadwal tetap berada pada akun orang tua.</p>
+        <p><b>Orang tua mengelola keputusan penting.</b><br>Booking, pembayaran, dan perubahan jadwal tetap berada pada akun orang tua.</p>
     </div>
     <div>
         <span class="trust-icon"><x-icon name="co-design" /></span>
@@ -98,6 +98,18 @@
     </div>
 </section>
 
+<section class="section section-soft mentor-section">
+    <div class="section-head">
+        <div><span class="eyebrow">Pengajar</span><h2>Mentor yang mendampingi anak Anda.</h2></div>
+        <a class="text-link" href="{{ route('mentors.index') }}">Lihat semua mentor <x-icon name="arrow-right" /></a>
+    </div>
+    <div class="mentor-grid">
+        @foreach($mentors as $mentor)
+            <x-mentor-flip-card :mentor="$mentor" />
+        @endforeach
+    </div>
+</section>
+
 <section class="section parent-value-section">
     <div class="value-visual">
         <div class="value-card value-main">
@@ -105,7 +117,7 @@
             <h3>Satu dashboard untuk semua kebutuhan belajar anak.</h3>
             <div class="value-list">
                 <span><x-icon name="calendar" /> Jadwal kursus</span>
-                <span><x-icon name="credit" /> Kredit sesi</span>
+                <span><x-icon name="calendar" /> Ubah jadwal</span>
                 <span><x-icon name="certificate" /> Ujian & sertifikat</span>
                 <span><x-icon name="path" /> Jalur belajar</span>
             </div>
@@ -118,7 +130,7 @@
         <p>SkillPath memisahkan pengalaman eksplorasi anak dari keputusan finansial. Anak cukup berpartisipasi pada pemilihan minat dan proses belajar.</p>
         <ul class="check-list">
             <li><x-icon name="check" /> Jadwal otomatis dicek sebelum booking.</li>
-            <li><x-icon name="check" /> Sesi tertentu dapat diubah menjadi kredit.</li>
+            <li><x-icon name="check" /> Jadwal dapat diubah jika anak berhalangan.</li>
             <li><x-icon name="check" /> Sertifikat hanya terbit setelah anak lulus ujian.</li>
         </ul>
     </div>
@@ -127,7 +139,7 @@
 <section class="section" id="features">
     <div class="section-head"><div><span class="eyebrow">Fitur utama SkillPath</span><h2>Dirancang untuk situasi nyata keluarga.</h2></div><p>Fitur inti membantu keluarga mengelola kursus tanpa mengurangi keterlibatan anak dalam memilih apa yang ingin dipelajari.</p></div>
     <div class="feature-grid">
-        <article><span class="feature-icon"><x-icon name="credit" /></span><h3>Kredit Sesi Fleksibel</h3><p>Sesi yang terlewat karena alasan yang memenuhi syarat dapat menjadi kredit untuk sesi pengganti.</p></article>
+        <article><span class="feature-icon"><x-icon name="calendar" /></span><h3>Ubah Jadwal Fleksibel</h3><p>Anak berhalangan hadir? Orang tua dapat memindahkan course ke jadwal lain yang tersedia kapan saja.</p></article>
         <article><span class="feature-icon"><x-icon name="conflict" /></span><h3>Deteksi Jadwal Bentrok</h3><p>Sistem memeriksa course aktif anak sebelum booking dikonfirmasi dan menampilkan alternatif.</p></article>
         <article><span class="feature-icon"><x-icon name="certificate" /></span><h3>Ujian, Retake, Sertifikat</h3><p>Sertifikat baru terbit setelah lulus final exam. Retake mengikuti batas percobaan course.</p></article>
         <article><span class="feature-icon"><x-icon name="growth" /></span><h3>Self Improvement</h3><p>Kategori untuk percaya diri, komunikasi, kemampuan sosial, dan pengelolaan emosi.</p></article>
@@ -143,7 +155,7 @@
         <article><b>01</b><span class="step-icon"><x-icon name="co-design" /></span><h3>Kenali minat</h3><p>Orang tua dan anak melakukan onboarding bersama.</p></article>
         <article><b>02</b><span class="step-icon"><x-icon name="path" /></span><h3>Lihat jalur belajar</h3><p>Sistem menyusun rekomendasi berdasarkan profil anak.</p></article>
         <article><b>03</b><span class="step-icon"><x-icon name="calendar" /></span><h3>Pilih jadwal</h3><p>SkillPath memeriksa bentrok sebelum booking dibuat.</p></article>
-        <article><b>04</b><span class="step-icon"><x-icon name="certificate" /></span><h3>Pantau perkembangan</h3><p>Orang tua melihat progress, ujian, kredit, dan sertifikat.</p></article>
+        <article><b>04</b><span class="step-icon"><x-icon name="certificate" /></span><h3>Pantau perkembangan</h3><p>Orang tua melihat progress, ujian, jadwal, dan sertifikat.</p></article>
     </div>
 </section>
 

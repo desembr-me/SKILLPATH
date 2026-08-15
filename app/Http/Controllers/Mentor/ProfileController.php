@@ -11,7 +11,7 @@ class ProfileController extends Controller
 {
     public function show(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user()->load('category');
         $courses = $user->courses()->with('category')->get();
 
         return view('mentor.profile', [

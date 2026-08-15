@@ -85,11 +85,9 @@
                 <div><b>{{ $rating ?: '0.0' }}</b><span>Rating mentor</span></div>
                 <div><b>{{ $reviewCount }}</b><span>Ulasan diterima</span></div>
             </div>
-            @if($courses->isNotEmpty())
+            @if($user->category)
             <div class="mini-tags summary-tags">
-                @foreach($courses->pluck('category.name')->unique() as $cat)
-                    <span>{{ $cat }}</span>
-                @endforeach
+                <span>Spesialisasi: {{ $user->category->name }}</span>
             </div>
             @endif
         </div>

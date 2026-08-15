@@ -11,8 +11,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $parent = User::create(['name'=>'Nadia Putri','email'=>'parent@skillpath.test','phone'=>'081234567890','password'=>Hash::make('password'),'role'=>'parent']);
-        $mentor = User::create(['name'=>'Naya Rahma','email'=>'mentor@skillpath.test','phone'=>'081298765432','password'=>Hash::make('password'),'role'=>'mentor']);
-        $mentor2 = User::create(['name'=>'Dimas Pratama','email'=>'dimas@skillpath.test','password'=>Hash::make('password'),'role'=>'mentor']);
         User::create(['name'=>'Admin SkillPath','email'=>'admin@skillpath.test','password'=>Hash::make('password'),'role'=>'admin']);
 
         $categories = collect([
@@ -22,18 +20,26 @@ class DatabaseSeeder extends Seeder
             ['Sports','sports','Gerak aktif, koordinasi, kebugaran, dan sportivitas.','#DFF4E5'],
             ['Self Improvement','self-improvement','Percaya diri, kemampuan sosial, emosi, dan komunikasi.','#FFE3EC'],
             ['Technology','technology','Coding, robotik, logika, dan kreasi digital.','#EAE5FF'],
-        ])->mapWithKeys(function($x){$c=Category::create(['name'=>$x[0],'slug'=>$x[1],'emoji'=>$x[2],'description'=>$x[3],'accent'=>$x[4]]);return [$x[0]=>$c];});
+        ])->mapWithKeys(function($x){$c=Category::create(['name'=>$x[0],'slug'=>$x[1],'description'=>$x[2],'accent'=>$x[3]]);return [$x[0]=>$c];});
+
+        // Setiap mentor hanya mengajar 1 kategori.
+        $mentor = User::create(['name'=>'Naya Rahma','email'=>'mentor@skillpath.test','phone'=>'081298765432','password'=>Hash::make('password'),'role'=>'mentor','category_id'=>$categories['Music']->id,'headline'=>'Mentor Piano & Musik Anak','bio'=>'Mengajar piano untuk anak sejak 7 tahun, fokus pada fondasi ritme dan kepercayaan diri tampil.']);
+        $mentor2 = User::create(['name'=>'Dimas Pratama','email'=>'dimas@skillpath.test','password'=>Hash::make('password'),'role'=>'mentor','category_id'=>$categories['Technology']->id,'headline'=>'Mentor Robotika & Coding Anak','bio'=>'Membimbing anak merakit robot dan belajar logika pemrograman lewat proyek langsung.']);
+        $mentor3 = User::create(['name'=>'Sari Wulandari','email'=>'sari@skillpath.test','password'=>Hash::make('password'),'role'=>'mentor','category_id'=>$categories['Arts']->id,'headline'=>'Mentor Seni & Ilustrasi Anak','bio'=>'Mendampingi anak bereksplorasi warna, bentuk, dan bercerita lewat karya visual.']);
+        $mentor4 = User::create(['name'=>'Bimo Aditya','email'=>'bimo@skillpath.test','password'=>Hash::make('password'),'role'=>'mentor','category_id'=>$categories['Self Improvement']->id,'headline'=>'Mentor Pengembangan Diri Anak','bio'=>'Fokus membangun kepercayaan diri, kemampuan sosial, dan pengelolaan emosi anak lewat aktivitas kelompok.']);
+        $mentor5 = User::create(['name'=>'Clara Simanjuntak','email'=>'clara@skillpath.test','password'=>Hash::make('password'),'role'=>'mentor','category_id'=>$categories['Languages']->id,'headline'=>'Mentor Bahasa Inggris Anak','bio'=>'Mengajak anak berani berbahasa Inggris lewat storytelling dan permainan kelompok.']);
+        $mentor6 = User::create(['name'=>'Fajar Nugroho','email'=>'fajar@skillpath.test','password'=>Hash::make('password'),'role'=>'mentor','category_id'=>$categories['Sports']->id,'headline'=>'Mentor Olahraga Anak','bio'=>'Melatih teknik dasar olahraga dengan pendekatan yang menyenangkan dan aman untuk anak.']);
 
         $courseData = [
             ['Technology','Junior Robotics Lab','junior-robotics-lab','Build, test, improve.','Anak merakit robot sederhana, mengenal sensor, logika, dan problem solving melalui proyek langsung.',8,10,850000,8,90,'SkillHub Kemang','Jakarta Selatan','🤖','#EAE5FF',$mentor2,true],
-            ['Arts','Little Canvas Club','little-canvas-club','Create what you imagine.','Eksplorasi warna, bentuk, tekstur, dan craft untuk melatih kreativitas dan motorik halus.',5,7,620000,6,75,'Studio Warna Tebet','Jakarta Selatan','🎨','#FFE6D8',$mentor,false],
-            ['Self Improvement','Confident Kids Club','confident-kids-club','Speak, connect, grow.','Roleplay, permainan kelompok, dan aktivitas refleksi untuk membangun percaya diri serta kemampuan sosial.',8,10,690000,6,90,'GrowSpace Bintaro','Tangerang Selatan','🌱','#FFE3EC',$mentor,true],
+            ['Arts','Little Canvas Club','little-canvas-club','Create what you imagine.','Eksplorasi warna, bentuk, tekstur, dan craft untuk melatih kreativitas dan motorik halus.',5,7,620000,6,75,'Studio Warna Tebet','Jakarta Selatan','🎨','#FFE6D8',$mentor3,false],
+            ['Self Improvement','Confident Kids Club','confident-kids-club','Speak, connect, grow.','Roleplay, permainan kelompok, dan aktivitas refleksi untuk membangun percaya diri serta kemampuan sosial.',8,10,690000,6,90,'GrowSpace Bintaro','Tangerang Selatan','🌱','#FFE3EC',$mentor4,true],
             ['Music','Piano Starter','piano-starter','Play your first song.','Belajar fondasi piano, ritme, koordinasi tangan, dan lagu sederhana secara bertahap.',8,10,780000,8,60,'Nada Studio Cipete','Jakarta Selatan','🎹','#FFF2B9',$mentor,false],
-            ['Languages','English Adventure','english-adventure','Speak through stories.','Speaking, storytelling, games, dan aktivitas kelompok untuk membangun keberanian berbahasa Inggris.',11,14,720000,8,90,'BrightTalk Depok','Depok','💬','#DDF2FF',$mentor,false],
-            ['Sports','Junior Badminton','junior-badminton','Move with confidence.','Teknik dasar badminton, koordinasi, kebugaran, kerja sama, dan sportivitas.',11,14,760000,8,90,'Arena Cilandak','Jakarta Selatan','🏸','#DFF4E5',$mentor2,false],
+            ['Languages','English Adventure','english-adventure','Speak through stories.','Speaking, storytelling, games, dan aktivitas kelompok untuk membangun keberanian berbahasa Inggris.',11,14,720000,8,90,'BrightTalk Depok','Depok','💬','#DDF2FF',$mentor5,false],
+            ['Sports','Junior Badminton','junior-badminton','Move with confidence.','Teknik dasar badminton, koordinasi, kebugaran, kerja sama, dan sportivitas.',11,14,760000,8,90,'Arena Cilandak','Jakarta Selatan','🏸','#DFF4E5',$mentor6,false],
             ['Technology','Mini Coding Explorer','mini-coding-explorer','Logic before screens.','Pola, urutan, algoritma sederhana, dan logika komputasional melalui permainan serta aktivitas praktik.',5,7,650000,6,75,'Makerspace Bekasi','Bekasi','🧩','#EAE5FF',$mentor2,true],
-            ['Self Improvement','Social Skills Playgroup','social-skills-playgroup','Practice friendship skills.','Kegiatan kelompok untuk melatih bergiliran, mendengar, menyampaikan kebutuhan, dan kerja sama.',5,7,680000,6,75,'KindSpace Pondok Indah','Jakarta Selatan','🤝','#FFE3EC',$mentor,false],
-            ['Arts','Young Illustrator','young-illustrator','Turn ideas into visual stories.','Ilustrasi karakter, komposisi, warna, dan proyek akhir berupa karya personal.',11,14,740000,8,90,'Creative Lab Rawamangun','Jakarta Timur','✏️','#FFE6D8',$mentor2,false],
+            ['Self Improvement','Social Skills Playgroup','social-skills-playgroup','Practice friendship skills.','Kegiatan kelompok untuk melatih bergiliran, mendengar, menyampaikan kebutuhan, dan kerja sama.',5,7,680000,6,75,'KindSpace Pondok Indah','Jakarta Selatan','🤝','#FFE3EC',$mentor4,false],
+            ['Arts','Young Illustrator','young-illustrator','Turn ideas into visual stories.','Ilustrasi karakter, komposisi, warna, dan proyek akhir berupa karya personal.',11,14,740000,8,90,'Creative Lab Rawamangun','Jakarta Timur','✏️','#FFE6D8',$mentor3,false],
         ];
 
         $coverImages = [
@@ -80,7 +86,6 @@ class DatabaseSeeder extends Seeder
         SessionCredit::create(['child_id'=>$alya->id,'enrollment_id'=>$enroll->id,'source_attendance_id'=>$att->id,'credit_code'=>'CR-DEMO01','reason'=>'Sakit','status'=>'available','expires_at'=>now()->addDays(30)]);
         $exam=$piano->exams()->first();
         ExamAttempt::create(['exam_id'=>$exam->id,'enrollment_id'=>$enroll->id,'attempt_no'=>1,'score'=>68,'status'=>'failed','mentor_feedback'=>'Perlu menguatkan tempo dan koordinasi.','taken_at'=>now()->subDays(3)]);
-        Review::create(['parent_id'=>$parent->id,'enrollment_id'=>$enroll->id,'course_id'=>$piano->id,'instructor_id'=>$piano->instructor_id,'mentor_rating'=>5,'mentor_review'=>'Mentor sabar dan feedback jelas.','platform_rating'=>4,'platform_review'=>'Booking mudah. Filter lokasi masih bisa dibuat lebih detail.']);
 
         $pianoActivities=$piano->modules()->with('activities')->get()->flatMap->activities;
         foreach($pianoActivities->take(4) as $activity)ActivityCompletion::create(['enrollment_id'=>$enroll->id,'module_activity_id'=>$activity->id,'completed_at'=>now()->subDays(rand(1,25))]);

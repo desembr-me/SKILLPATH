@@ -6,11 +6,20 @@
     @if(session('error'))<div class="flash error"><strong>{{ session('error') }}</strong></div>@endif
     <div class="panel">
         @forelse($items as $item)
-            <div class="credit-row">
-                <div class="row-icon-vector" style="--row-accent:{{ $item->schedule->course->accent }}"><x-icon :name="$item->schedule->course->category->slug" /></div>
-                <div class="cart-item-main"><h3>{{ $item->schedule->course->title }}</h3><p>{{ $item->child->name }} • Hari {{ $item->schedule->day_of_week }} • {{ substr($item->schedule->start_time,0,5) }}-{{ substr($item->schedule->end_time,0,5) }}</p><small>Rp{{ number_format($item->schedule->course->price+15000,0,',','.') }} (termasuk biaya platform)</small><a class="text-link" href="{{ route('courses.show',$item->schedule->course) }}">Lihat course <x-icon name="arrow-right" /></a></div>
-                <form method="POST" action="{{ route('parent.cart.destroy',$item) }}">@csrf @method('DELETE')<button class="pay-link">Hapus</button></form>
-            </div>
+            <article class="checkout-course">
+                <div class="checkout-course-art"><x-course-art :course="$item->schedule->course" /></div>
+                <div class="checkout-course-main">
+                    <span class="eyebrow">{{ $item->schedule->course->category->name }}</span>
+                    <h3>{{ $item->schedule->course->title }}</h3>
+                    <p>{{ $item->child->name }} • Hari {{ $item->schedule->day_of_week }} • {{ substr($item->schedule->start_time,0,5) }}-{{ substr($item->schedule->end_time,0,5) }}</p>
+                    <small>Termasuk biaya platform Rp15.000</small>
+                    <div class="row-actions">
+                        <a class="text-link" href="{{ route('courses.show',$item->schedule->course) }}">Lihat course <x-icon name="arrow-right" /></a>
+                        <form method="POST" action="{{ route('parent.cart.destroy',$item) }}">@csrf @method('DELETE')<button class="pay-link cart-remove">Hapus</button></form>
+                    </div>
+                </div>
+                <strong>Rp{{ number_format($item->schedule->course->price+15000,0,',','.') }}</strong>
+            </article>
         @empty<div class="empty-state"><x-icon name="cart" /><div><b>Keranjang masih kosong</b><span>Tambahkan course dari halaman detail course.</span></div></div>@endforelse
     </div>
     @if($items->count())

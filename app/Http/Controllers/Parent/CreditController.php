@@ -1,4 +1,0 @@
-<?php
-namespace App\Http\Controllers\Parent;
-use App\Http\Controllers\Controller; use App\Models\CourseSession; use App\Models\SessionCredit; use App\Services\SessionCreditService; use Illuminate\Http\Request;
-class CreditController extends Controller { public function index(Request $r){$credits=SessionCredit::whereHas('child',fn($q)=>$q->where('parent_id',$r->user()->id))->with(['child','enrollment.course','enrollment.schedule.sessions'])->latest()->get();return view('parent.credits',compact('credits'));} public function redeem(Request $r,SessionCredit $credit,SessionCreditService $svc){abort_unless($credit->child->parent_id===$r->user()->id,403);$d=$r->validate(['course_session_id'=>'required|exists:course_sessions,id']);$target=CourseSession::findOrFail($d['course_session_id']);abort_unless($target->course_id===$credit->enrollment->course_id,422);$svc->redeem($credit,$target);return back()->with('success','Kredit berhasil digunakan untuk sesi pengganti.');} }

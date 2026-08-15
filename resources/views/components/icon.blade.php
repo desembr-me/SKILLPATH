@@ -89,6 +89,10 @@
     @case('voice')
         <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/></svg>
         @break
+    @case('avatar')
+    @case('person')
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="8.2" r="4.2"/><path d="M4.2 21c.5-5.3 3.3-7.9 7.8-7.9s7.3 2.6 7.8 7.9c0 .6-.4 1-1 1H5.2c-.6 0-1-.4-1-1Z"/></svg>
+        @break
     @case('spark')
     @default
         <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.8 13.6 8l5.2 1.6-5.2 1.6L12 16.4l-1.6-5.2-5.2-1.6L10.4 8 12 2.8Z"/><path d="m18 15 .8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8L18 15Z"/></svg>

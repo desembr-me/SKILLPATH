@@ -14,11 +14,6 @@
     @stack('styles')
 </head>
 <body>
-<div class="announcement-bar">
-    <span class="announcement-dot"></span>
-    <span>Kursus offline non-akademik untuk anak usia 5-14 tahun</span>
-    <a href="{{ route('how-it-works') }}">Lihat cara kerja</a>
-</div>
 <header class="site-header" id="siteHeader">
     <a class="brand" href="{{ route('home') }}" aria-label="SkillPath home">
         <img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath">
@@ -35,7 +30,7 @@
                 <a href="{{ route('parent.cart') }}" class="{{ request()->routeIs('parent.cart') ? 'active' : '' }}"><x-icon name="cart" /> Keranjang @if(auth()->user()->cartItems()->count())<i class="nav-badge">{{ auth()->user()->cartItems()->count() }}</i>@endif</a>
                 <a href="{{ route('parent.orders') }}" class="{{ request()->routeIs('parent.orders') ? 'active' : '' }}"><x-icon name="receipt" /> Pesanan</a>
                 <a href="{{ route('parent.exams') }}" class="{{ request()->routeIs('parent.exams') || request()->routeIs('parent.certificates.*') ? 'active' : '' }}"><x-icon name="certificate" /> Ujian & Sertifikat</a>
-                <a href="{{ route('parent.credits') }}" class="{{ request()->routeIs('parent.credits') ? 'active' : '' }}"><x-icon name="credit" /> Kredit</a>
+                <a href="{{ route('parent.schedule') }}" class="{{ request()->routeIs('parent.schedule') ? 'active' : '' }}"><x-icon name="calendar" /> Jadwal</a>
                 <a href="{{ route('parent.children') }}" class="{{ request()->routeIs('parent.children*') ? 'active' : '' }}"><x-icon name="child" /> Profil Anak</a>
             </nav>
             <div class="header-actions parent-header-actions">
@@ -67,6 +62,7 @@
         @else
             <nav class="main-nav" data-main-nav>
                 <a href="{{ route('explore.index') }}">Kursus</a>
+                <a href="{{ route('mentors.index') }}">Mentor</a>
                 <a href="{{ route('home') }}#categories">Kategori</a>
                 <a href="{{ route('how-it-works') }}">Cara Kerja</a>
                 <a href="{{ route('home') }}#features">Fitur</a>
@@ -79,6 +75,7 @@
     @else
         <nav class="main-nav" data-main-nav>
             <a href="{{ route('explore.index') }}">Kursus</a>
+            <a href="{{ route('mentors.index') }}">Mentor</a>
             <a href="{{ route('home') }}#categories">Kategori</a>
             <a href="{{ route('how-it-works') }}">Cara Kerja</a>
             <a href="{{ route('home') }}#features">Fitur</a>

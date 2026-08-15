@@ -83,7 +83,7 @@
                         <small>Opsional, untuk mentor</small>
                     </div>
                     <label class="notes-field">
-                        <textarea name="notes" rows="3" placeholder="Catatan yang perlu diketahui mentor, misalnya alergi, kebiasaan belajar, atau hal lain yang perlu diperhatikan...">{{ $child->notes }}</textarea>
+                        <textarea name="notes" rows="3" placeholder="Contoh: alergi makanan tertentu, mudah gugup di keramaian...">{{ $child->notes }}</textarea>
                     </label>
 
                     <div class="form-actions">

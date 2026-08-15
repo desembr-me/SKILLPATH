@@ -7,7 +7,7 @@ use App\Http\Controllers\Parent\ProfileController;
 use App\Http\Controllers\Parent\ChildController;
 use App\Http\Controllers\Parent\OnboardingController;
 use App\Http\Controllers\Parent\LearningPathController;
-use App\Http\Controllers\Parent\CreditController;
+use App\Http\Controllers\Parent\ScheduleController;
 use App\Http\Controllers\Parent\ReviewController;
 use App\Http\Controllers\Parent\PaymentController;
 use App\Http\Controllers\Parent\ExamController as ParentExamController;
@@ -18,6 +18,7 @@ use App\Http\Controllers\Parent\CheckoutController;
 use App\Http\Controllers\Parent\OrderController;
 use App\Http\Controllers\Parent\MyCourseController;
 use App\Http\Controllers\Parent\LearnController;
+use App\Http\Controllers\MentorController;
 use App\Http\Controllers\Mentor\AttendanceController;
 use App\Http\Controllers\Mentor\ExamController as MentorExamController;
 use App\Http\Controllers\Mentor\DashboardController as MentorDashboard;
@@ -30,6 +31,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class,'index'])->name('home');
 Route::get('/explore', [CourseController::class,'index'])->name('explore.index');
 Route::get('/courses/{course}', [CourseController::class,'show'])->name('courses.show');
+Route::get('/mentors', [MentorController::class,'index'])->name('mentors.index');
+Route::get('/mentors/{mentor}', [MentorController::class,'show'])->name('mentors.show');
 Route::view('/how-it-works','how-it-works')->name('how-it-works');
 
 Route::middleware('guest')->group(function(){
@@ -49,8 +52,8 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
  Route::get('/onboarding',[OnboardingController::class,'create'])->name('onboarding');
  Route::post('/onboarding',[OnboardingController::class,'store'])->name('onboarding.store');
  Route::get('/children/{child}/learning-path',[LearningPathController::class,'show'])->name('learning-path');
- Route::get('/credits',[CreditController::class,'index'])->name('credits');
- Route::post('/credits/{credit}/redeem',[CreditController::class,'redeem'])->name('credits.redeem');
+ Route::get('/schedule',[ScheduleController::class,'index'])->name('schedule');
+ Route::put('/schedule/{enrollment}',[ScheduleController::class,'update'])->name('schedule.update');
  Route::post('/enrollments/{enrollment}/review',[ReviewController::class,'store'])->name('reviews.store');
  Route::post('/transactions/{transaction}/pay',[PaymentController::class,'pay'])->name('transactions.pay');
  Route::get('/exams',[ParentExamController::class,'index'])->name('exams');
@@ -66,7 +69,6 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
  Route::get('/orders',[OrderController::class,'index'])->name('orders');
  Route::get('/my-courses',[MyCourseController::class,'index'])->name('my-courses');
  Route::get('/enrollments/{enrollment}/learn',[LearnController::class,'show'])->name('learn');
- Route::post('/enrollments/{enrollment}/activities/{activity}/toggle',[LearnController::class,'toggleActivity'])->name('learn.toggle');
 });
 Route::prefix('mentor')->name('mentor.')->middleware(['auth','role:mentor'])->group(function(){
  Route::get('/dashboard',MentorDashboard::class)->name('dashboard');
