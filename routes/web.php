@@ -4,6 +4,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Parent\DashboardController as ParentDashboard;
 use App\Http\Controllers\Parent\ProfileController;
+use App\Http\Controllers\Parent\ChildController;
 use App\Http\Controllers\Parent\OnboardingController;
 use App\Http\Controllers\Parent\LearningPathController;
 use App\Http\Controllers\Parent\CreditController;
@@ -43,8 +44,8 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
  Route::get('/dashboard',ParentDashboard::class)->name('dashboard');
  Route::get('/profile',[ProfileController::class,'show'])->name('profile');
  Route::put('/profile',[ProfileController::class,'update'])->name('profile.update');
- Route::post('/profile/children',[ProfileController::class,'storeChild'])->name('profile.children.store');
- Route::put('/profile/children/{child}',[ProfileController::class,'updateChild'])->name('profile.children.update');
+ Route::get('/children',[ChildController::class,'index'])->name('children');
+ Route::put('/children/{child}',[ChildController::class,'update'])->name('children.update');
  Route::get('/onboarding',[OnboardingController::class,'create'])->name('onboarding');
  Route::post('/onboarding',[OnboardingController::class,'store'])->name('onboarding.store');
  Route::get('/children/{child}/learning-path',[LearningPathController::class,'show'])->name('learning-path');

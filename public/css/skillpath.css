@@ -195,7 +195,6 @@ a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit;c
 .profile-interest-list span{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#6b7083;font-size:9px;font-weight:800;cursor:pointer}
 .profile-interest-list input:checked + span{background:#f1efff;border-color:#d9d3ff;color:var(--purple)}
 .preferences span{background:#fafafa}
-.add-child-card{margin-top:15px;padding:22px}
 .empty-profile{display:flex;align-items:center;gap:12px;padding:24px}
 .empty-profile>.ui-icon{width:30px;height:30px;color:var(--purple)}
 .empty-profile h3{font-family:"Fredoka";margin:0;font-size:17px}

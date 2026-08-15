@@ -8,12 +8,12 @@
             <h1>Halo, {{ auth()->user()->name }}</h1>
             <p>Pantau anak, course, jadwal, kredit, ujian, dan transaksi dari satu tempat.</p>
             <div class="hero-action-group">
-                <a class="btn btn-white" href="{{ route('parent.profile') }}"><x-icon name="child" /> Profil Keluarga</a>
-                <a class="btn btn-white" href="{{ route('parent.profile') }}#tambah-anak">Tambah Anak <x-icon name="arrow-right" /></a>
+                <a class="btn btn-white" href="{{ route('parent.children') }}"><x-icon name="child" /> Profil Anak</a>
+                <a class="btn btn-white" href="{{ route('parent.onboarding') }}">Tambah Anak <x-icon name="arrow-right" /></a>
             </div>
         </div>
         <div class="dashboard-hero-side">
-            <a class="dashboard-hero-avatar profile-hero-avatar" href="{{ route('parent.profile') }}" aria-label="Edit profil keluarga">
+            <a class="dashboard-hero-avatar profile-hero-avatar" href="{{ route('parent.profile') }}" aria-label="Edit profil saya">
                 @if(auth()->user()->avatar)
                     <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
                 @else
@@ -32,7 +32,7 @@
 
     <div class="dashboard-grid">
         <div class="panel">
-            <div class="panel-heading"><div><span class="panel-kicker">Profil keluarga</span><h2>Anak Saya</h2></div><a class="text-link" href="{{ route('parent.profile') }}">Kelola profil <x-icon name="arrow-right" /></a></div>
+            <div class="panel-heading"><div><span class="panel-kicker">Profil keluarga</span><h2>Anak Saya</h2></div><a class="text-link" href="{{ route('parent.children') }}">Kelola profil <x-icon name="arrow-right" /></a></div>
             @forelse($children as $child)
             <div class="child-row">
                 <div class="child-avatar">

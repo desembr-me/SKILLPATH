@@ -36,10 +36,10 @@
                 <a href="{{ route('parent.orders') }}" class="{{ request()->routeIs('parent.orders') ? 'active' : '' }}"><x-icon name="receipt" /> Pesanan</a>
                 <a href="{{ route('parent.exams') }}" class="{{ request()->routeIs('parent.exams') || request()->routeIs('parent.certificates.*') ? 'active' : '' }}"><x-icon name="certificate" /> Ujian & Sertifikat</a>
                 <a href="{{ route('parent.credits') }}" class="{{ request()->routeIs('parent.credits') ? 'active' : '' }}"><x-icon name="credit" /> Kredit</a>
-                <a href="{{ route('parent.profile') }}" class="{{ request()->routeIs('parent.profile*') ? 'active' : '' }}"><x-icon name="child" /> Profil Keluarga</a>
+                <a href="{{ route('parent.children') }}" class="{{ request()->routeIs('parent.children*') ? 'active' : '' }}"><x-icon name="child" /> Profil Anak</a>
             </nav>
             <div class="header-actions parent-header-actions">
-                <a class="header-profile" href="{{ route('parent.profile') }}" aria-label="Profil keluarga">
+                <a class="header-profile" href="{{ route('parent.profile') }}" aria-label="Profil saya">
                     @if(auth()->user()->avatar)
                         <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
                     @else
