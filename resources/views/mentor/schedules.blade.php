@@ -9,9 +9,6 @@
             <h1>Kelola Jadwal Kursus</h1>
             <p>Atur hari, jam, kapasitas kuota, ruangan, dan sesi pertemuan untuk setiap kelas yang Anda ampu.</p>
         </div>
-        <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a>
-        </div>
     </div>
 
     <div class="stat-grid">

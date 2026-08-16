@@ -25,7 +25,7 @@ class ReportController extends Controller
         }
 
         // Query transactions for the selected year strictly
-        $paidTransactions = Transaction::with(['parent', 'enrollment.child', 'enrollment.course.instructor'])
+        $paidTransactions = Transaction::with(['parent', 'enrollments.child', 'enrollments.course.instructor', 'enrollment.child', 'enrollment.course.instructor'])
             ->where('status', 'paid')
             ->where(function ($q) use ($selectedYear) {
                 $q->whereYear('paid_at', $selectedYear)
@@ -62,7 +62,7 @@ class ReportController extends Controller
         $yearInput = $request->query('year');
         $selectedYear = ($yearInput !== null && $yearInput !== '') ? (int) $yearInput : $currentYear;
 
-        $paidTransactions = Transaction::with(['parent', 'enrollment.child', 'enrollment.course.instructor'])
+        $paidTransactions = Transaction::with(['parent', 'enrollments.child', 'enrollments.course.instructor', 'enrollment.child', 'enrollment.course.instructor'])
             ->where('status', 'paid')
             ->where(function ($q) use ($selectedYear) {
                 $q->whereYear('paid_at', $selectedYear)

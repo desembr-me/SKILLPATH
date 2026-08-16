@@ -9,7 +9,6 @@
             <h1>Kelola Profil & Bio Pengajar</h1>
             <p>Foto dan bio yang lengkap membantu orang tua mengenal keahlian dan gaya mengajarmu.</p>
         </div>
-        <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}"><x-icon name="arrow-left" /> Kembali ke Dashboard</a>
     </div>
 
     <div class="profile-grid">
@@ -37,7 +36,7 @@
                         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                             <label class="btn btn-sm btn-soft" style="cursor:pointer; margin:0;">
                                 <x-icon name="plus" /> Pilih Foto Baru
-                                <input type="file" name="avatar" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="previewAvatar(this)">
+                                <input type="file" name="avatar" id="avatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;" data-crop-avatar data-preview-target="#avatarPreviewContainer">
                             </label>
                             @if($user->avatar)
                                 <label style="font-size:11px; color:var(--danger); display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
@@ -89,11 +88,12 @@
         <div class="panel profile-summary-card">
             <span class="panel-kicker">Ringkasan Mengajar</span>
             <div class="family-summary">
-                <div class="summary-avatar">
+                <div class="summary-avatar" id="summaryAvatarPreview">
                     @if($user->avatar_url)
                         <img src="{{ $user->avatar_url }}" alt="Foto {{ $user->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:18px;">
                     @else
-                        {{ $user->initial }}
+                        <span>{{ $user->initial }}</span>
+                        <img src="" alt="Preview" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:18px;">
                     @endif
                 </div>
                 <div>
@@ -116,19 +116,15 @@
     </div>
 </section>
 
+@push('scripts')
 <script>
-function previewAvatar(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var img = document.getElementById('avatarPreviewImg');
-            var initial = document.getElementById('avatarInitial');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            if (initial) initial.style.display = 'none';
-        }
-        reader.readAsDataURL(input.files[0]);
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.SkillPathAvatarCropper) {
+        SkillPathAvatarCropper.bind('#avatarInput', {
+            previewTargets: ['#avatarPreviewContainer', '#summaryAvatarPreview']
+        });
     }
-}
+});
 </script>
+@endpush
 @endsection

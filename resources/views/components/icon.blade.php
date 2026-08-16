@@ -24,6 +24,7 @@
 
     @case('package')
     @case('courses')
+    @case('course')
     @case('box')
         <svg viewBox="0 0 24 24" fill="none"><path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         @break
@@ -136,6 +137,17 @@
         <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>
         @break
 
+    @case('close')
+    @case('x')
+        <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        @break
+
+    @case('menu')
+    @case('bars')
+    @case('hamburger')
+        <svg viewBox="0 0 24 24" fill="none"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        @break
+
     @case('arrow-right')
         <svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         @break
@@ -244,6 +256,12 @@
 
     @case('copy')
         <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        @break
+
+    @case('verified')
+    @case('badge-check')
+    @case('verified-badge')
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><polyline points="9 12 11 14 15 10"/></svg>
         @break
 
     @case('shield-check')

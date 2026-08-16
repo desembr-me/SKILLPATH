@@ -11,29 +11,90 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
   }
 
-  const toggle = document.querySelector('[data-nav-toggle]');
-  const nav = document.querySelector('[data-main-nav]');
-  if (toggle && nav) {
-    toggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const open = nav.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
+  // Enhanced Mobile Navigation Drawer & Toggle
+  const toggleBtn = document.querySelector('[data-nav-toggle]');
+  const drawer = document.querySelector('[data-nav-drawer]');
+  const backdrop = document.querySelector('[data-nav-backdrop]');
+  const closeBtn = document.querySelector('[data-nav-close]');
+  const legacyNav = document.querySelector('[data-main-nav]');
 
-    document.addEventListener('click', (e) => {
-      if (nav.classList.contains('open') && !nav.contains(e.target) && !toggle.contains(e.target)) {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
+  function openMobileNav() {
+    if (drawer) drawer.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      toggleBtn.classList.add('active');
+    }
+    if (legacyNav) legacyNav.classList.add('open');
+    document.body.classList.add('mobile-nav-locked');
+  }
+
+  function closeMobileNav() {
+    if (drawer) drawer.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      toggleBtn.classList.remove('active');
+    }
+    if (legacyNav) legacyNav.classList.remove('open');
+    document.body.classList.remove('mobile-nav-locked');
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = drawer ? drawer.classList.contains('open') : (legacyNav && legacyNav.classList.contains('open'));
+      if (isOpen) {
+        closeMobileNav();
+      } else {
+        openMobileNav();
       }
     });
+  }
 
-    nav.querySelectorAll('a').forEach(link => {
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMobileNav();
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', () => {
+      closeMobileNav();
+    });
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMobileNav();
+    }
+  });
+
+  // Close when clicking nav links
+  if (drawer) {
+    drawer.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
+        closeMobileNav();
+      });
+    });
+  } else if (legacyNav) {
+    legacyNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeMobileNav();
       });
     });
   }
+
+  // Close on outside click if legacy nav fallback
+  document.addEventListener('click', (e) => {
+    if (drawer && drawer.classList.contains('open')) {
+      if (!drawer.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+        closeMobileNav();
+      }
+    }
+  });
 
   document.querySelectorAll('.flash').forEach(el => setTimeout(() => el.remove(), 5000));
 });

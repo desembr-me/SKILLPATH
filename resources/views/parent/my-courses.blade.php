@@ -2,7 +2,13 @@
 @section('title','Course Saya')
 @section('content')
 <section class="dashboard-page">
-    <div class="dash-title"><div><span class="eyebrow">Course Saya</span><h1>Course yang Diikuti</h1><p>Pantau progres belajar dan lanjutkan aktivitas anak.</p></div><a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a></div>
+    <div class="dash-title">
+        <div>
+            <span class="eyebrow">Course Saya</span>
+            <h1>Course yang Diikuti</h1>
+            <p>Pantau progres belajar dan lanjutkan aktivitas anak.</p>
+        </div>
+    </div>
     <div class="panel">
         @forelse($enrollments as $enrollment)
             <div class="my-course-row">

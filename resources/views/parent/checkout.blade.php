@@ -9,11 +9,6 @@
             <h1>Periksa & Selesaikan Checkout</h1>
             <p>Pastikan kursus, siswa, dan jadwal yang dipilih sudah sesuai sebelum melanjutkan ke pembayaran.</p>
         </div>
-        <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('parent.cart') }}">
-                <x-icon name="arrow-left" /> Kembali ke Keranjang
-            </a>
-        </div>
     </div>
 
     @if(session('error'))

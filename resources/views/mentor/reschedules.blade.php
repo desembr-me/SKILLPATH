@@ -9,9 +9,6 @@
             <h1>Permintaan Perubahan Jadwal</h1>
             <p>Kelola dan tanggapi permohonan pemindahan jadwal kelas yang diajukan oleh orang tua siswa.</p>
         </div>
-        <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a>
-        </div>
     </div>
 
     {{-- Pending Requests --}}

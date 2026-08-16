@@ -10,13 +10,16 @@
                 @endif
             </div>
             <div class="mentor-flip-name">
-                <h3>{{ $mentor->name }}</h3>
+                <h3>{{ $mentor->name }} <span class="mentor-verified-badge" title="Mentor Terverifikasi SkillPath"><x-icon name="verified" /></span></h3>
                 @if($mentor->category)<span class="mentor-flip-tag">{{ $mentor->category->name }}</span>@endif
             </div>
             <span class="mentor-flip-hint"><x-icon name="path" /> Sentuh untuk lihat detail</span>
         </div>
         <div class="mentor-flip-face mentor-flip-back">
-            <h3>{{ $mentor->name }}</h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:4px;">
+                <h3 style="margin:0;">{{ $mentor->name }}</h3>
+                <span class="mentor-verified-badge" title="Mentor Terverifikasi SkillPath"><x-icon name="verified" /></span>
+            </div>
             <span class="mentor-flip-headline">{{ $mentor->headline ?: 'Mentor SkillPath' }}</span>
             <p class="mentor-flip-bio">{{ $mentor->bio ?: 'Mentor berpengalaman di SkillPath, siap mendampingi anak belajar dengan cara yang menyenangkan.' }}</p>
             <div class="mini-tags">

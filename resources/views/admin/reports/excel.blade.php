@@ -134,9 +134,9 @@
                     $tTotal = (float) $trx->total;
                     $tMentor = round($tTotal * 0.80);
                     $tPlatform = round($tTotal * 0.20);
-                    $childName = optional(optional($trx->enrollment)->child)->name ?? 'Anak';
-                    $courseTitle = optional(optional($trx->enrollment)->course)->title ?? 'Course';
-                    $mentorName = optional(optional(optional($trx->enrollment)->course)->instructor)->name ?? 'Mentor';
+                    $childName = $trx->child_name;
+                    $courseTitle = $trx->course_title;
+                    $mentorName = $trx->all_enrollments->first()?->course?->instructor?->name ?? optional(optional(optional($trx->enrollment)->course)->instructor)->name ?? 'Mentor';
                     $parentName = optional($trx->parent)->name ?? 'Orang Tua';
                 @endphp
                 <tr>

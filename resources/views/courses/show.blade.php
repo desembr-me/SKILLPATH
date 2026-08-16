@@ -41,7 +41,15 @@
                         {{ $course->instructor->initial }}
                     @endif
                 </div>
-                <div><small>Mentor</small><b>{{ $course->instructor->name }}</b></div>
+                <div>
+                    <small>Mentor Pengajar</small>
+                    <div style="display:inline-flex; align-items:center; gap:4px;">
+                        <b>{{ $course->instructor->name }}</b>
+                        <span class="mentor-verified-badge" title="Mentor Terverifikasi SkillPath" aria-label="Terverifikasi">
+                            <x-icon name="verified" />
+                        </span>
+                    </div>
+                </div>
                 <span class="rating"><x-icon name="star" /> 4.9</span>
             </div>
             <div class="course-price">

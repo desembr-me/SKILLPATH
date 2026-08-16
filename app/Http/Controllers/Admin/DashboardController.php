@@ -81,7 +81,7 @@ class DashboardController extends Controller
 
         // Quality Score
         $avgMentorRating = Review::avg('mentor_rating');
-        $avgPlatformRating = Review::avg('platform_rating');
+        $avgPlatformRating = \App\Models\PlatformReview::avg('rating') ?: Review::avg('platform_rating');
         $mentorRating = $avgMentorRating ? number_format($avgMentorRating, 2) : '5.00';
         $platformRating = $avgPlatformRating ? number_format($avgPlatformRating, 2) : '5.00';
 

@@ -10,7 +10,6 @@
             <h1>Jadwal & Pengajuan Pindah Jadwal</h1>
             <p>Ajukan permohonan perubahan jadwal kursus jika anak berhalangan hadir pada sesi kelas yang sedang berjalan.</p>
         </div>
-        <a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a>
     </div>
 
     <div class="info-banner">

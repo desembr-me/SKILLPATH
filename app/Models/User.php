@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
@@ -24,6 +25,7 @@ class User extends Authenticatable
     public function courses(): HasMany { return $this->hasMany(Course::class, 'instructor_id'); }
     public function transactions(): HasMany { return $this->hasMany(Transaction::class, 'parent_id'); }
     public function reviews(): HasMany { return $this->hasMany(Review::class, 'parent_id'); }
+    public function platformReview(): HasOne { return $this->hasOne(PlatformReview::class, 'parent_id'); }
     public function enrollments(): HasMany { return $this->hasMany(Enrollment::class, 'parent_id'); }
     public function wishlists(): HasMany { return $this->hasMany(Wishlist::class, 'parent_id'); }
     public function cartItems(): HasMany { return $this->hasMany(CartItem::class, 'parent_id'); }

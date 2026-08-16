@@ -9,7 +9,6 @@
             <h1>{{ $child->name }}</h1>
             <p>{{ $enrollment->course->title }} • Status: {{ ucfirst($enrollment->status) }} • Progres: {{ $enrollment->progress }}%</p>
         </div>
-        <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}"><x-icon name="arrow-left" /> Kembali ke Dashboard</a>
     </div>
 
     <div class="dashboard-grid">

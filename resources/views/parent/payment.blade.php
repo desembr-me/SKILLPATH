@@ -1,6 +1,17 @@
 @extends('layouts.app')
 @section('title', $transaction->status === 'paid' ? 'Bukti Pembayaran - ' . $transaction->invoice_code : 'Pembayaran - ' . $transaction->invoice_code)
 
+@push('styles')
+<style>
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 10mm 12mm;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 <section class="dashboard-page payment-page-wrap">
     <div class="dash-title no-print">
@@ -9,16 +20,13 @@
             <h1>{{ $transaction->status === 'paid' ? 'Bukti Pembayaran & Invoice' : 'Instruksi Pembayaran' }}</h1>
             <p>{{ $transaction->status === 'paid' ? 'Pembayaran telah diverifikasi. Kelas anak Anda siap dimulai.' : 'Selesaikan pembayaran 1x transfer sebelum batas waktu berakhir untuk mengaktifkan reservasi kelas.' }}</p>
         </div>
-        <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('parent.orders') }}">
-                <x-icon name="arrow-left" /> Riwayat Pesanan
-            </a>
-            @if($transaction->status === 'paid')
+        @if($transaction->status === 'paid')
+            <div class="dash-actions">
                 <button class="btn btn-ghost" onclick="window.print()">
                     <x-icon name="printer" /> Cetak Invoice
                 </button>
-            @endif
-        </div>
+            </div>
+        @endif
     </div>
 
     @if(session('success'))
@@ -329,13 +337,19 @@ if (!function_exists('terbilang_rupiah')) {
     @elseif($transaction->status === 'cancelled')
         {{-- CANCELLED VIEW --}}
         <div class="panel payment-cancelled-card">
-            <div class="empty-state">
-                <x-icon name="recycle-bin" />
+            <div class="empty-state empty-state-full">
+                <div class="empty-state-icon-wrap danger">
+                    <x-icon name="recycle-bin" />
+                </div>
                 <h2>Pesanan Dibatalkan</h2>
-                <p>Invoice <b>{{ $transaction->invoice_code }}</b> telah dibatalkan. Anda dapat memilih course baru dari katalog.</p>
-                <div style="margin-top: 18px; display:flex; gap:10px; justify-content:center;">
-                    <a class="btn btn-primary" href="{{ route('explore.index') }}">Jelajahi Course</a>
-                    <a class="btn btn-soft" href="{{ route('parent.orders') }}">Riwayat Pesanan</a>
+                <p>Invoice <b>{{ $transaction->invoice_code }}</b> telah dibatalkan. Anda dapat memilih course baru dari katalog kursus kami.</p>
+                <div class="empty-state-actions">
+                    <a class="btn btn-primary" href="{{ route('explore.index') }}">
+                        <x-icon name="search" /> Jelajahi Course
+                    </a>
+                    <a class="btn btn-soft" href="{{ route('parent.orders') }}">
+                        <x-icon name="receipt" /> Riwayat Pesanan
+                    </a>
                 </div>
             </div>
         </div>
@@ -469,7 +483,7 @@ if (!function_exists('terbilang_rupiah')) {
                                 </div>
                                 <div>
                                     <h4>Sudah Melakukan Transfer VA?</h4>
-                                    <p>Klik konfirmasi untuk verifikasi simulasi & aktifkan kelas siswa secara instan.</p>
+                                    <p>Klik tombol konfirmasi di bawah untuk verifikasi pembayaran dan langsung aktifkan seluruh kelas anak.</p>
                                 </div>
                             </div>
                             <form method="POST" action="{{ route('parent.payment.pay', $transaction) }}">
@@ -613,6 +627,43 @@ if (!function_exists('terbilang_rupiah')) {
                             </div>
                         </div>
 
+                        {{-- QRIS How to Pay Accordion Steps --}}
+                        <div class="payment-guide-section">
+                            <h4><x-icon name="info" /> Panduan Pembayaran Scan QRIS</h4>
+                            <div class="guide-accordion-stack">
+                                <details class="guide-accordion" open>
+                                    <summary>
+                                        <span class="guide-sum-title"><x-icon name="mobile" /> Melalui Aplikasi E-Wallet (GoPay, OVO, DANA, ShopeePay, dll)</span>
+                                        <span class="guide-chevron"><x-icon name="arrow-right" /></span>
+                                    </summary>
+                                    <div class="guide-body">
+                                        <ol>
+                                            <li>Buka aplikasi e-wallet pilihan Anda (GoPay / OVO / DANA / ShopeePay / LinkAja).</li>
+                                            <li>Pilih menu <b>Bayar / Scan QR</b> pada layar utama aplikasi.</li>
+                                            <li>Arahkan kamera smartphone Anda ke kode QRIS di atas.</li>
+                                            <li>Periksa nama penerima <b>SKILLPATH EDUKASI INDONESIA</b> dan total tagihan <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>.</li>
+                                            <li>Konfirmasi pembayaran dan masukkan PIN/keamanan akun e-wallet Anda.</li>
+                                        </ol>
+                                    </div>
+                                </details>
+
+                                <details class="guide-accordion">
+                                    <summary>
+                                        <span class="guide-sum-title"><x-icon name="bank" /> Melalui Mobile Banking (BCA Mobile, Livin, BRImo, dll)</span>
+                                        <span class="guide-chevron"><x-icon name="arrow-right" /></span>
+                                    </summary>
+                                    <div class="guide-body">
+                                        <ol>
+                                            <li>Buka aplikasi mobile banking bank Anda dan login.</li>
+                                            <li>Pilih fitur <b>QRIS / Scan QR</b> di halaman utama m-banking.</li>
+                                            <li>Scan kode QR di atas dan pastikan nominal sesuai: <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>.</li>
+                                            <li>Masukkan PIN m-banking Anda untuk menyelesaikan pembayaran.</li>
+                                        </ol>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
                         <div class="payment-action-card">
                             <div class="action-card-text">
                                 <div class="action-pulse-icon">
@@ -707,6 +758,43 @@ if (!function_exists('terbilang_rupiah')) {
                                     <x-icon name="check" /> Konfirmasi Pembayaran (1x Bayar)
                                 </button>
                             </form>
+                        </div>
+
+                        {{-- How to Pay Accordion Steps for Manual Transfer --}}
+                        <div class="payment-guide-section">
+                            <h4><x-icon name="info" /> Panduan Pembayaran Transfer Bank BCA</h4>
+                            <div class="guide-accordion-stack">
+                                <details class="guide-accordion" open>
+                                    <summary>
+                                        <span class="guide-sum-title"><x-icon name="mobile" /> Melalui BCA Mobile (m-BCA)</span>
+                                        <span class="guide-chevron"><x-icon name="arrow-right" /></span>
+                                    </summary>
+                                    <div class="guide-body">
+                                        <ol>
+                                            <li>Buka aplikasi BCA mobile dan pilih menu <b>m-BCA</b> lalu masukkan kode akses Anda.</li>
+                                            <li>Pilih menu <b>m-Transfer &gt; Antar Rekening</b>.</li>
+                                            <li>Masukkan nomor rekening BCA: <code class="code-badge">541-098-7721</code> (a/n PT SkillPath Edukasi Indonesia).</li>
+                                            <li>Masukkan nominal transfer tepat sebesar: <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>.</li>
+                                            <li>Periksa rincian transfer dan masukkan 6 digit PIN m-BCA Anda.</li>
+                                        </ol>
+                                    </div>
+                                </details>
+
+                                <details class="guide-accordion">
+                                    <summary>
+                                        <span class="guide-sum-title"><x-icon name="bank" /> Melalui ATM BCA</span>
+                                        <span class="guide-chevron"><x-icon name="arrow-right" /></span>
+                                    </summary>
+                                    <div class="guide-body">
+                                        <ol>
+                                            <li>Masukkan kartu ATM BCA dan 6 digit PIN Anda.</li>
+                                            <li>Pilih menu <b>Transaksi Lainnya &gt; Transfer &gt; ke Rek BCA</b>.</li>
+                                            <li>Ketik nomor rekening <code class="code-badge">541-098-7721</code> dan masukkan jumlah <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>.</li>
+                                            <li>Periksa nama penerima <b>PT SKILLPATH EDUKASI INDONESIA</b> lalu tekan <b>Ya / Benar</b>.</li>
+                                        </ol>
+                                    </div>
+                                </details>
+                            </div>
                         </div>
                     @endif
 

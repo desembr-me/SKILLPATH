@@ -2,7 +2,13 @@
 @section('title','Ujian & Sertifikat')
 @section('content')
 <section class="dashboard-page">
-    <div class="dash-title"><div><span class="eyebrow">Exam Based Certificate</span><h1>Ujian & Sertifikat</h1><p>Sertifikat hanya terbit setelah anak mencapai passing grade. Retake mengikuti batas percobaan course.</p></div><a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a></div>
+    <div class="dash-title">
+        <div>
+            <span class="eyebrow">Exam Based Certificate</span>
+            <h1>Ujian & Sertifikat</h1>
+            <p>Sertifikat hanya terbit setelah anak mencapai passing grade. Retake mengikuti batas percobaan course.</p>
+        </div>
+    </div>
     <div class="info-banner certificate-banner"><span><x-icon name="certificate" /></span><div><b>Sertifikat berbasis kelulusan</b><p>Menyelesaikan seluruh sesi belum otomatis menghasilkan sertifikat. Anak harus mencapai passing grade pada ujian akhir sesuai aturan course.</p></div></div>
     <div class="panel">
         @forelse($enrollments as $enrollment)

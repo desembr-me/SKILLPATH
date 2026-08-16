@@ -12,7 +12,13 @@
         </div>
         <div class="mentor-hero-copy">
             @if($mentor->category)<span class="eyebrow">{{ $mentor->category->name }}</span>@endif
-            <h1>{{ $mentor->name }}</h1>
+            <div class="mentor-name-row">
+                <h1>{{ $mentor->name }}</h1>
+                <span class="mentor-verified-pill" title="Mentor Resmi Terverifikasi SkillPath">
+                    <x-icon name="verified" />
+                    <span>Mentor Terverifikasi</span>
+                </span>
+            </div>
             <p class="mentor-hero-headline">{{ $mentor->headline ?: 'Mentor SkillPath' }}</p>
             @if($mentor->bio)<p class="mentor-bio">{{ $mentor->bio }}</p>@endif
             <div class="mini-tags">

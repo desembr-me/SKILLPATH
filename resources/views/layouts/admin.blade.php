@@ -10,18 +10,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/skillpath.css') }}">
     <link rel="icon" href="{{ asset('images/skillpath-logo.png') }}" type="image/png">
+    @stack('styles')
 </head>
 <body class="admin-body">
 <div class="admin-layout">
+    <!-- Admin Mobile Backdrop Overlay -->
+    <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
+
     <!-- Sidebar -->
-    <aside class="admin-sidebar">
-        <a class="admin-brand" href="{{ route('admin.dashboard') }}">
-            <div class="admin-brand-icon">S</div>
-            <div class="admin-brand-text">
-                <h2>SkillPath</h2>
-                <span>ADMINISTRATION</span>
-            </div>
-        </a>
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header-row">
+            <a class="admin-brand" href="{{ route('admin.dashboard') }}">
+                <div class="admin-brand-icon">S</div>
+                <div class="admin-brand-text">
+                    <h2>SkillPath</h2>
+                    <span>ADMINISTRATION</span>
+                </div>
+            </a>
+            <button type="button" class="admin-sidebar-mobile-close" id="adminSidebarClose" aria-label="Tutup Sidebar Admin">
+                <x-icon name="close" />
+            </button>
+        </div>
 
         <!-- 1. UTAMA & ANALITIK -->
         <div class="admin-sidebar-section" data-section-id="utama">
@@ -166,8 +175,13 @@
         <!-- Topbar -->
         <header class="admin-topbar">
             <div class="admin-topbar-left">
-                <h3>SkillPath Admin</h3>
-                <p>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
+                <button type="button" class="admin-sidebar-toggle" id="adminSidebarToggle" aria-label="Buka Menu Admin">
+                    <x-icon name="menu" />
+                </button>
+                <div>
+                    <h3>SkillPath Admin</h3>
+                    <p>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</p>
+                </div>
             </div>
             <div class="admin-topbar-right">
                 <span class="admin-status-badge">
@@ -237,7 +251,31 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
+
+    // Mobile Admin Sidebar Toggle
+    const adminSidebar = document.getElementById('adminSidebar');
+    const adminToggle = document.getElementById('adminSidebarToggle');
+    const adminClose = document.getElementById('adminSidebarClose');
+    const adminBackdrop = document.getElementById('adminSidebarBackdrop');
+
+    function openAdminSidebar() {
+        if (adminSidebar) adminSidebar.classList.add('open');
+        if (adminBackdrop) adminBackdrop.classList.add('open');
+        document.body.classList.add('admin-sidebar-locked');
+    }
+
+    function closeAdminSidebar() {
+        if (adminSidebar) adminSidebar.classList.remove('open');
+        if (adminBackdrop) adminBackdrop.classList.remove('open');
+        document.body.classList.remove('admin-sidebar-locked');
+    }
+
+    if (adminToggle) adminToggle.addEventListener('click', openAdminSidebar);
+    if (adminClose) adminClose.addEventListener('click', closeAdminSidebar);
+    if (adminBackdrop) adminBackdrop.addEventListener('click', closeAdminSidebar);
 });
 </script>
+<script src="{{ asset('js/avatar-cropper.js') }}"></script>
+@stack('scripts')
 </body>
 </html>

@@ -10,9 +10,6 @@
             <p>Tinjau jadwal dan pilihan kursus sebelum melanjutkan ke proses checkout.</p>
         </div>
         <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('parent.dashboard') }}">
-                <x-icon name="arrow-left" /> Dashboard
-            </a>
             <a class="btn btn-primary" href="{{ route('explore.index') }}">
                 <x-icon name="plus" /> Tambah Kursus Lain
             </a>
@@ -150,13 +147,17 @@
                         </div>
                     </article>
                 @empty
-                    <div class="empty-state">
-                        <x-icon name="cart" />
+                    <div class="empty-state empty-state-full">
+                        <div class="empty-state-icon-wrap">
+                            <x-icon name="cart" />
+                        </div>
                         <h3>Keranjang Booking Masih Kosong</h3>
-                        <p>Pilih kelas yang diminati anak dari katalog kursus kami.</p>
-                        <a class="btn btn-primary" href="{{ route('explore.index') }}" style="margin-top: 14px;">
-                            <x-icon name="search" /> Jelajahi Katalog Kursus
-                        </a>
+                        <p>Pilih kelas yang diminati anak dari katalog kursus kami dan mulai petualangan belajarnya.</p>
+                        <div class="empty-state-actions">
+                            <a class="btn btn-primary" href="{{ route('explore.index') }}">
+                                <x-icon name="search" /> Jelajahi Katalog Kursus
+                            </a>
+                        </div>
                     </div>
                 @endforelse
             </div>

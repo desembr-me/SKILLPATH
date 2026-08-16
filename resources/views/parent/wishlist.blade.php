@@ -2,7 +2,13 @@
 @section('title','Wishlist')
 @section('content')
 <section class="dashboard-page">
-    <div class="dash-title"><div><span class="eyebrow">Wishlist</span><h1>Course Diminati</h1><p>Simpan course yang menarik untuk dilihat lagi sebelum booking.</p></div><a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a></div>
+    <div class="dash-title">
+        <div>
+            <span class="eyebrow">Wishlist</span>
+            <h1>Course Diminati</h1>
+            <p>Simpan course yang menarik untuk dilihat lagi sebelum booking.</p>
+        </div>
+    </div>
     <div class="panel">
         @forelse($wishlists as $wishlist)
             <div class="credit-row">

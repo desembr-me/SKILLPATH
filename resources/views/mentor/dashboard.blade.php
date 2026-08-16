@@ -165,7 +165,7 @@
         @forelse($enrollments->where('status', 'active') as $enrollment)
             @php($sessions = optional($enrollment->schedule)->sessions ?? collect())
             @if($sessions->isNotEmpty())
-                <form class="tool-form" method="POST" action="{{ route('mentor.attendance.store') }}" style="grid-template-columns: 1.4fr 1.1fr 1fr 1.3fr 1.1fr auto; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid #eff0f4;">
+                <form class="tool-form attendance-form" method="POST" action="{{ route('mentor.attendance.store') }}">
                     @csrf
                     <input type="hidden" name="enrollment_id" value="{{ $enrollment->id }}">
 
@@ -233,7 +233,7 @@
         @forelse($enrollments as $enrollment)
             @php($exam = optional(optional($enrollment->course)->exams)->first())
             @if($exam)
-                <form class="tool-form" method="POST" action="{{ route('mentor.exam-attempts.store') }}" style="grid-template-columns: 1.6fr 1fr 1.6fr auto; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid #eff0f4;">
+                <form class="tool-form exam-form" method="POST" action="{{ route('mentor.exam-attempts.store') }}">
                     @csrf
                     <input type="hidden" name="exam_id" value="{{ $exam->id }}">
                     <input type="hidden" name="enrollment_id" value="{{ $enrollment->id }}">

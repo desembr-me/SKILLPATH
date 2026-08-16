@@ -75,6 +75,28 @@ class Transaction extends Model
     }
 
     /**
+     * Helper to retrieve primary child name for single/multi transactions.
+     */
+    public function getChildNameAttribute(): ?string
+    {
+        return $this->metadata['child_name'] 
+            ?? $this->enrollment?->child?->name 
+            ?? $this->enrollments->first()?->child?->name 
+            ?? '-';
+    }
+
+    /**
+     * Helper to retrieve primary course title for single/multi transactions.
+     */
+    public function getCourseTitleAttribute(): ?string
+    {
+        return $this->metadata['course_title'] 
+            ?? $this->enrollment?->course?->title 
+            ?? $this->enrollments->first()?->course?->title 
+            ?? 'Kursus SkillPath';
+    }
+
+    /**
      * Check if this transaction is a bundled multi-course checkout.
      */
     public function getIsMultiCourseAttribute(): bool

@@ -17,6 +17,7 @@ use App\Models\{
     Exam,
     ExamAttempt,
     LearningPath,
+    PlatformReview,
     RescheduleRequest,
     Review,
     SessionCredit,
@@ -813,6 +814,12 @@ class DatabaseSeeder extends Seeder
                 'platform_rating' => 5,
                 'platform_review' => 'Pengalaman belajar sangat memuaskan.',
             ]);
+            PlatformReview::create([
+                'parent_id' => $parent3->id,
+                'rating' => 5,
+                'review' => 'Pengalaman belajar sangat memuaskan, antarmuka mudah dipahami dan customer service responsif.',
+                'is_published' => true,
+            ]);
         }
 
         // Enrollment 3: Alya in Robotika Pengenalan (Completed + Certificate)
@@ -867,6 +874,12 @@ class DatabaseSeeder extends Seeder
                 'mentor_review' => 'Kak Dimas mengajarkan problem solving dengan sangat menyenangkan!',
                 'platform_rating' => 5,
                 'platform_review' => 'Platformnya rapi dan sertifikat langsung terbit.',
+            ]);
+            PlatformReview::create([
+                'parent_id' => $parent1->id,
+                'rating' => 5,
+                'review' => 'Platformnya rapi, jadwal transparan, dan sertifikat kelulusan langsung terbit.',
+                'is_published' => true,
             ]);
         }
 

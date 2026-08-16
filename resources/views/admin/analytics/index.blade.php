@@ -12,7 +12,7 @@
     </div>
 
     <!-- 3 Stat Cards Summary -->
-    <div class="admin-stat-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+    <div class="admin-stat-grid" style="margin-bottom: 24px;">
         <article class="admin-stat-card">
             <div class="admin-stat-icon tone-purple-admin">
                 <x-icon name="users" />

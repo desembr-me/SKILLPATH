@@ -21,7 +21,7 @@ class ReviewController extends Controller
         $reviews = $query->paginate(10)->withQueryString();
 
         $avgMentor = Review::avg('mentor_rating');
-        $avgPlatform = Review::avg('platform_rating');
+        $avgPlatform = \App\Models\PlatformReview::avg('rating') ?: Review::avg('platform_rating');
 
         return view('admin.reviews.index', [
             'reviews' => $reviews,

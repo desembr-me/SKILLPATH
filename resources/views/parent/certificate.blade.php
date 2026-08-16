@@ -1,6 +1,385 @@
 @extends('layouts.app')
 @section('title', 'Sertifikat Kelulusan - ' . $certificate->enrollment->child->name)
 
+@push('styles')
+<style>
+@page {
+    size: A4 landscape;
+    margin: 0;
+}
+
+@media print {
+    *, *:before, *:after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        box-sizing: border-box !important;
+    }
+    
+    html, body {
+        width: 297mm !important;
+        height: 210mm !important;
+        max-width: 297mm !important;
+        max-height: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+    }
+
+    main {
+        width: 297mm !important;
+        height: 210mm !important;
+        max-width: 297mm !important;
+        max-height: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        display: block !important;
+    }
+
+    .no-print,
+    .site-header,
+    .site-footer,
+    .site-footer-compact,
+    .mobile-header-actions,
+    .mobile-nav-backdrop,
+    .mobile-nav-drawer,
+    .mobile-bottom-nav,
+    .dash-title,
+    .dash-actions,
+    .invoice-bottom-actions,
+    .flash,
+    .btn,
+    .payment-toast,
+    .admin-sidebar,
+    .admin-header,
+    .admin-mobile-header,
+    .admin-bottom-nav {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .certificate-page {
+        width: 297mm !important;
+        height: 210mm !important;
+        max-width: 297mm !important;
+        max-height: 210mm !important;
+        margin: 0 !important;
+        padding: 6mm 8mm !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .certificate-sheet,
+    .certificate-wrapper {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    .certificate-border {
+        width: 281mm !important;
+        height: 198mm !important;
+        max-width: 281mm !important;
+        max-height: 198mm !important;
+        border: 8px solid #201c4b !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        padding: 16px 36px 14px !important;
+        background: #ffffff !important;
+        background: radial-gradient(circle at center, #ffffff 0%, #fffdf8 70%, #fbf8ef 100%) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        text-align: center !important;
+        position: relative !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        page-break-before: avoid !important;
+        break-before: avoid !important;
+    }
+
+    .certificate-border:before {
+        inset: 5px !important;
+        border: 1.5px solid #d4af37 !important;
+        border-radius: 2px !important;
+    }
+
+    .certificate-inner-frame {
+        inset: 9px !important;
+        border: 1px dashed rgba(212, 175, 55, 0.4) !important;
+    }
+
+    .cert-corner {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    .cert-corner-tl { top: 6px !important; left: 6px !important; }
+    .cert-corner-tr { top: 6px !important; right: 6px !important; }
+    .cert-corner-bl { bottom: 6px !important; left: 6px !important; }
+    .cert-corner-br { bottom: 6px !important; right: 6px !important; }
+
+    /* Header */
+    .cert-header {
+        margin: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    .cert-brand-bar {
+        margin-bottom: 4px !important;
+    }
+    .cert-brand-logo {
+        height: 26px !important;
+    }
+    .cert-ribbon-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        background: #d4af37 !important;
+        background: linear-gradient(135deg, #d4af37 0%, #f59e0b 50%, #b45309 100%) !important;
+        color: #ffffff !important;
+        padding: 2px 14px !important;
+        border-radius: 999px !important;
+        font-size: 7.5px !important;
+        font-weight: 700 !important;
+        letter-spacing: 1.5px !important;
+        text-transform: uppercase !important;
+        border: 1px solid #b45309 !important;
+        margin-bottom: 4px !important;
+    }
+    .cert-main-title {
+        font-family: "Fredoka", "Nunito", sans-serif !important;
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        letter-spacing: 2px !important;
+        color: #1e1b4b !important;
+        text-transform: uppercase !important;
+        margin: 0 !important;
+        line-height: 1.15 !important;
+    }
+    .cert-sub-title {
+        font-size: 8px !important;
+        font-weight: 700 !important;
+        letter-spacing: 2px !important;
+        color: #d97706 !important;
+        text-transform: uppercase !important;
+        margin-top: 1px !important;
+    }
+    .cert-header-divider {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        max-width: 220px !important;
+        margin: 3px auto 0 !important;
+    }
+    .cert-header-divider .divider-line {
+        flex: 1 !important;
+        height: 1px !important;
+        background: #d4af37 !important;
+    }
+    .cert-header-divider .divider-star {
+        color: #d4af37 !important;
+        font-size: 9px !important;
+    }
+
+    /* Body */
+    .cert-body {
+        margin: 2px 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    .cert-presentation-text {
+        font-size: 9px !important;
+        font-weight: 600 !important;
+        letter-spacing: 1px !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        margin-bottom: 2px !important;
+    }
+    .cert-child-name-box {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        margin: 1px 0 3px !important;
+    }
+    .cert-child-name-box .star-accent {
+        color: #f59e0b !important;
+        font-size: 16px !important;
+    }
+    .cert-child-name {
+        font-family: "Fredoka", "Nunito", sans-serif !important;
+        font-size: 28px !important;
+        font-weight: 700 !important;
+        color: #1e1b4b !important;
+        -webkit-text-fill-color: #1e1b4b !important;
+        background: none !important;
+        padding: 0 14px 2px !important;
+        border-bottom: 2px solid #d4af37 !important;
+        margin: 0 !important;
+        line-height: 1.1 !important;
+    }
+    .cert-description {
+        max-width: 560px !important;
+        font-size: 10px !important;
+        line-height: 1.4 !important;
+        color: #334155 !important;
+        margin: 0 auto 4px !important;
+    }
+    .cert-course-highlight {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        background: #f1efff !important;
+        border: 1px solid #c7d2fe !important;
+        border-radius: 999px !important;
+        padding: 2.5px 12px !important;
+        margin-bottom: 3px !important;
+    }
+    .cert-course-highlight strong {
+        font-family: "Fredoka", sans-serif !important;
+        font-size: 12px !important;
+        color: #1e1b4b !important;
+    }
+    .cert-course-highlight .category-chip {
+        background: #6857df !important;
+        color: #ffffff !important;
+        font-size: 7.5px !important;
+        font-weight: 700 !important;
+        padding: 1.5px 6px !important;
+        border-radius: 999px !important;
+        text-transform: uppercase !important;
+    }
+    .cert-merit-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        background: #fffbeb !important;
+        border: 1px solid #fde68a !important;
+        border-radius: 999px !important;
+        padding: 2px 10px !important;
+        font-size: 8.5px !important;
+        color: #92400e !important;
+        font-weight: 600 !important;
+    }
+
+    /* Footer */
+    .cert-footer {
+        width: 100% !important;
+        gap: 3px !important;
+        margin: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .cert-signatures-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 80px 1fr !important;
+        align-items: end !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 680px !important;
+        margin: 0 auto !important;
+    }
+    .cert-sign-col {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    .cert-sign-svg {
+        height: 24px !important;
+        width: 95px !important;
+        margin-bottom: 2px !important;
+        color: #1e1b4b !important;
+    }
+    .cert-sign-line {
+        width: 110px !important;
+        height: 1.5px !important;
+        background: #201c4b !important;
+        margin-bottom: 2px !important;
+    }
+    .cert-sign-name {
+        font-family: "Fredoka", sans-serif !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        color: #1e1b4b !important;
+    }
+    .cert-sign-role {
+        font-size: 7px !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.4px !important;
+        margin-top: 1px !important;
+    }
+    .cert-seal-col {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .cert-rosette-seal {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    .cert-meta-bottom {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        border-top: 1px solid rgba(212, 175, 55, 0.35) !important;
+        padding-top: 3px !important;
+        font-size: 7.5px !important;
+        color: #64748b !important;
+    }
+    .cert-serial-tag {
+        font-weight: 500 !important;
+        color: #475569 !important;
+    }
+    .cert-auth-tag {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        color: #15803d !important;
+        font-weight: 600 !important;
+    }
+}
+</style>
+@endpush
+
 @section('content')
 @php
     $child = $certificate->enrollment->child;
@@ -31,19 +410,6 @@
             <p>Diterbitkan untuk <b>{{ $child->name }}</b> atas keberhasilan menyelesaikan program <b>{{ $course->title }}</b>.</p>
         </div>
         <div class="dash-actions">
-            @if(auth()->check() && auth()->user()->isAdmin())
-                <a class="btn btn-soft" href="{{ route('admin.certificates.index') }}">
-                    <x-icon name="arrow-left" /> Kembali ke Manajemen Sertifikat
-                </a>
-            @elseif(auth()->check() && auth()->user()->isMentor())
-                <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}">
-                    <x-icon name="arrow-left" /> Kembali ke Dashboard
-                </a>
-            @else
-                <a class="btn btn-soft" href="{{ route('parent.exams') }}">
-                    <x-icon name="arrow-left" /> Kembali ke Ujian & Sertifikat
-                </a>
-            @endif
             <button class="btn btn-primary" onclick="window.print()">
                 <x-icon name="certificate" /> Cetak / Simpan PDF (A4)
             </button>

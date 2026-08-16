@@ -47,7 +47,7 @@
     </div>
 
     {{-- 3 Stat Cards Summary for Selected Year --}}
-    <div class="admin-stat-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+    <div class="admin-stat-grid" style="margin-bottom: 24px;">
         <article class="admin-stat-card">
             <div class="admin-stat-icon tone-green-admin">
                 <x-icon name="wallet" />
@@ -227,9 +227,10 @@
                             $tTotal = (float) $trx->total;
                             $tMentor = round($tTotal * 0.80);
                             $tPlatform = round($tTotal * 0.20);
-                            $childName = optional(optional($trx->enrollment)->child)->name ?? 'Anak';
-                            $courseTitle = optional(optional($trx->enrollment)->course)->title ?? 'Course';
-                            $mentorName = optional(optional(optional($trx->enrollment)->course)->instructor)->name ?? 'Mentor';
+                            $allEnrs = $trx->all_enrollments;
+                            $childName = $trx->child_name;
+                            $courseTitle = $trx->course_title;
+                            $mentorName = $allEnrs->first()?->course?->instructor?->name ?? optional(optional(optional($trx->enrollment)->course)->instructor)->name ?? 'Mentor';
                             $parentName = optional($trx->parent)->name ?? 'Orang Tua';
                             $payDate = $trx->paid_at ? $trx->paid_at->translatedFormat('d M Y, H:i') : $trx->created_at->translatedFormat('d M Y, H:i');
                         @endphp
@@ -244,13 +245,32 @@
                                 <b style="color:#120e2e; font-size:12.5px;">{{ $parentName }}</b>
                             </td>
                             <td>
-                                <span style="font-weight:700; color:#4b5563;">{{ $childName }}</span>
+                                @if($allEnrs->count() > 1)
+                                    <div style="display:flex; flex-direction:column; gap:3px;">
+                                        @foreach($allEnrs as $enr)
+                                            <span style="font-weight:700; color:#4b5563; font-size:11.5px;">• {{ $enr->child->name ?? '-' }}</span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span style="font-weight:700; color:#4b5563;">{{ $childName }}</span>
+                                @endif
                             </td>
                             <td>
-                                <div>
-                                    <b style="color:#120e2e; font-size:12px; display:block;">{{ $courseTitle }}</b>
-                                    <small style="color:#8a84ab; font-size:11px;">Mentor: {{ $mentorName }}</small>
-                                </div>
+                                @if($allEnrs->count() > 1)
+                                    <div style="display:flex; flex-direction:column; gap:3px;">
+                                        @foreach($allEnrs as $enr)
+                                            <div>
+                                                <b style="color:#120e2e; font-size:11.5px; display:block;">{{ $enr->course->title ?? 'Kursus' }}</b>
+                                                <small style="color:#8a84ab; font-size:10px;">Mentor: {{ $enr->course->instructor->name ?? 'Mentor' }}</small>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div>
+                                        <b style="color:#120e2e; font-size:12px; display:block;">{{ $courseTitle }}</b>
+                                        <small style="color:#8a84ab; font-size:11px;">Mentor: {{ $mentorName }}</small>
+                                    </div>
+                                @endif
                             </td>
                             <td style="text-align:right;">
                                 <b style="color:#120e2e; font-size:13px;">Rp{{ number_format($tTotal, 0, ',', '.') }}</b>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Mentor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use App\Models\PlatformReview;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
@@ -15,10 +16,12 @@ class ReviewController extends Controller
             ->latest()
             ->get();
 
+        $avgPlatform = PlatformReview::avg('rating') ?: Review::avg('platform_rating');
+
         return view('mentor.reviews', [
             'reviews' => $reviews,
             'avgMentorRating' => round((float) $reviews->avg('mentor_rating'), 1),
-            'avgPlatformRating' => round((float) $reviews->avg('platform_rating'), 1),
+            'avgPlatformRating' => round((float) $avgPlatform, 1),
         ]);
     }
 }

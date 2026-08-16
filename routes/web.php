@@ -57,6 +57,8 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
  Route::get('/children/{child}/learning-path',[LearningPathController::class,'show'])->name('learning-path');
  Route::get('/schedule',[ScheduleController::class,'index'])->name('schedule');
  Route::put('/schedule/{enrollment}',[ScheduleController::class,'update'])->name('schedule.update');
+ Route::post('/platform-review',[ReviewController::class,'storePlatform'])->name('platform-review.store');
+ Route::post('/enrollments/{enrollment}/mentor-review',[ReviewController::class,'storeMentor'])->name('mentor-reviews.store');
  Route::post('/enrollments/{enrollment}/review',[ReviewController::class,'store'])->name('reviews.store');
  Route::get('/exams',[ParentExamController::class,'index'])->name('exams');
  Route::put('/learning-path/items/{item}/voice',[LearningPathController::class,'updateVoice'])->name('learning-path.voice');

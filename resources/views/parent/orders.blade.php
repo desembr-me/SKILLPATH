@@ -10,9 +10,6 @@
             <p>Kelola status pembayaran, invoice resmi, dan akses kursus anak Anda.</p>
         </div>
         <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('parent.dashboard') }}">
-                <x-icon name="arrow-left" /> Dashboard
-            </a>
             <a class="btn btn-primary" href="{{ route('explore.index') }}">
                 <x-icon name="plus" /> Cari Kursus Baru
             </a>
@@ -81,11 +78,11 @@
                     <div class="order-header-left">
                         <span class="invoice-tag"><x-icon name="receipt" /> {{ $order->invoice_code }}</span>
                         <span class="order-date">{{ $order->created_at->format('d M Y, H:i') }} WIB</span>
-                        @if($isMulti)
-                            <span class="order-bundle-pill"><x-icon name="spark" /> {{ $itemCount }} Kursus (1x Bayar)</span>
-                        @endif
                         @if($order->payment_method)
                             <span class="order-method-badge">{{ strtoupper(str_replace('_', ' ', $order->payment_method)) }}</span>
+                        @endif
+                        @if($isMulti)
+                            <span class="order-bundle-pill"><x-icon name="spark" /> {{ $itemCount }} Kursus (1x Bayar)</span>
                         @endif
                     </div>
                     <div class="order-header-right">
@@ -235,13 +232,17 @@
             </div>
         @empty
             <div class="panel">
-                <div class="empty-state">
-                    <x-icon name="receipt" />
+                <div class="empty-state empty-state-full">
+                    <div class="empty-state-icon-wrap">
+                        <x-icon name="receipt" />
+                    </div>
                     <h3>Belum Ada Pesanan yang Sesuai</h3>
-                    <p>Pesanan akan muncul di sini setelah Anda melakukan checkout kursus.</p>
-                    <a class="btn btn-primary" href="{{ route('explore.index') }}" style="margin-top: 14px;">
-                        <x-icon name="search" /> Jelajahi Katalog Kursus
-                    </a>
+                    <p>Pesanan akan muncul di sini setelah Anda melakukan checkout kursus untuk anak.</p>
+                    <div class="empty-state-actions">
+                        <a class="btn btn-primary" href="{{ route('explore.index') }}">
+                            <x-icon name="search" /> Jelajahi Katalog Kursus
+                        </a>
+                    </div>
                 </div>
             </div>
         @endforelse

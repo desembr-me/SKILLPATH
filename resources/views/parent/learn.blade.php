@@ -2,7 +2,13 @@
 @section('title','Belajar - '.$enrollment->course->title)
 @section('content')
 <section class="dashboard-page">
-    <div class="dash-title"><div><span class="eyebrow">Belajar</span><h1>{{ $enrollment->course->title }}</h1><p>{{ $enrollment->child->name }} • Jalur belajar, modul, dan aktivitas course ini.</p></div><a class="btn btn-soft" href="{{ route('parent.my-courses') }}"><x-icon name="arrow-left" /> Course Saya</a></div>
+    <div class="dash-title">
+        <div>
+            <span class="eyebrow">Belajar</span>
+            <h1>{{ $enrollment->course->title }}</h1>
+            <p>{{ $enrollment->child->name }} • Jalur belajar, modul, dan aktivitas course ini.</p>
+        </div>
+    </div>
 
     @if(!in_array($enrollment->status,['active','completed']))
         <div class="info-banner"><span><x-icon name="conflict" /></span><div><b>Menunggu pembayaran</b><p>Modul dan aktivitas terbuka setelah pembayaran course ini selesai.</p></div></div>

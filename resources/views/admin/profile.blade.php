@@ -39,7 +39,7 @@
                     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                         <label class="btn btn-sm btn-soft" style="cursor:pointer; margin:0;">
                             <x-icon name="plus" /> Pilih Foto Baru
-                            <input type="file" name="avatar" id="avatarInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="previewAvatar(this)">
+                            <input type="file" name="avatar" id="avatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;" data-crop-avatar data-preview-target="#avatarPreviewContainer">
                         </label>
                         @if($user->avatar)
                             <label style="font-size:11px; color:var(--danger); display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
@@ -82,19 +82,15 @@
     </div>
 </section>
 
+@push('scripts')
 <script>
-function previewAvatar(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var img = document.getElementById('avatarPreviewImg');
-            var initial = document.getElementById('avatarInitial');
-            img.src = e.target.result;
-            img.style.display = 'block';
-            if (initial) initial.style.display = 'none';
-        }
-        reader.readAsDataURL(input.files[0]);
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.SkillPathAvatarCropper) {
+        SkillPathAvatarCropper.bind('#avatarInput', {
+            previewTargets: ['#avatarPreviewContainer', '.admin-avatar']
+        });
     }
-}
+});
 </script>
+@endpush
 @endsection

@@ -9,7 +9,6 @@
             <h1>Kelola Data & Foto Anak</h1>
             <p>Perbarui foto, minat, dan gaya belajar anak agar rekomendasi kurikulum tetap sesuai.</p>
         </div>
-        <a class="btn btn-soft" href="{{ route('parent.dashboard') }}"><x-icon name="arrow-left" /> Kembali ke Dashboard</a>
     </div>
 
     <div class="children-profile-grid">
@@ -41,7 +40,7 @@
                     <div class="photo-input-row" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
                         <label class="btn btn-sm btn-soft" style="cursor:pointer; margin:0;">
                             <x-icon name="plus" /> Ganti Foto Anak
-                            <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="previewChildAvatar(this, '{{ $child->id }}')">
+                            <input type="file" name="avatar" id="childAvatarInput_{{ $child->id }}" class="child-avatar-file-input" accept="image/jpeg,image/png,image/webp" style="display:none;" data-crop-avatar data-preview-target="#childAvatarContainer_{{ $child->id }}">
                         </label>
                         @if($child->avatar)
                             <label style="font-size:11px; color:var(--danger); display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
@@ -111,21 +110,18 @@
     </div>
 </section>
 
+@push('scripts')
 <script>
-function previewChildAvatar(input, childId) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var img = document.getElementById('childPreviewImg_' + childId);
-            var initial = document.getElementById('childInitial_' + childId);
-            if (img) {
-                img.src = e.target.result;
-                img.style.display = 'block';
-            }
-            if (initial) initial.style.display = 'none';
-        }
-        reader.readAsDataURL(input.files[0]);
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.SkillPathAvatarCropper) {
+        document.querySelectorAll('.child-avatar-file-input').forEach(function(input) {
+            const previewTarget = input.getAttribute('data-preview-target');
+            SkillPathAvatarCropper.bind(input, {
+                previewTargets: previewTarget ? [previewTarget] : []
+            });
+        });
     }
-}
+});
 </script>
+@endpush
 @endsection

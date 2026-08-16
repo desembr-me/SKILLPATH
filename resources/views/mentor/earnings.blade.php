@@ -9,9 +9,6 @@
             <h1>Laporan Pendapatan</h1>
             <p>Pantau pendapatan bersih dari seluruh kelas dan siswa yang terdaftar pada kursus Anda.</p>
         </div>
-        <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}"><x-icon name="arrow-left" /> Dashboard</a>
-        </div>
     </div>
 
     <div class="stat-grid">

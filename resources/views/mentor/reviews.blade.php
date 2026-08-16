@@ -8,7 +8,6 @@
             <h1>Riwayat Ulasan Orang Tua</h1>
             <p>Rangkuman penilaian dari orang tua terhadap kelas yang kamu ajar.</p>
         </div>
-        <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}"><x-icon name="arrow-left" /> Kembali ke Dashboard</a>
     </div>
 
     <div class="rating-split">
