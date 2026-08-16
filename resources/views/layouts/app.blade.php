@@ -18,9 +18,6 @@
     <a class="brand" href="{{ route('home') }}" aria-label="SkillPath home">
         <img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath">
     </a>
-    <button class="nav-toggle" type="button" aria-label="Buka navigasi" aria-expanded="false" data-nav-toggle>
-        <span></span><span></span><span></span>
-    </button>
     @auth
         @if(auth()->user()->isParent())
             <nav class="main-nav parent-main-nav" data-main-nav aria-label="Navigasi orang tua">
@@ -35,10 +32,10 @@
             </nav>
             <div class="header-actions parent-header-actions">
                 <a class="header-profile" href="{{ route('parent.profile') }}" aria-label="Profil saya">
-                    @if(auth()->user()->avatar)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
+                    @if(auth()->user()->avatar_url)
+                        <img src="{{ auth()->user()->avatar_url }}" alt="Foto {{ auth()->user()->name }}">
                     @else
-                        <span>{{ strtoupper(substr(auth()->user()->name,0,1)) }}</span>
+                        <span>{{ auth()->user()->initial }}</span>
                     @endif
                 </a>
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-ghost">Keluar</button></form>
@@ -46,29 +43,35 @@
         @elseif(auth()->user()->isMentor())
             <nav class="main-nav parent-main-nav" data-main-nav aria-label="Navigasi pengajar">
                 <a href="{{ route('mentor.dashboard') }}" class="{{ request()->routeIs('mentor.dashboard') || request()->routeIs('mentor.students.show') ? 'active' : '' }}"><x-icon name="sessions" /> Dashboard</a>
+                <a href="{{ route('mentor.schedules.index') }}" class="{{ request()->routeIs('mentor.schedules.*') ? 'active' : '' }}"><x-icon name="calendar" /> Kelola Jadwal</a>
+                <a href="{{ route('mentor.earnings') }}" class="{{ request()->routeIs('mentor.earnings') ? 'active' : '' }}"><x-icon name="earnings" /> Pendapatan</a>
                 <a href="{{ route('mentor.reviews') }}" class="{{ request()->routeIs('mentor.reviews') ? 'active' : '' }}"><x-icon name="review" /> Ulasan</a>
-                <a href="{{ route('mentor.profile') }}" class="{{ request()->routeIs('mentor.profile*') ? 'active' : '' }}"><x-icon name="child" /> Profil</a>
+                <a href="{{ route('mentor.reschedules.index') }}" class="{{ request()->routeIs('mentor.reschedules.*') ? 'active' : '' }}"><x-icon name="bell" /> Permintaan Jadwal @if(auth()->user()->unreadRescheduleRequestsCount() > 0)<i class="nav-badge">{{ auth()->user()->unreadRescheduleRequestsCount() }}</i>@endif</a>
             </nav>
             <div class="header-actions parent-header-actions">
                 <a class="header-profile" href="{{ route('mentor.profile') }}" aria-label="Profil pengajar">
-                    @if(auth()->user()->avatar)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
+                    @if(auth()->user()->avatar_url)
+                        <img src="{{ auth()->user()->avatar_url }}" alt="Foto {{ auth()->user()->name }}">
                     @else
-                        <span>{{ strtoupper(substr(auth()->user()->name,0,1)) }}</span>
+                        <span>{{ auth()->user()->initial }}</span>
                     @endif
                 </a>
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-ghost">Keluar</button></form>
             </div>
         @else
             <nav class="main-nav" data-main-nav>
+                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard Admin</a>
                 <a href="{{ route('explore.index') }}">Kursus</a>
                 <a href="{{ route('mentors.index') }}">Mentor</a>
-                <a href="{{ route('home') }}#categories">Kategori</a>
-                <a href="{{ route('how-it-works') }}">Cara Kerja</a>
-                <a href="{{ route('home') }}#features">Fitur</a>
             </nav>
-            <div class="header-actions">
-                <a class="btn btn-soft" href="{{ route('admin.dashboard') }}">Dashboard</a>
+            <div class="header-actions parent-header-actions">
+                <a class="header-profile" href="{{ route('admin.profile') }}" aria-label="Profil administrator">
+                    @if(auth()->user()->avatar_url)
+                        <img src="{{ auth()->user()->avatar_url }}" alt="Foto {{ auth()->user()->name }}">
+                    @else
+                        <span>{{ auth()->user()->initial }}</span>
+                    @endif
+                </a>
                 <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn btn-ghost">Keluar</button></form>
             </div>
         @endif
@@ -85,6 +88,9 @@
             <a class="btn btn-primary" href="{{ route('register') }}">Daftar Orang Tua</a>
         </div>
     @endauth
+    <button class="nav-toggle" type="button" aria-label="Buka navigasi" aria-expanded="false" data-nav-toggle>
+        <span></span><span></span><span></span>
+    </button>
 </header>
 
 @if(session('success'))
@@ -96,13 +102,15 @@
 
 <main>@yield('content')</main>
 
-@if(auth()->check() && auth()->user()->isParent())
+@if(auth()->check() && auth()->user()->isMentor())
+    {{-- Footer dihilangkan untuk dashboard pengajar --}}
+@elseif(auth()->check() && auth()->user()->isParent())
 <footer class="site-footer-compact">
     <a class="brand" href="{{ route('home') }}"><img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath"></a>
     <p>SkillPath membantu orang tua menemukan dan mendaftarkan course offline non-akademik untuk anak usia 5-14 tahun.</p>
     <span>&copy; {{ now()->year }} SkillPath. Seluruh hak cipta dilindungi.</span>
 </footer>
-@else
+@elseif(!auth()->check())
 <footer class="site-footer">
     <div class="footer-brand">
         <a class="brand" href="{{ route('home') }}"><img class="brand-logo" src="{{ asset('images/skillpath-logo.png') }}" alt="SkillPath"></a>

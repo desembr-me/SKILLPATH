@@ -3,8 +3,8 @@
     <div class="mentor-flip-inner">
         <div class="mentor-flip-face mentor-flip-front" style="--flip-accent: {{ $mentor->category->accent ?? '#EAE5FF' }}">
             <div class="mentor-flip-photo">
-                @if($mentor->avatar)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($mentor->avatar) }}" alt="Foto {{ $mentor->name }}">
+                @if($mentor->avatar_url)
+                    <img src="{{ $mentor->avatar_url }}" alt="Foto {{ $mentor->name }}">
                 @else
                     <x-icon name="avatar" />
                 @endif

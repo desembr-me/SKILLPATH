@@ -15,10 +15,10 @@
         </div>
         <div class="dashboard-hero-side">
             <a class="dashboard-hero-avatar profile-hero-avatar" href="{{ route('parent.profile') }}" aria-label="Edit profil saya">
-                @if(auth()->user()->avatar)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar) }}" alt="Foto {{ auth()->user()->name }}">
+                @if(auth()->user()->avatar_url)
+                    <img src="{{ auth()->user()->avatar_url }}" alt="Foto {{ auth()->user()->name }}">
                 @else
-                    {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+                    {{ auth()->user()->initial }}
                 @endif
             </a>
         </div>
@@ -37,10 +37,12 @@
             @forelse($children as $child)
             <div class="child-row">
                 <div class="child-avatar">
-                    @if($child->avatar)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($child->avatar) }}" alt="Foto {{ $child->name }}">
+                    @if($child->avatar_url)
+                        <img src="{{ $child->avatar_url }}" alt="Foto {{ $child->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                    @elseif($child->avatar && !str_starts_with($child->avatar, 'avatars/'))
+                        <span style="font-size:20px;">{{ $child->avatar }}</span>
                     @else
-                        {{ strtoupper(substr($child->name,0,1)) }}
+                        {{ $child->initial }}
                     @endif
                 </div>
                 <div><h3>{{ $child->name }}</h3><p>{{ $child->age }} tahun • {{ implode(', ',$child->interests ?: []) ?: 'Minat belum dipilih' }}</p><div class="mini-tags"><span>{{ $child->enrollments->where('status','active')->count() }} course aktif</span></div></div>
@@ -61,10 +63,10 @@
         @forelse($mentors as $mentor)
         <div class="child-row">
             <div class="child-avatar">
-                @if($mentor->avatar)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($mentor->avatar) }}" alt="Foto {{ $mentor->name }}">
+                @if($mentor->avatar_url)
+                    <img src="{{ $mentor->avatar_url }}" alt="Foto {{ $mentor->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
                 @else
-                    {{ strtoupper(substr($mentor->name,0,1)) }}
+                    {{ $mentor->initial }}
                 @endif
             </div>
             <div><h3>{{ $mentor->name }}</h3><p>{{ $mentor->headline ?: 'Mentor SkillPath' }}</p></div>

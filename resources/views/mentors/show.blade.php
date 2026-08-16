@@ -4,8 +4,8 @@
 <section class="section compact">
     <div class="mentor-hero" style="--mentor-accent: {{ $mentor->category->accent ?? '#EAE5FF' }}">
         <div class="mentor-hero-photo">
-            @if($mentor->avatar)
-                <img src="{{ \Illuminate\Support\Facades\Storage::url($mentor->avatar) }}" alt="Foto {{ $mentor->name }}">
+            @if($mentor->avatar_url)
+                <img src="{{ $mentor->avatar_url }}" alt="Foto {{ $mentor->name }}">
             @else
                 <x-icon name="avatar" />
             @endif

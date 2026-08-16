@@ -16,4 +16,27 @@ class Child extends Model
     public function learningPaths(): HasMany { return $this->hasMany(LearningPath::class); }
     public function cartItems(): HasMany { return $this->hasMany(CartItem::class); }
     public function getAgeAttribute(): int { return $this->birth_date?->age ?? 0; }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+        if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+            return $this->avatar;
+        }
+        if (str_starts_with($this->avatar, 'avatars/') || str_starts_with($this->avatar, 'photos/')) {
+            return \Illuminate\Support\Facades\Storage::url($this->avatar);
+        }
+        if (file_exists(public_path($this->avatar))) {
+            return asset($this->avatar);
+        }
+        return null;
+    }
+
+    public function getInitialAttribute(): string
+    {
+        return strtoupper(substr($this->name ?? 'A', 0, 1));
+    }
 }
+

@@ -10,4 +10,5 @@ class Certificate extends Model
     protected function casts(): array { return ['issued_at'=>'datetime']; }
     public function enrollment(): BelongsTo { return $this->belongsTo(Enrollment::class); }
     public function examAttempt(): BelongsTo { return $this->belongsTo(ExamAttempt::class); }
+    public function getCertificateNumberAttribute(): ?string { return $this->certificate_no; }
 }

@@ -8,4 +8,5 @@ class Category extends Model
 {
     protected $fillable = ['name','slug','emoji','description','accent'];
     public function courses(): HasMany { return $this->hasMany(Course::class); }
+    public function mentors(): HasMany { return $this->hasMany(User::class, 'category_id')->where('role', 'mentor'); }
 }

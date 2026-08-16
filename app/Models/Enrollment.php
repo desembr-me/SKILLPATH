@@ -17,7 +17,9 @@ class Enrollment extends Model
     public function transaction(): HasOne { return $this->hasOne(Transaction::class); }
     public function attendance(): HasMany { return $this->hasMany(Attendance::class); }
     public function examAttempts(): HasMany { return $this->hasMany(ExamAttempt::class); }
+    public function examAttempt(): HasOne { return $this->hasOne(ExamAttempt::class)->latestOfMany(); }
     public function certificate(): HasOne { return $this->hasOne(Certificate::class); }
     public function review(): HasOne { return $this->hasOne(Review::class); }
     public function activityCompletions(): HasMany { return $this->hasMany(ActivityCompletion::class); }
+    public function rescheduleRequests(): HasMany { return $this->hasMany(RescheduleRequest::class); }
 }

@@ -23,7 +23,13 @@
             </div>
             <p>{{ $course->description }}</p>
             <div class="mentor-panel">
-                <div class="mentor-avatar">{{ strtoupper(substr($course->instructor->name,0,1)) }}</div>
+                <div class="mentor-avatar" style="overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                    @if($course->instructor->avatar_url)
+                        <img src="{{ $course->instructor->avatar_url }}" alt="Foto {{ $course->instructor->name }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                    @else
+                        {{ $course->instructor->initial }}
+                    @endif
+                </div>
                 <div><small>Mentor</small><b>{{ $course->instructor->name }}</b></div>
                 <span class="rating"><x-icon name="star" /> 4.9</span>
             </div>
