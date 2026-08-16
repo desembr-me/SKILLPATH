@@ -8,7 +8,10 @@
             <div class="my-course-row">
                 <div class="row-icon-vector" style="--row-accent:{{ $enrollment->course->accent }}"><x-icon :name="$enrollment->course->category->slug" /></div>
                 <div class="my-course-main">
-                    <h3>{{ $enrollment->course->title }}</h3>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px;">
+                        <h3 style="margin: 0;">{{ $enrollment->course->title }}</h3>
+                        <span class="status-chip soft" style="font-size: 9.5px; padding: 2px 7px;">{{ $enrollment->package_info['title'] ?? 'Paket 3 Bulan' }} ({{ $enrollment->total_sessions ?? ($enrollment->package_info['sessions'] ?? 12) }} Sesi)</span>
+                    </div>
                     <p>{{ $enrollment->child->name }} • {{ $enrollment->course->category->name }}</p>
                     <div class="progress-bar"><span style="width:{{ $enrollment->progress }}%"></span></div>
                     <small>{{ $enrollment->progress }}% modul selesai</small>

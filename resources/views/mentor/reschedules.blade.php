@@ -42,7 +42,7 @@
 
                     <div style="margin: 10px 0; background:#f7f8fc; border-radius:12px; padding:12px; display:grid; gap:8px; font-size:11px;">
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="color:var(--muted); width:130px; font-weight:800;">Jadwal Saat Ini:</span>
+                            <span style="color:var(--muted); width:130px; font-weight:600;">Jadwal Saat Ini:</span>
                             <b style="color:var(--ink);">
                                 {{ $days[optional($req->currentSchedule)->day_of_week ?? 0] }},
                                 {{ substr(optional($req->currentSchedule)->start_time, 0, 5) }} - {{ substr(optional($req->currentSchedule)->end_time, 0, 5) }} WIB
@@ -50,7 +50,7 @@
                             </b>
                         </div>
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="color:var(--purple); width:130px; font-weight:800;">Jadwal Baru Diminta:</span>
+                            <span style="color:var(--purple); width:130px; font-weight:600;">Jadwal Baru Diminta:</span>
                             <b style="color:var(--purple);">
                                 {{ $days[optional($req->requestedSchedule)->day_of_week ?? 0] }},
                                 {{ substr(optional($req->requestedSchedule)->start_time, 0, 5) }} - {{ substr(optional($req->requestedSchedule)->end_time, 0, 5) }} WIB
@@ -58,7 +58,7 @@
                             </b>
                         </div>
                         <div style="display:flex; align-items:flex-start; gap:10px; border-top:1px dashed #e2e4ed; padding-top:6px;">
-                            <span style="color:var(--muted); width:130px; font-weight:800;">Alasan Pengajuan:</span>
+                            <span style="color:var(--muted); width:130px; font-weight:600;">Alasan Pengajuan:</span>
                             <span style="color:var(--ink-2); font-style:italic;">"{{ $req->reason ?: 'Tidak ada keterangan khusus.' }}"</span>
                         </div>
                     </div>

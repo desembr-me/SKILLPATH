@@ -31,6 +31,7 @@ class User extends Authenticatable
     public function mentorRescheduleRequests(): HasMany { return $this->hasMany(RescheduleRequest::class, 'mentor_id'); }
     public function parentRescheduleRequests(): HasMany { return $this->hasMany(RescheduleRequest::class, 'parent_id'); }
     public function unreadRescheduleRequestsCount(): int { return $this->mentorRescheduleRequests()->where('is_read', false)->count(); }
+    public function pendingTransactionsCount(): int { return $this->transactions()->where('status', 'pending')->count(); }
 
     public function isParent(): bool { return $this->role === self::ROLE_PARENT; }
     public function isMentor(): bool { return $this->role === self::ROLE_MENTOR; }

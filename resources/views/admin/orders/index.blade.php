@@ -11,7 +11,7 @@
         </div>
         <div class="admin-action-group">
             <div class="admin-mini-kpi" style="padding:10px 18px; border-radius:12px; background:#fff;">
-                <span style="font-size:10px; font-weight:900; color:#8a84ab;">TOTAL OMSET SUKSES</span>
+                <span style="font-size:10px; font-weight:600; color:#8a84ab;">TOTAL OMSET SUKSES</span>
                 <b style="font-size:18px; color:#166534;">Rp{{ number_format($totalRevenue, 0, ',', '.') }}</b>
             </div>
         </div>
@@ -42,7 +42,7 @@
                 <x-icon name="search" />
                 <input type="text" name="search" value="{{ $search }}" placeholder="Cari invoice, nama orang tua...">
                 @if($search)
-                    <a href="{{ route('admin.orders.index', ['status' => $currentStatus]) }}" style="color:#8a84ab; font-size:11px; font-weight:800;">Reset</a>
+                    <a href="{{ route('admin.orders.index', ['status' => $currentStatus]) }}" style="color:#8a84ab; font-size:11px; font-weight:600;">Reset</a>
                 @endif
             </form>
         </div>
@@ -75,15 +75,40 @@
                                 <b style="color:#120e2e; display:block;">{{ $order->parent->name ?? 'User' }}</b>
                                 <small style="color:#8a84ab;">{{ $order->parent->email ?? '-' }}</small>
                             </td>
+                            @php
+                                $allEnr = $order->all_enrollments;
+                            @endphp
                             <td>
-                                <span style="font-weight:700; color:#5c567e;">{{ optional(optional($order->enrollment)->child)->name ?? '-' }}</span>
+                                @if($allEnr->count() > 1)
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        @foreach($allEnr as $enr)
+                                            <span style="font-weight:700; color:#5c567e; font-size:12px;">• {{ $enr->child->name ?? '-' }}</span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span style="font-weight:700; color:#5c567e;">{{ $order->child_name }}</span>
+                                @endif
                             </td>
                             <td>
-                                <b style="color:#120e2e; display:block;">{{ optional(optional($order->enrollment)->course)->title ?? 'Course Belajar' }}</b>
-                                <small style="color:#8a84ab;">{{ optional(optional($order->enrollment)->course)->sessions_count ?? '-' }} Pertemuan</small>
+                                @if($allEnr->count() > 1)
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        @foreach($allEnr as $enr)
+                                            <div>
+                                                <b style="color:#120e2e; font-size:12px;">{{ $enr->course->title ?? 'Course' }}</b>
+                                                <small style="color:#8a84ab; display:block; font-size:10px;">{{ $enr->package_info['title'] ?? 'Paket' }} ({{ $enr->package_info['sessions'] ?? $enr->total_sessions }} Sesi)</small>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <b style="color:#120e2e; display:block;">{{ $order->course_title }}</b>
+                                    <small style="color:#8a84ab;">{{ $order->metadata['package_title'] ?? ($order->enrollment?->package_info['title'] ?? 'Paket Pilihan') }}</small>
+                                @endif
                             </td>
                             <td>
                                 <b style="color:#120e2e; font-size:13.5px;">Rp{{ number_format($order->total, 0, ',', '.') }}</b>
+                                @if($allEnr->count() > 1)
+                                    <small style="display:block; color:#7e22ce; font-size:10px; font-weight:700;">{{ $allEnr->count() }} Kursus (1x Bayar)</small>
+                                @endif
                             </td>
                             <td>
                                 <span class="status-pill {{ $order->status }}">

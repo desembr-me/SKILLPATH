@@ -89,7 +89,7 @@
                         {{-- Collapsible sessions preview --}}
                         @if($schedule->sessions->isNotEmpty())
                             <details style="margin-top:10px; background:#f8f8fb; border-radius:12px; padding:8px 12px; font-size:10px;">
-                                <summary style="cursor:pointer; font-weight:800; color:var(--purple); list-style:none;">
+                                <summary style="cursor:pointer; font-weight:600; color:var(--purple); list-style:none;">
                                     Lihat {{ $schedule->sessions->count() }} Sesi Pertemuan &#9662;
                                 </summary>
                                 <div style="display:grid; gap:6px; margin-top:8px; padding-top:6px; border-top:1px solid #eff0f4;">

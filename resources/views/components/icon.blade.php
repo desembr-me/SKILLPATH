@@ -117,7 +117,7 @@
         @break
 
     @case('star')
-        <svg viewBox="0 0 24 24" fill="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.083 2.823a1.05 1.05 0 0 1 1.834 0l2.553 5.172 5.707.83a1.05 1.05 0 0 1 .582 1.792l-4.13 4.025.975 5.684a1.05 1.05 0 0 1-1.523 1.107L12 18.755l-5.081 2.678a1.05 1.05 0 0 1-1.523-1.107l.975-5.684-4.13-4.025a1.05 1.05 0 0 1 .582-1.792l5.707-.83 2.553-5.172z"/></svg>
         @break
 
     @case('plus')
@@ -207,6 +207,21 @@
     @case('mic')
     @case('voice')
         <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3M9 21h6"/></svg>
+        @break
+
+    @case('mic-off')
+        <svg viewBox="0 0 24 24" fill="none"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V6a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
+        @break
+
+    @case('volume')
+    @case('speaker')
+    @case('sound')
+        <svg viewBox="0 0 24 24" fill="none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        @break
+
+    @case('stop')
+    @case('square')
+        <svg viewBox="0 0 24 24" fill="none"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
         @break
 
     @case('avatar')

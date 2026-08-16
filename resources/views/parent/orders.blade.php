@@ -71,11 +71,19 @@
     {{-- Orders List Grid / Cards --}}
     <div class="orders-stack">
         @forelse($orders as $order)
+            @php
+                $allEnrollments = $order->all_enrollments;
+                $isMulti = $allEnrollments->count() > 1 || (!empty($order->metadata['items']) && count($order->metadata['items']) > 1);
+                $itemCount = max($allEnrollments->count(), !empty($order->metadata['items']) ? count($order->metadata['items']) : 1);
+            @endphp
             <div class="panel order-card {{ $order->status }}">
                 <div class="order-card-header">
                     <div class="order-header-left">
                         <span class="invoice-tag"><x-icon name="receipt" /> {{ $order->invoice_code }}</span>
                         <span class="order-date">{{ $order->created_at->format('d M Y, H:i') }} WIB</span>
+                        @if($isMulti)
+                            <span class="order-bundle-pill"><x-icon name="spark" /> {{ $itemCount }} Kursus (1x Bayar)</span>
+                        @endif
                         @if($order->payment_method)
                             <span class="order-method-badge">{{ strtoupper(str_replace('_', ' ', $order->payment_method)) }}</span>
                         @endif
@@ -84,32 +92,114 @@
                         @if($order->status === 'paid')
                             <span class="status-chip paid"><x-icon name="check" /> Lunas</span>
                         @elseif($order->status === 'pending')
-                            <span class="status-chip pending"><x-icon name="clock" /> Menunggu Pembayaran</span>
+                            <span class="status-chip pending"><x-icon name="clock" /> Menunggu 1x Pembayaran</span>
                         @else
                             <span class="status-chip cancelled"><x-icon name="recycle-bin" /> Dibatalkan</span>
                         @endif
                     </div>
                 </div>
 
-                <div class="order-card-body">
-                    <div class="order-thumb-box">
-                        <x-course-art :course="$order->enrollment->course ?? null" />
-                    </div>
-                    <div class="order-course-info">
-                        <span class="category-pill">{{ $order->enrollment->course->category->name ?? 'Kursus' }}</span>
-                        <h3>{{ $order->enrollment->course->title ?? 'Kursus SkillPath' }}</h3>
-                        
-                        <div class="order-meta-row">
-                            <span class="order-meta-item child-pill"><x-icon name="child" /> Siswa: <b>{{ $order->enrollment->child->name ?? '-' }}</b></span>
-                            <span class="order-meta-item"><x-icon name="calendar" /> Hari {{ $order->enrollment->schedule->day_of_week ?? '-' }}, {{ substr($order->enrollment->schedule->start_time ?? '', 0, 5) }} - {{ substr($order->enrollment->schedule->end_time ?? '', 0, 5) }} WIB</span>
-                            <span class="order-meta-item"><x-icon name="location" /> {{ $order->enrollment->course->location_name ?? '-' }}</span>
+                @if($isMulti)
+                    {{-- Multi-Course Group Layout --}}
+                    <div class="order-card-body multi" style="flex-direction: column; gap: 16px;">
+                        <div class="multi-course-list">
+                            @if($allEnrollments->isNotEmpty())
+                                @foreach($allEnrollments as $enr)
+                                    <div class="multi-course-item">
+                                        <div class="multi-course-thumb">
+                                            <x-course-art :course="$enr->course" />
+                                        </div>
+                                        <div class="multi-course-detail">
+                                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                                <span class="category-pill" style="font-size: 10px; padding: 2px 8px;">{{ $enr->course->category->name ?? 'Kursus' }}</span>
+                                                <span class="status-chip soft" style="font-size: 10px; padding: 2px 8px;">
+                                                    {{ $enr->package_info['title'] ?? 'Paket Pilihan' }} ({{ $enr->package_info['sessions'] ?? $enr->total_sessions }} Sesi)
+                                                </span>
+                                            </div>
+                                            <h4>{{ $enr->course->title }}</h4>
+                                            <div class="order-meta-row">
+                                                <span class="order-meta-item child-pill"><x-icon name="child" /> Siswa: <b>{{ $enr->child->name ?? '-' }}</b></span>
+                                                <span class="order-meta-item"><x-icon name="calendar" /> Hari {{ $enr->schedule->day_name ?? '-' }}, {{ substr($enr->schedule->start_time ?? '', 0, 5) }} - {{ substr($enr->schedule->end_time ?? '', 0, 5) }} WIB</span>
+                                                <span class="order-meta-item"><x-icon name="location" /> {{ $enr->course->location_name ?? '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="multi-course-price">
+                                            <small style="display:block; font-size:10px; color:var(--muted);">Biaya Paket</small>
+                                            <b>Rp{{ number_format($enr->package_info['price'] ?? 0, 0, ',', '.') }}</b>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @elseif(!empty($order->metadata['items']))
+                                @foreach($order->metadata['items'] as $itemMeta)
+                                    <div class="multi-course-item">
+                                        <div class="multi-course-thumb">
+                                            <div class="course-art">📚</div>
+                                        </div>
+                                        <div class="multi-course-detail">
+                                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                                <span class="category-pill" style="font-size: 10px; padding: 2px 8px;">{{ $itemMeta['category_name'] ?? 'Kursus' }}</span>
+                                                <span class="status-chip soft" style="font-size: 10px; padding: 2px 8px;">
+                                                    {{ $itemMeta['package_title'] ?? 'Paket' }} ({{ $itemMeta['package_sessions'] ?? 12 }} Sesi)
+                                                </span>
+                                            </div>
+                                            <h4>{{ $itemMeta['course_title'] ?? 'Kursus' }}</h4>
+                                            <div class="order-meta-row">
+                                                <span class="order-meta-item child-pill"><x-icon name="child" /> Siswa: <b>{{ $itemMeta['child_name'] ?? '-' }}</b></span>
+                                                <span class="order-meta-item"><x-icon name="calendar" /> Hari {{ $itemMeta['schedule_day'] ?? '-' }}, {{ $itemMeta['schedule_time'] ?? '-' }}</span>
+                                                <span class="order-meta-item"><x-icon name="location" /> {{ $itemMeta['location'] ?? '-' }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="multi-course-price">
+                                            <small style="display:block; font-size:10px; color:var(--muted);">Biaya Paket</small>
+                                            <b>Rp{{ number_format($itemMeta['price'] ?? 0, 0, ',', '.') }}</b>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; align-items: center; padding-top: 10px; border-top: 1px dashed #e2e8f0; width: 100%;">
+                            <div class="order-price-box">
+                                <small>Total Tagihan ({{ $itemCount }} Kursus)</small>
+                                <strong>Rp{{ number_format($order->total, 0, ',', '.') }}</strong>
+                            </div>
                         </div>
                     </div>
-                    <div class="order-price-box">
-                        <small>Total Tagihan</small>
-                        <strong>Rp{{ number_format($order->total, 0, ',', '.') }}</strong>
+                @else
+                    {{-- Single Course Layout --}}
+                    @php
+                        $primaryEnr = $allEnrollments->first() ?: $order->enrollment;
+                    @endphp
+                    <div class="order-card-body">
+                        <div class="order-thumb-box">
+                            <x-course-art :course="$primaryEnr->course ?? null" />
+                        </div>
+                        <div class="order-course-info">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                                <span class="category-pill">{{ $primaryEnr->course->category->name ?? 'Kursus' }}</span>
+                                @if(isset($order->metadata['package_title']))
+                                    <span class="status-chip recommended" style="font-size: 10px;">
+                                        {{ $order->metadata['package_title'] }} ({{ $order->metadata['package_sessions'] ?? ($primaryEnr->total_sessions ?? 12) }} Sesi)
+                                    </span>
+                                @elseif($primaryEnr && $primaryEnr->package_info)
+                                    <span class="status-chip soft" style="font-size: 10px;">
+                                        {{ $primaryEnr->package_info['title'] }} ({{ $primaryEnr->package_info['sessions'] }} Sesi)
+                                    </span>
+                                @endif
+                            </div>
+                            <h3>{{ $primaryEnr->course->title ?? $order->metadata['course_title'] ?? 'Kursus SkillPath' }}</h3>
+                            
+                            <div class="order-meta-row">
+                                <span class="order-meta-item child-pill"><x-icon name="child" /> Siswa: <b>{{ $primaryEnr->child->name ?? $order->metadata['child_name'] ?? '-' }}</b></span>
+                                <span class="order-meta-item"><x-icon name="calendar" /> Hari {{ $primaryEnr->schedule->day_name ?? $order->metadata['schedule_day'] ?? '-' }}, {{ substr($primaryEnr->schedule->start_time ?? '', 0, 5) }} - {{ substr($primaryEnr->schedule->end_time ?? '', 0, 5) }} WIB</span>
+                                <span class="order-meta-item"><x-icon name="location" /> {{ $primaryEnr->course->location_name ?? $order->metadata['location'] ?? '-' }}</span>
+                            </div>
+                        </div>
+                        <div class="order-price-box">
+                            <small>Total Tagihan</small>
+                            <strong>Rp{{ number_format($order->total, 0, ',', '.') }}</strong>
+                        </div>
                     </div>
-                </div>
+                @endif
 
                 <div class="order-card-footer">
                     <div class="order-footer-left">
@@ -122,7 +212,7 @@
                     <div class="order-footer-actions">
                         @if($order->status === 'pending')
                             <a class="btn btn-primary" href="{{ route('parent.payment.show', $order) }}">
-                                <x-icon name="wallet" /> Bayar Sekarang
+                                <x-icon name="wallet" /> Bayar Sekarang (1x Bayar)
                             </a>
                             <form method="POST" action="{{ route('parent.transactions.cancel', $order) }}" onsubmit="return confirm('Batalkan pesanan ini?')" style="display:inline;">
                                 @csrf

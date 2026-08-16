@@ -11,7 +11,7 @@
         </div>
         <div class="admin-action-group">
             <div class="admin-mini-kpi" style="padding:10px 18px; border-radius:12px; background:#fff;">
-                <span style="font-size:10px; font-weight:900; color:#8a84ab;">TOTAL SERTIFIKAT TERBIT</span>
+                <span style="font-size:10px; font-weight:600; color:#8a84ab;">TOTAL SERTIFIKAT TERBIT</span>
                 <b style="font-size:18px; color:#166534;">{{ $totalCount }} Sertifikat</b>
             </div>
         </div>
@@ -24,7 +24,7 @@
                 <x-icon name="search" />
                 <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor sertifikat atau nama siswa...">
                 @if($search)
-                    <a href="{{ route('admin.certificates.index') }}" style="color:#8a84ab; font-size:11px; font-weight:800;">Reset</a>
+                    <a href="{{ route('admin.certificates.index') }}" style="color:#8a84ab; font-size:11px; font-weight:600;">Reset</a>
                 @endif
             </form>
         </div>

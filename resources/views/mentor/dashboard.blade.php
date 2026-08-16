@@ -59,15 +59,15 @@
             <span class="stat-icon tone-green"><x-icon name="earnings" /></span>
             <div>
                 <span>Total Pendapatan</span>
-                <b style="font-size:16px;">Rp {{ number_format($totalEarnings, 0, ',', '.') }}</b>
-                <small><a href="{{ route('mentor.earnings') }}" style="color:var(--purple); text-decoration:underline;">Lihat rincian finansial &rarr;</a></small>
+                <b>Rp {{ number_format($totalEarnings, 0, ',', '.') }}</b>
+                <small>Akumulasi bagi hasil</small>
             </div>
         </article>
         <article>
             <span class="stat-icon tone-pink"><x-icon name="star" /></span>
             <div>
                 <span>Rating mentor</span>
-                <b>{{ $rating ?: '0.0' }}</b>
+                <b>{{ $rating ? number_format((float)$rating, 1) : '0.0' }}</b>
                 <small>Rata-rata review orang tua</small>
             </div>
         </article>
@@ -135,6 +135,7 @@
                     </p>
                     <div class="mini-tags">
                         <span>{{ ucfirst($enrollment->status) }}</span>
+                        <span>{{ $enrollment->package_info['title'] ?? 'Paket 3 Bulan' }} ({{ $enrollment->total_sessions ?? ($enrollment->package_info['sessions'] ?? 12) }} Sesi)</span>
                         <span>{{ $enrollment->progress }}% progres belajar</span>
                     </div>
                 </div>

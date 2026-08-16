@@ -25,7 +25,7 @@
             @method('PUT')
 
             <div class="profile-photo-block" style="display:flex; align-items:center; gap:20px; padding:16px 0; border-bottom:1px solid #eff0f4;">
-                <div class="profile-photo large" id="avatarPreviewContainer" style="width:84px; height:84px; border-radius:50%; overflow:hidden; background:#e0e7ff; color:var(--purple); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; border:2px solid #c7d2fe; flex-shrink:0;">
+                <div class="profile-photo large" id="avatarPreviewContainer" style="width:84px; height:84px; border-radius:50%; overflow:hidden; background:#e0e7ff; color:var(--purple); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:600; border:2px solid #c7d2fe; flex-shrink:0;">
                     @if($user->avatar_url)
                         <img id="avatarPreviewImg" src="{{ $user->avatar_url }}" alt="Foto {{ $user->name }}" style="width:100%; height:100%; object-fit:cover;">
                     @else

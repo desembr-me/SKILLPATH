@@ -65,11 +65,15 @@ Route::prefix('parent')->name('parent.')->middleware(['auth','role:parent'])->gr
  Route::post('/wishlist/{course}',[WishlistController::class,'toggle'])->name('wishlist.toggle');
  Route::get('/cart',[CartController::class,'index'])->name('cart');
  Route::post('/cart',[CartController::class,'store'])->name('cart.store');
+ Route::put('/cart/{cartItem}',[CartController::class,'update'])->name('cart.update');
  Route::delete('/cart/{cartItem}',[CartController::class,'destroy'])->name('cart.destroy');
  Route::get('/checkout',[CheckoutController::class,'index'])->name('checkout');
  Route::post('/checkout',[CheckoutController::class,'store'])->name('checkout.store');
  Route::get('/orders',[OrderController::class,'index'])->name('orders');
+ Route::get('/payment',[PaymentController::class,'index'])->name('payment');
  Route::get('/payment/{transaction}',[PaymentController::class,'show'])->name('payment.show');
+ Route::post('/payment/{transaction}/pay',[PaymentController::class,'pay'])->name('payment.pay');
+ Route::post('/payment/{transaction}/cancel',[PaymentController::class,'cancel'])->name('payment.cancel');
  Route::get('/transactions/{transaction}',[PaymentController::class,'show'])->name('transactions.show');
  Route::post('/transactions/{transaction}/pay',[PaymentController::class,'pay'])->name('transactions.pay');
  Route::post('/transactions/{transaction}/cancel',[PaymentController::class,'cancel'])->name('transactions.cancel');

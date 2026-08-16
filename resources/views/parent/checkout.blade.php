@@ -52,7 +52,13 @@
                     </div>
 
                     <div class="checkout-items-stack">
+                        @php
+                            $totalSavings = $items->sum(fn ($i) => (float) ($i->package_info['savings'] ?? 0));
+                        @endphp
                         @foreach($items as $item)
+                            @php
+                                $pkg = $item->package_info;
+                            @endphp
                             <article class="checkout-course-card {{ !empty($item->conflicts) ? 'item-conflict' : '' }}">
                                 <div class="checkout-thumb-box">
                                     <x-course-art :course="$item->schedule->course" />
@@ -60,11 +66,26 @@
                                 <div class="checkout-course-body">
                                     <div class="checkout-course-header">
                                         <div>
-                                            <span class="category-pill">{{ $item->schedule->course->category->name }}</span>
+                                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                                                <span class="category-pill">{{ $item->schedule->course->category->name }}</span>
+                                                <span class="status-chip {{ $pkg['badge_type'] === 'popular' ? 'recommended' : ($pkg['badge_type'] === 'best_value' ? 'confirmed' : 'soft') }}" style="font-size: 10px;">
+                                                    {{ $pkg['title'] }} • {{ $pkg['sessions'] }} Sesi
+                                                </span>
+                                            </div>
                                             <h3>{{ $item->schedule->course->title }}</h3>
                                         </div>
-                                        <div class="checkout-course-price">
-                                            Rp{{ number_format($item->schedule->course->price, 0, ',', '.') }}
+                                        <div class="checkout-course-price" style="text-align: right;">
+                                            @if($pkg['discount_percent'] > 0)
+                                                <small style="text-decoration: line-through; color: var(--muted); font-size: 11px; display: block;">
+                                                    Rp{{ number_format($pkg['original_price'], 0, ',', '.') }}
+                                                </small>
+                                            @endif
+                                            <b>Rp{{ number_format($item->calculated_price, 0, ',', '.') }}</b>
+                                            @if($pkg['savings'] > 0)
+                                                <small style="color: #059669; font-weight: 600; font-size: 10.5px; display: block;">
+                                                    Hemat Rp{{ number_format($pkg['savings'], 0, ',', '.') }}
+                                                </small>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -73,7 +94,7 @@
                                             <x-icon name="child" /> Siswa: <b>{{ $item->child->name }}</b>
                                         </span>
                                         <span class="meta-pill">
-                                            <x-icon name="calendar" /> Hari {{ $item->schedule->day_of_week }}, {{ substr($item->schedule->start_time, 0, 5) }} - {{ substr($item->schedule->end_time, 0, 5) }} WIB
+                                            <x-icon name="calendar" /> Hari {{ $item->schedule->day_name }}, {{ substr($item->schedule->start_time, 0, 5) }} - {{ substr($item->schedule->end_time, 0, 5) }} WIB
                                         </span>
                                         <span class="meta-pill">
                                             <x-icon name="location" /> {{ $item->schedule->course->location_name }}, {{ $item->schedule->course->city }}
@@ -110,44 +131,93 @@
                         <div>
                             <span class="panel-kicker">Metode Pembayaran</span>
                             <h2>Pilih Jalur Pembayaran</h2>
+                            <p class="panel-subtitle">Pilih metode pembayaran yang paling nyaman. Semua jalur terenkripsi dan diverifikasi sistem secara real-time.</p>
                         </div>
                     </div>
 
-                    <div class="payment-methods-grid">
-                        @foreach($paymentMethods as $index => $pm)
-                            <label class="payment-method-card {{ $index === 0 ? 'selected' : '' }}">
-                                <input type="radio" name="payment_method" value="{{ $pm['id'] }}" {{ $index === 0 ? 'checked' : '' }} class="payment-radio">
-                                <div class="method-card-content">
-                                    <div class="method-icon-badge">
-                                        <x-icon name="{{ $pm['icon'] }}" />
-                                    </div>
-                                    <div class="method-card-details">
-                                        <div class="method-title-row">
-                                            <h4>{{ $pm['name'] }}</h4>
-                                            <span class="method-tag">{{ $pm['badge'] }}</span>
-                                        </div>
-                                        <p>{{ $pm['desc'] }}</p>
-                                    </div>
-                                    <div class="method-check-circle">
-                                        <x-icon name="check" />
+                    <div class="pm-groups-container">
+                        @foreach($paymentMethods as $groupKey => $group)
+                            <div class="pm-group-section">
+                                <div class="pm-group-header">
+                                    <span class="pm-group-icon"><x-icon :name="$group['icon']" /></span>
+                                    <div>
+                                        <h3 class="pm-group-title">{{ $group['title'] }}</h3>
+                                        <span class="pm-group-subtitle">{{ $group['subtitle'] }}</span>
                                     </div>
                                 </div>
-                            </label>
+
+                                <div class="pm-cards-grid {{ count($group['items']) === 1 ? 'single-col' : '' }}">
+                                    @foreach($group['items'] as $pm)
+                                        @php($isSelected = ($loop->parent->first && $loop->first))
+                                        <label class="pm-card {{ $isSelected ? 'selected' : '' }}" for="pm_{{ $pm['id'] }}">
+                                            <input type="radio" id="pm_{{ $pm['id'] }}" name="payment_method" value="{{ $pm['id'] }}" {{ $isSelected ? 'checked' : '' }} class="pm-radio-input">
+                                            
+                                            <div class="pm-card-left">
+                                                <div class="pm-brand-badge pm-brand-{{ $pm['brand'] }}">
+                                                    <span>{{ $pm['brand_label'] }}</span>
+                                                </div>
+                                                <div class="pm-card-info">
+                                                    <div class="pm-title-row">
+                                                        <h4 class="pm-title">{{ $pm['name'] }}</h4>
+                                                        <span class="pm-status-pill {{ $pm['badge_type'] }}">{{ $pm['badge'] }}</span>
+                                                    </div>
+                                                    <p class="pm-desc">{{ $pm['desc'] }}</p>
+                                                    @if(!empty($pm['ewallet_tags']))
+                                                        <div class="pm-sub-badges">
+                                                            @foreach($pm['ewallet_tags'] as $tag)
+                                                                <span class="ewallet-mini-pill">{{ $tag }}</span>
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            <div class="pm-card-right">
+                                                <div class="pm-radio-indicator">
+                                                    <x-icon name="check" class="pm-check-svg" />
+                                                </div>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endforeach
                     </div>
                 </div>
 
-                {{-- SECTION 3: Special Notes for Mentor --}}
-                <div class="panel">
+                {{-- SECTION 3: Notes for Instructor --}}
+                <div class="panel parent-notes-panel">
                     <div class="panel-heading">
                         <div>
-                            <span class="panel-kicker">Catatan Tambahan (Opsional)</span>
-                            <h2>Pesan Khusus untuk Mentor</h2>
+                            <span class="panel-kicker">Opsional</span>
+                            <h2>Catatan Khusus untuk Mentor</h2>
+                            <p class="panel-subtitle">Beri tahu mentor tentang karakter, gaya belajar, atau kebutuhan khusus anak agar pendampingan belajar lebih efektif.</p>
                         </div>
                     </div>
+
                     <div class="notes-field-wrap">
-                        <textarea name="parent_notes" rows="3" class="form-control" placeholder="Contoh: Anak saya sedikit pemalu di awal sesi, atau memiliki preferensi belajar visual..."></textarea>
-                        <small class="text-muted">Catatan ini akan diteruskan ke pengajar untuk membantu pendekatan belajar yang lebih personal.</small>
+                        <div class="notes-quick-tags">
+                            <span class="quick-tag-label">Ide catatan cepat:</span>
+                            <button type="button" class="quick-chip" onclick="addNoteSuggestion('Anak sedikit pemalu di awal pertemuan.')">+ Pemalu di awal</button>
+                            <button type="button" class="quick-chip" onclick="addNoteSuggestion('Lebih cepat paham melalui visual & praktik.')">+ Suka visual & praktik</button>
+                            <button type="button" class="quick-chip" onclick="addNoteSuggestion('Sangat aktif dan antusias bertanya.')">+ Sangat aktif</button>
+                            <button type="button" class="quick-chip" onclick="addNoteSuggestion('Perlu dorongan percaya diri saat berpendapat.')">+ Butuh dorongan PD</button>
+                        </div>
+
+                        <div class="notes-textarea-container">
+                            <textarea 
+                                id="parentNotesArea"
+                                name="parent_notes" 
+                                rows="3" 
+                                class="notes-textarea" 
+                                placeholder="Contoh: Anak saya sedikit pemalu di awal pertemuan, lebih cepat paham dengan media visual/gambar, atau sangat antusias pada pembuatan game..."
+                            ></textarea>
+                        </div>
+
+                        <div class="notes-footer-hint">
+                            <x-icon name="info" />
+                            <span>Catatan ini bersifat privat dan langsung diteruskan kepada pengajar kelas untuk pendekatan personal.</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,9 +240,15 @@
                     <hr class="summary-divider">
 
                     <div class="summary-line">
-                        <span>Subtotal ({{ $items->count() }} kursus)</span>
+                        <span>Subtotal Paket ({{ $items->count() }} kursus)</span>
                         <b id="subtotalVal">Rp{{ number_format($subtotal, 0, ',', '.') }}</b>
                     </div>
+                    @if($totalSavings > 0)
+                        <div class="summary-line" style="color: #059669;">
+                            <span>Total Hemat Paket</span>
+                            <b>-Rp{{ number_format($totalSavings, 0, ',', '.') }}</b>
+                        </div>
+                    @endif
                     <div class="summary-line">
                         <span>Biaya Platform (Rp15.000/kursus)</span>
                         <b>Rp{{ number_format($platformFee, 0, ',', '.') }}</b>
@@ -207,11 +283,17 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // Payment method selection styling
-    const methodCards = document.querySelectorAll('.payment-method-card');
+    const methodCards = document.querySelectorAll('.pm-card');
     methodCards.forEach(card => {
         card.addEventListener('click', () => {
-            methodCards.forEach(c => c.classList.remove('selected'));
+            methodCards.forEach(c => {
+                c.classList.remove('selected');
+                const radio = c.querySelector('.pm-radio-input');
+                if (radio) radio.checked = false;
+            });
             card.classList.add('selected');
+            const activeRadio = card.querySelector('.pm-radio-input');
+            if (activeRadio) activeRadio.checked = true;
         });
     });
 
@@ -250,5 +332,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function addNoteSuggestion(text) {
+    const textarea = document.getElementById('parentNotesArea');
+    if (!textarea) return;
+    const current = textarea.value.trim();
+    if (current.length > 0) {
+        if (!current.includes(text)) {
+            textarea.value = current + ' ' + text;
+        }
+    } else {
+        textarea.value = text;
+    }
+    textarea.focus();
+}
 </script>
 @endsection

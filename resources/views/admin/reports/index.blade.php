@@ -21,7 +21,7 @@
                         name="year" 
                         onchange="if(this.value) window.location.href = '{{ route('admin.reports.index') }}?year=' + this.value;" 
                         class="admin-select" 
-                        style="padding:10px 38px 10px 36px; font-size:13px; font-weight:800; border-radius:11px; border:1.5px solid #dcdbe7; background:#ffffff; color:#1e1b4b; cursor:pointer; outline:none; appearance:none; -webkit-appearance:none; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.2s;">
+                        style="padding:10px 38px 10px 36px; font-size:13px; font-weight:600; border-radius:11px; border:1.5px solid #dcdbe7; background:#ffffff; color:#1e1b4b; cursor:pointer; outline:none; appearance:none; -webkit-appearance:none; box-shadow:0 2px 6px rgba(0,0,0,0.04); transition:all 0.2s;">
                     @foreach($availableYears as $yr)
                         <option value="{{ $yr }}" {{ (int)$selectedYear === (int)$yr ? 'selected' : '' }}>
                             Tahun {{ $yr }}
@@ -39,7 +39,7 @@
             <a href="{{ route('admin.reports.export', ['year' => $selectedYear]) }}" 
                class="btn-admin-primary" 
                title="Unduh laporan Excel untuk tahun {{ $selectedYear }}"
-               style="background:#107c41; border-color:#107c41; color:#ffffff; display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:11px; font-size:12px; font-weight:800; text-decoration:none; box-shadow:0 4px 12px rgba(16,124,65,0.25);">
+               style="background:#107c41; border-color:#107c41; color:#ffffff; display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:11px; font-size:12px; font-weight:600; text-decoration:none; box-shadow:0 4px 12px rgba(16,124,65,0.25);">
                 <x-icon name="excel" style="width:16px; height:16px;" />
                 <span>Ekspor Excel {{ $selectedYear }} (.xls)</span>
             </a>
@@ -91,7 +91,7 @@
             </div>
             <div style="display:flex; align-items:center; gap:12px;">
                 <span style="font-size:12px; color:#5c567e; font-weight:700;">Periode: <b>1 Jan {{ $selectedYear }} - 31 Des {{ $selectedYear }}</b></span>
-                <a href="{{ route('admin.reports.export', ['year' => $selectedYear]) }}" style="font-size:12px; font-weight:800; color:#107c41; text-decoration:none; display:inline-flex; align-items:center; gap:5px; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:8px;">
+                <a href="{{ route('admin.reports.export', ['year' => $selectedYear]) }}" style="font-size:12px; font-weight:600; color:#107c41; text-decoration:none; display:inline-flex; align-items:center; gap:5px; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px 12px; border-radius:8px;">
                     <x-icon name="download" style="width:14px; height:14px;" /> Unduh Excel Tahun {{ $selectedYear }}
                 </a>
             </div>
@@ -135,7 +135,7 @@
                         <tr style="{{ $hasRevenue ? 'background: #ffffff;' : 'background: #fafbfe; opacity: 0.85;' }}">
                             <td style="padding-left:24px;">
                                 <div style="display:flex; align-items:center; gap:10px;">
-                                    <span style="display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px; font-size:11px; font-weight:800; {{ $hasRevenue ? 'background:#eeebff; color:#5b36f5;' : 'background:#eff0f6; color:#9ca3af;' }}">
+                                    <span style="display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px; font-size:11px; font-weight:600; {{ $hasRevenue ? 'background:#eeebff; color:#5b36f5;' : 'background:#eff0f6; color:#9ca3af;' }}">
                                         {{ str_pad($m['month_num'], 2, '0', STR_PAD_LEFT) }}
                                     </span>
                                     <b style="color: {{ $hasRevenue ? '#120e2e' : '#6b7280' }}; font-size:13px;">{{ $m['month_name'] }}</b>
@@ -157,7 +157,7 @@
                                 </span>
                             </td>
                             <td style="text-align:right;">
-                                <span style="color: {{ $hasRevenue ? '#166534' : '#9ca3af' }}; font-weight:800;">
+                                <span style="color: {{ $hasRevenue ? '#166534' : '#9ca3af' }}; font-weight:600;">
                                     Rp{{ number_format($m['platform_profit'], 0, ',', '.') }}
                                 </span>
                             </td>
@@ -170,12 +170,12 @@
                     @endforeach
                 </tbody>
                 <tfoot>
-                    <tr style="background:#f4f3fb; font-weight:800; border-top:2px solid #dcd7fa;">
-                        <td style="padding-left:24px; color:#120e2e; font-size:12px; font-weight:900;">TOTAL TAHUN {{ $selectedYear }}</td>
-                        <td style="text-align:center; color:#5c567e; font-size:12px; font-weight:800;">{{ $grandOrders }} Transaksi</td>
-                        <td style="text-align:right; color:#120e2e; font-size:13px; font-weight:900;">Rp{{ number_format($grandGross, 0, ',', '.') }}</td>
-                        <td style="text-align:right; color:#5b36f5; font-size:13px; font-weight:900;">Rp{{ number_format($grandMentor, 0, ',', '.') }}</td>
-                        <td style="text-align:right; color:#166534; font-size:13px; font-weight:900;">Rp{{ number_format($grandPlatform, 0, ',', '.') }}</td>
+                    <tr style="background:#f4f3fb; font-weight:600; border-top:2px solid #dcd7fa;">
+                        <td style="padding-left:24px; color:#120e2e; font-size:12px; font-weight:600;">TOTAL TAHUN {{ $selectedYear }}</td>
+                        <td style="text-align:center; color:#5c567e; font-size:12px; font-weight:600;">{{ $grandOrders }} Transaksi</td>
+                        <td style="text-align:right; color:#120e2e; font-size:13px; font-weight:600;">Rp{{ number_format($grandGross, 0, ',', '.') }}</td>
+                        <td style="text-align:right; color:#5b36f5; font-size:13px; font-weight:600;">Rp{{ number_format($grandMentor, 0, ',', '.') }}</td>
+                        <td style="text-align:right; color:#166534; font-size:13px; font-weight:600;">Rp{{ number_format($grandPlatform, 0, ',', '.') }}</td>
                         <td style="text-align:center; padding-right:24px;">
                             <span class="status-pill {{ $grandGross > 0 ? 'paid' : '' }}">
                                 {{ $grandGross > 0 ? 'Aktif' : 'Nihil' }}
@@ -258,7 +258,7 @@
                             <td style="text-align:right; padding-right:24px;">
                                 <div>
                                     <span style="color:#5b36f5; font-size:11.5px; font-weight:700; display:block;">Mentor: Rp{{ number_format($tMentor, 0, ',', '.') }}</span>
-                                    <span style="color:#166534; font-size:11px; font-weight:800; display:block;">SkillPath: Rp{{ number_format($tPlatform, 0, ',', '.') }}</span>
+                                    <span style="color:#166534; font-size:11px; font-weight:600; display:block;">SkillPath: Rp{{ number_format($tPlatform, 0, ',', '.') }}</span>
                                 </div>
                             </td>
                         </tr>

@@ -13,7 +13,13 @@ class OrderController extends Controller
         $status = $request->query('status');
         $search = $request->query('search');
 
-        $query = Transaction::with(['parent', 'enrollment.child', 'enrollment.course'])->latest();
+        $query = Transaction::with([
+            'parent',
+            'enrollments.child',
+            'enrollments.course',
+            'enrollment.child',
+            'enrollment.course'
+        ])->latest();
 
         if ($status && in_array($status, ['paid', 'pending', 'cancelled'])) {
             $query->where('status', $status);
@@ -54,11 +60,14 @@ class OrderController extends Controller
             'paid_at' => $data['status'] === 'paid' ? ($transaction->paid_at ?: now()) : null,
         ]);
 
-        if ($transaction->enrollment) {
+        foreach ($transaction->all_enrollments as $enrollment) {
             if ($data['status'] === 'paid') {
-                $transaction->enrollment->update(['status' => 'active']);
+                $enrollment->update([
+                    'status' => 'active',
+                    'enrolled_at' => $enrollment->enrolled_at ?: now(),
+                ]);
             } elseif ($data['status'] === 'cancelled') {
-                $transaction->enrollment->update(['status' => 'cancelled']);
+                $enrollment->update(['status' => 'cancelled']);
             }
         }
 

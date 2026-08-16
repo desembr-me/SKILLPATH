@@ -99,7 +99,7 @@
                     @forelse($schedules as $sch)
                         <tr>
                             <td>
-                                <span class="status-pill paid" style="font-size:11.5px; font-weight:800;">
+                                <span class="status-pill paid" style="font-size:11.5px; font-weight:600;">
                                     {{ $sch->day_of_week }}
                                 </span>
                                 <b style="color:#120e2e; display:block; margin-top:4px;">
@@ -119,7 +119,7 @@
                                 <small style="color:#8a84ab; display:block;">{{ $sch->course->location_name ?? 'SkillPath Hub' }}</small>
                             </td>
                             <td>
-                                <span style="font-size:12px; font-weight:800; color:#166534;">
+                                <span style="font-size:12px; font-weight:600; color:#166534;">
                                     {{ $sch->enrollments->count() }} / {{ $sch->capacity }} Terisi
                                 </span>
                             </td>

@@ -2,33 +2,87 @@
 @section('title','Dashboard Orang Tua')
 @section('content')
 <section class="dashboard-page">
-    <div class="dashboard-hero">
-        <div class="dashboard-hero-copy">
-            <span class="eyebrow">Dashboard Orang Tua</span>
-            <h1>Halo, {{ auth()->user()->name }}</h1>
-            <p>Pantau anak, course, jadwal, ujian, dan transaksi dari satu tempat.</p>
-            <div class="hero-action-group">
-                <a class="btn btn-white" href="{{ route('parent.children') }}"><x-icon name="child" /> Profil Anak</a>
-                <a class="btn btn-white" href="{{ route('parent.onboarding') }}">Tambah Anak <x-icon name="arrow-right" /></a>
-                <a class="btn btn-white" href="{{ route('mentors.index') }}"><x-icon name="users" /> Lihat Semua Mentor</a>
+    <div class="dashboard-hero parent-dashboard-hero">
+        <div class="dashboard-hero-decor-circle-1"></div>
+        <div class="dashboard-hero-decor-circle-2"></div>
+        
+        <div class="dashboard-hero-left">
+            <div class="dashboard-hero-badge">
+                <x-icon name="spark" /> <span>Dashboard Orang Tua</span>
+            </div>
+            <h1 class="dashboard-hero-title">Halo, {{ auth()->user()->name }}! 👋</h1>
+            <p class="dashboard-hero-subtitle">Pantau perkembangan anak, jadwal kursus, evaluasi sertifikat, dan transaksi dari satu tempat yang nyaman.</p>
+            
+            <div class="dashboard-hero-actions">
+                <a class="btn-hero-action btn-hero-primary" href="{{ route('parent.onboarding') }}">
+                    <x-icon name="plus" /> <span>Tambah Anak</span>
+                </a>
+                <a class="btn-hero-action btn-hero-glass" href="{{ route('parent.children') }}">
+                    <x-icon name="child" /> <span>Profil Anak</span>
+                </a>
+                <a class="btn-hero-action btn-hero-glass" href="{{ route('mentors.index') }}">
+                    <x-icon name="users" /> <span>Lihat Semua Mentor</span>
+                </a>
             </div>
         </div>
-        <div class="dashboard-hero-side">
-            <a class="dashboard-hero-avatar profile-hero-avatar" href="{{ route('parent.profile') }}" aria-label="Edit profil saya">
-                @if(auth()->user()->avatar_url)
-                    <img src="{{ auth()->user()->avatar_url }}" alt="Foto {{ auth()->user()->name }}">
+
+        <div class="dashboard-hero-right">
+            <div class="hero-quick-profile-card">
+                <div class="quick-profile-header">
+                    <a class="quick-profile-avatar-wrap" href="{{ route('parent.profile') }}" title="Kelola Profil Saya">
+                        @if(auth()->user()->avatar_url)
+                            <img src="{{ auth()->user()->avatar_url }}" alt="Foto {{ auth()->user()->name }}">
+                        @else
+                            <span>{{ auth()->user()->initial }}</span>
+                        @endif
+                        <span class="quick-avatar-badge" title="Terverifikasi"><x-icon name="check" /></span>
+                    </a>
+                    <div class="quick-profile-info">
+                        <span class="quick-profile-role">Keluarga SkillPath</span>
+                        <h3 class="quick-profile-name">{{ auth()->user()->name }}</h3>
+                        <a class="quick-profile-edit-link" href="{{ route('parent.profile') }}">Kelola Profil Akun &rarr;</a>
+                    </div>
+                </div>
+
+                @if($children->count() > 0)
+                    <div class="quick-children-section">
+                        <span class="quick-section-label">Anak Terdaftar ({{ $children->count() }}):</span>
+                        <div class="quick-children-pills">
+                            @foreach($children->take(3) as $child)
+                                <a href="{{ route('parent.learning-path', $child) }}" class="quick-child-pill" title="Lihat Jalur Belajar {{ $child->name }}">
+                                    <span class="child-pill-avatar">
+                                        @if($child->avatar_url)
+                                            <img src="{{ $child->avatar_url }}" alt="{{ $child->name }}">
+                                        @elseif($child->avatar && !str_starts_with($child->avatar, 'avatars/'))
+                                            {{ $child->avatar }}
+                                        @else
+                                            {{ $child->initial }}
+                                        @endif
+                                    </span>
+                                    <span class="child-pill-name">{{ Str::limit($child->name, 10) }}</span>
+                                    <span class="child-pill-courses">{{ $child->enrollments->where('status', 'active')->count() }} kursus</span>
+                                </a>
+                            @endforeach
+                            @if($children->count() > 3)
+                                <a href="{{ route('parent.children') }}" class="quick-child-more">+{{ $children->count() - 3 }} lainnya</a>
+                            @endif
+                        </div>
+                    </div>
                 @else
-                    {{ auth()->user()->initial }}
+                    <div class="quick-children-empty">
+                        <p>Belum ada anak terdaftar di akun ini.</p>
+                        <a href="{{ route('parent.onboarding') }}" class="btn-quick-add">+ Daftarkan Anak Pertama</a>
+                    </div>
                 @endif
-            </a>
+            </div>
         </div>
     </div>
 
     <div class="stat-grid">
         <article><span class="stat-icon tone-blue"><x-icon name="child" /></span><div><span>Anak terdaftar</span><b>{{ $children->count() }}</b><small>Profil anak dalam akun keluarga</small></div></article>
-        <article><span class="stat-icon tone-green"><x-icon name="sessions" /></span><div><span>Course aktif</span><b>{{ $children->sum(fn($c)=>$c->enrollments->where('status','active')->count()) }}</b><small>Kursus yang sedang berjalan</small></div></article>
-        <article><span class="stat-icon tone-orange"><x-icon name="certificate" /></span><div><span>Sertifikat diperoleh</span><b>{{ $children->sum(fn($c)=>$c->enrollments->whereNotNull('certificate')->count()) }}</b><small>Course yang sudah lulus ujian</small></div></article>
-        <article><span class="stat-icon tone-pink"><x-icon name="payment" /></span><div><span>Transaksi terakhir</span><b>{{ $transactions->count() }}</b><small>Riwayat pembayaran terbaru</small></div></article>
+        <article><span class="stat-icon tone-green"><x-icon name="sessions" /></span><div><span>Kursus aktif</span><b>{{ $children->sum(fn($c)=>$c->enrollments->where('status','active')->count()) }}</b><small>Kursus yang sedang berjalan</small></div></article>
+        <article><span class="stat-icon tone-orange"><x-icon name="certificate" /></span><div><span>Sertifikat diperoleh</span><b>{{ $children->sum(fn($c)=>$c->enrollments->whereNotNull('certificate')->count()) }}</b><small>Kursus yang sudah lulus ujian</small></div></article>
+        <article><span class="stat-icon tone-pink"><x-icon name="payment" /></span><div><span>Riwayat transaksi</span><b>{{ $transactions->count() }}</b><small>Total riwayat pembayaran</small></div></article>
     </div>
 
     <div class="dashboard-grid">

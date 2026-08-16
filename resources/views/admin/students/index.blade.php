@@ -11,7 +11,7 @@
         </div>
         <div class="admin-action-group">
             <div class="admin-mini-kpi" style="padding:10px 18px; border-radius:12px; background:#fff;">
-                <span style="font-size:10px; font-weight:900; color:#8a84ab;">SISWA AKTIF BELAJAR</span>
+                <span style="font-size:10px; font-weight:600; color:#8a84ab;">SISWA AKTIF BELAJAR</span>
                 <b style="font-size:18px; color:#5b36f5;">{{ $totalActiveStudents }} Siswa</b>
             </div>
         </div>
@@ -24,7 +24,7 @@
                 <x-icon name="search" />
                 <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama anak atau judul kelas...">
                 @if($search)
-                    <a href="{{ route('admin.students.index') }}" style="color:#8a84ab; font-size:11px; font-weight:800;">Reset</a>
+                    <a href="{{ route('admin.students.index') }}" style="color:#8a84ab; font-size:11px; font-weight:600;">Reset</a>
                 @endif
             </form>
         </div>
@@ -70,7 +70,7 @@
                                 <small style="color:#8a84ab;">Mentor: {{ $st['course']->instructor->name ?? 'SkillPath' }}</small>
                             </td>
                             <td style="min-width: 160px;">
-                                <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:800; margin-bottom:4px;">
+                                <div style="display:flex; justify-content:space-between; font-size:11.5px; font-weight:600; margin-bottom:4px;">
                                     <span>{{ $st['completedActivities'] }} / {{ $st['totalActivities'] }} Modul</span>
                                     <span style="color:{{ $st['progressPercent'] >= 100 ? '#166534' : ($st['progressPercent'] < 50 ? '#b45309' : '#5b36f5') }};">
                                         {{ $st['progressPercent'] }}%

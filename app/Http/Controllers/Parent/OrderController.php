@@ -16,6 +16,10 @@ class OrderController extends Controller
 
         $query = $parent->transactions()
             ->with([
+                'enrollments.course.category',
+                'enrollments.course.instructor',
+                'enrollments.child',
+                'enrollments.schedule',
                 'enrollment.course.category',
                 'enrollment.course.instructor',
                 'enrollment.child',
@@ -30,6 +34,12 @@ class OrderController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('invoice_code', 'like', "%{$search}%")
+                  ->orWhereHas('enrollments.course', function ($c) use ($search) {
+                      $c->where('title', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('enrollments.child', function ($ch) use ($search) {
+                      $ch->where('name', 'like', "%{$search}%");
+                  })
                   ->orWhereHas('enrollment.course', function ($c) use ($search) {
                       $c->where('title', 'like', "%{$search}%");
                   })

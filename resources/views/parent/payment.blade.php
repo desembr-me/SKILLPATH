@@ -6,8 +6,8 @@
     <div class="dash-title no-print">
         <div>
             <span class="eyebrow">Payment Gateway</span>
-            <h1>{{ $transaction->status === 'paid' ? 'Bukti Pembayaran & Invoice' : 'Selesaikan Pembayaran' }}</h1>
-            <p>{{ $transaction->status === 'paid' ? 'Pembayaran telah diverifikasi. Kelas anak Anda siap dimulai.' : 'Selesaikan transaksi Anda sebelum batas waktu berakhir.' }}</p>
+            <h1>{{ $transaction->status === 'paid' ? 'Bukti Pembayaran & Invoice' : 'Instruksi Pembayaran' }}</h1>
+            <p>{{ $transaction->status === 'paid' ? 'Pembayaran telah diverifikasi. Kelas anak Anda siap dimulai.' : 'Selesaikan pembayaran 1x transfer sebelum batas waktu berakhir untuk mengaktifkan reservasi kelas.' }}</p>
         </div>
         <div class="dash-actions">
             <a class="btn btn-soft" href="{{ route('parent.orders') }}">
@@ -41,87 +41,287 @@
         </div>
     @endif
 
+@php
+if (!function_exists('penyebut_nominal')) {
+    function penyebut_nominal($nilai) {
+        $nilai = abs((int)$nilai);
+        $huruf = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+        $temp = "";
+        if ($nilai < 12) {
+            $temp = " ". $huruf[$nilai];
+        } else if ($nilai < 20) {
+            $temp = penyebut_nominal($nilai - 10). " Belas";
+        } else if ($nilai < 100) {
+            $temp = penyebut_nominal(intval($nilai / 10)). " Puluh" . penyebut_nominal($nilai % 10);
+        } else if ($nilai < 200) {
+            $temp = " Seratus" . penyebut_nominal($nilai - 100);
+        } else if ($nilai < 1000) {
+            $temp = penyebut_nominal(intval($nilai / 100)) . " Ratus" . penyebut_nominal($nilai % 100);
+        } else if ($nilai < 2000) {
+            $temp = " Seribu" . penyebut_nominal($nilai - 1000);
+        } else if ($nilai < 1000000) {
+            $temp = penyebut_nominal(intval($nilai / 1000)) . " Ribu" . penyebut_nominal($nilai % 1000);
+        } else if ($nilai < 1000000000) {
+            $temp = penyebut_nominal(intval($nilai / 1000000)) . " Juta" . penyebut_nominal($nilai % 1000000);
+        } else if ($nilai < 1000000000000) {
+            $temp = penyebut_nominal(intval($nilai / 1000000000)) . " Milyar" . penyebut_nominal(fmod($nilai, 1000000000));
+        }
+        return $temp;
+    }
+}
+if (!function_exists('terbilang_rupiah')) {
+    function terbilang_rupiah($nilai) {
+        if ($nilai < 0) {
+            $hasil = "Minus " . trim(penyebut_nominal($nilai));
+        } else {
+            $hasil = trim(penyebut_nominal($nilai));
+        }
+        return $hasil ? $hasil . " Rupiah" : "Nol Rupiah";
+    }
+}
+@endphp
+
     @if($transaction->status === 'paid')
-        {{-- PAID INVOICE / RECEIPT VIEW --}}
-        <div class="invoice-receipt-card print-target">
-            <div class="receipt-header">
-                <div class="receipt-brand">
-                    <img src="{{ asset('images/logo.png') }}" alt="SkillPath" class="brand-logo" onerror="this.style.display='none'">
-                    <div>
-                        <h2>PT SkillPath Edukasi Indonesia</h2>
-                        <p>Platform Kursus & Pengembangan Bakat Anak Terpercaya</p>
-                    </div>
-                </div>
-                <div class="receipt-status-badge paid">
-                    <x-icon name="check" /> LUNAS / PAID
-                </div>
+        {{-- OFFICIAL COMMERCIAL INVOICE (STANDARD FAKTUR PEMBAYARAN) --}}
+        <div class="official-invoice-sheet print-target">
+            {{-- Stamp Watermark --}}
+            <div class="invoice-stamp-watermark paid">
+                <span>LUNAS</span>
+                <small>VERIFIED</small>
             </div>
 
-            <hr class="receipt-divider">
-
-            <div class="receipt-meta-grid">
-                <div class="receipt-meta-item">
-                    <small>No. Invoice</small>
-                    <strong>{{ $transaction->invoice_code }}</strong>
-                </div>
-                <div class="receipt-meta-item">
-                    <small>Tanggal Pembayaran</small>
-                    <strong>{{ $transaction->paid_at ? $transaction->paid_at->format('d M Y, H:i') . ' WIB' : $transaction->updated_at->format('d M Y, H:i') . ' WIB' }}</strong>
-                </div>
-                <div class="receipt-meta-item">
-                    <small>Metode Pembayaran</small>
-                    <strong>{{ strtoupper(str_replace('_', ' ', $transaction->payment_method ?: 'Virtual Account')) }}</strong>
-                </div>
-                <div class="receipt-meta-item">
-                    <small>Nama Orang Tua</small>
-                    <strong>{{ $transaction->parent->name ?? auth()->user()->name }}</strong>
-                </div>
-            </div>
-
-            <div class="receipt-item-box">
-                <div class="receipt-item-head">
-                    <span>Rincian Course & Kelas Anak</span>
-                    <span>Biaya</span>
-                </div>
-                <div class="receipt-item-row">
-                    <div class="receipt-course-detail">
-                        <h4>{{ $course->title ?? $metadata['course_title'] ?? 'Course SkillPath' }}</h4>
-                        <div class="receipt-tags">
-                            <span class="badge-tag"><x-icon name="child" /> Siswa: <b>{{ $child->name ?? $metadata['child_name'] ?? 'Anak' }}</b></span>
-                            <span class="badge-tag"><x-icon name="calendar" /> Jadwal: <b>Hari {{ $schedule->day_of_week ?? $metadata['schedule_day'] ?? '-' }}, {{ $metadata['schedule_time'] ?? '-' }}</b></span>
-                            <span class="badge-tag"><x-icon name="location" /> Lokasi: <b>{{ $course->location_name ?? $metadata['location'] ?? 'Offline Hub' }}</b></span>
+            {{-- 1. Header Section --}}
+            <div class="invoice-header-row">
+                <div class="invoice-company-brand">
+                    <div class="company-logo-badge">
+                        <span class="logo-symbol">SP</span>
+                        <div class="company-brand-text">
+                            <h2>SKILLPATH</h2>
+                            <span>PT SKILLPATH EDUKASI NUSANTARA</span>
                         </div>
                     </div>
-                    <div class="receipt-item-price">
-                        Rp{{ number_format($transaction->subtotal, 0, ',', '.') }}
+                    <div class="company-address-block">
+                        <p>Gedung EduTech Tower Lt. 8, SCBD Bisnis Park</p>
+                        <p>Jl. Jend. Sudirman Kav. 52-53, Jakarta Selatan 12190</p>
+                        <p>NPWP: 01.345.678.9-012.000 &bull; Email: billing@skillpath.id &bull; www.skillpath.id</p>
                     </div>
                 </div>
-                <div class="receipt-calc-row">
-                    <span>Biaya Layanan Platform</span>
-                    <span>Rp{{ number_format($transaction->platform_fee, 0, ',', '.') }}</span>
-                </div>
-                @if(!empty($metadata['discount']) && $metadata['discount'] > 0)
-                <div class="receipt-calc-row discount-row">
-                    <span>Diskon Promo ({{ $metadata['voucher_code'] ?? 'PROMO' }})</span>
-                    <span>-Rp{{ number_format($metadata['discount'], 0, ',', '.') }}</span>
-                </div>
-                @endif
-                <div class="receipt-total-row">
-                    <span>Total Pembayaran</span>
-                    <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>
+
+                <div class="invoice-doc-title-block">
+                    <h1 class="invoice-main-title">INVOICE</h1>
+                    <div class="invoice-status-pill paid">
+                        <x-icon name="check" /> LUNAS / PAID
+                    </div>
+                    <table class="invoice-meta-table">
+                        <tr>
+                            <td class="meta-label">No. Invoice</td>
+                            <td class="meta-separator">:</td>
+                            <td class="meta-val"><strong>{{ $transaction->invoice_code }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label">Tgl. Terbit</td>
+                            <td class="meta-separator">:</td>
+                            <td class="meta-val">{{ $transaction->created_at->format('d F Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label">Tgl. Lunas</td>
+                            <td class="meta-separator">:</td>
+                            <td class="meta-val">{{ $transaction->paid_at ? $transaction->paid_at->format('d F Y, H:i') . ' WIB' : $transaction->updated_at->format('d F Y, H:i') . ' WIB' }}</td>
+                        </tr>
+                        <tr>
+                            <td class="meta-label">Metode Bayar</td>
+                            <td class="meta-separator">:</td>
+                            <td class="meta-val">{{ strtoupper(str_replace('_', ' ', $transaction->payment_method ?: 'Virtual Account')) }}</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
 
-            <div class="receipt-footer-notes">
-                <p><b>Catatan Pembayaran:</b> Bukti pembayaran ini adalah dokumen resmi yang sah diterbitkan oleh SkillPath. Akses belajar, jadwal kalender, dan materi kursus sudah langsung aktif untuk akun siswa.</p>
+            <div class="invoice-divider-line"></div>
+
+            {{-- 2. Customer / Billing Details (2 Columns) --}}
+            <div class="invoice-parties-grid">
+                <div class="party-card billed-from">
+                    <span class="party-caption">DITERBITKAN OLEH:</span>
+                    <h3 class="party-name">PT SKILLPATH EDUKASI NUSANTARA</h3>
+                    <p class="party-detail">Divisi Penagihan & Keuangan Digital</p>
+                    <p class="party-detail">Layanan Bantuan: finance@skillpath.id &bull; (021) 5088-7766</p>
+                </div>
+                <div class="party-card billed-to">
+                    <span class="party-caption">DITAGIHKAN KEPADA:</span>
+                    <h3 class="party-name">{{ $transaction->parent->name ?? auth()->user()->name }}</h3>
+                    <p class="party-detail"><strong>Email:</strong> {{ $transaction->parent->email ?? auth()->user()->email }}</p>
+                    <p class="party-detail"><strong>No. Telepon:</strong> {{ $transaction->parent->phone ?? '-' }}</p>
+                    <p class="party-detail"><strong>ID Pelanggan:</strong> SP-USER-{{ str_pad($transaction->parent_id ?? 1, 5, '0', STR_PAD_LEFT) }}</p>
+                </div>
             </div>
 
-            <div class="receipt-action-buttons no-print">
-                <a class="btn btn-primary btn-lg" href="{{ route('parent.my-courses') }}">
-                    <x-icon name="book" /> Mulai Belajar di Course Saya
+            {{-- 3. Itemized Products / Services Table --}}
+            <div class="invoice-table-wrap">
+                <table class="invoice-items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%; text-align: center;">No.</th>
+                            <th style="width: 44%;">Deskripsi Kursus & Layanan</th>
+                            <th style="width: 22%;">Jadwal & Lokasi Belajar</th>
+                            <th style="width: 14%; text-align: center;">Paket / Sesi</th>
+                            <th style="width: 15%; text-align: right;">Total Harga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php $no = 1; @endphp
+                        @if(isset($enrollments) && $enrollments->count() > 0)
+                            @foreach($enrollments as $enr)
+                                <tr>
+                                    <td style="text-align: center;" class="row-num">{{ $no++ }}</td>
+                                    <td>
+                                        <div class="item-course-title">{{ $enr->course->title }}</div>
+                                        <div class="item-meta-tags">
+                                            <span class="meta-tag student"><x-icon name="child" /> Siswa: <b>{{ $enr->child->name ?? '-' }}</b></span>
+                                            <span class="meta-tag cat"><x-icon name="spark" /> {{ $enr->course->category->name ?? 'Kursus' }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="schedule-detail-text">
+                                            <div class="sched-day"><x-icon name="calendar" /> Hari {{ $enr->schedule->day_name ?? '-' }}, {{ substr($enr->schedule->start_time ?? '', 0, 5) }} - {{ substr($enr->schedule->end_time ?? '', 0, 5) }} WIB</div>
+                                            <div class="loc-text"><x-icon name="location" /> {{ $enr->course->location_name ?? 'SkillPath Learning Center' }}</div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="package-pill">{{ $enr->package_info['title'] ?? 'Paket Pilihan' }}</span>
+                                        <small class="session-count-text">{{ $enr->package_info['sessions'] ?? $enr->total_sessions }} Sesi Pertemuan</small>
+                                    </td>
+                                    <td style="text-align: right;" class="item-price-val">
+                                        Rp{{ number_format($enr->package_info['price'] ?? 0, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @elseif(!empty($metadata['items']))
+                            @foreach($metadata['items'] as $itemMeta)
+                                <tr>
+                                    <td style="text-align: center;" class="row-num">{{ $no++ }}</td>
+                                    <td>
+                                        <div class="item-course-title">{{ $itemMeta['course_title'] ?? 'Kursus SkillPath' }}</div>
+                                        <div class="item-meta-tags">
+                                            <span class="meta-tag student"><x-icon name="child" /> Siswa: <b>{{ $itemMeta['child_name'] ?? 'Anak' }}</b></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="schedule-detail-text">
+                                            <div class="sched-day"><x-icon name="calendar" /> Hari {{ $itemMeta['schedule_day'] ?? '-' }}, {{ $itemMeta['schedule_time'] ?? '-' }}</div>
+                                            <div class="loc-text"><x-icon name="location" /> {{ $itemMeta['location'] ?? 'SkillPath Center' }}</div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="package-pill">{{ $itemMeta['package_title'] ?? 'Paket Pilihan' }}</span>
+                                        <small class="session-count-text">{{ $itemMeta['package_sessions'] ?? 12 }} Sesi Pertemuan</small>
+                                    </td>
+                                    <td style="text-align: right;" class="item-price-val">
+                                        Rp{{ number_format($itemMeta['price'] ?? 0, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td style="text-align: center;" class="row-num">{{ $no++ }}</td>
+                                <td>
+                                    <div class="item-course-title">{{ $course->title ?? $metadata['course_title'] ?? 'Kursus SkillPath' }}</div>
+                                    <div class="item-meta-tags">
+                                        <span class="meta-tag student"><x-icon name="child" /> Siswa: <b>{{ $child->name ?? $metadata['child_name'] ?? 'Anak' }}</b></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="schedule-detail-text">
+                                        <div class="sched-day"><x-icon name="calendar" /> Hari {{ $schedule->day_name ?? $metadata['schedule_day'] ?? '-' }}, {{ $metadata['schedule_time'] ?? '-' }}</div>
+                                        <div class="loc-text"><x-icon name="location" /> {{ $course->location_name ?? $metadata['location'] ?? 'SkillPath Center' }}</div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <span class="package-pill">{{ $metadata['package_title'] ?? 'Paket Pilihan' }}</span>
+                                    <small class="session-count-text">{{ $metadata['package_sessions'] ?? 12 }} Sesi Pertemuan</small>
+                                </td>
+                                <td style="text-align: right;" class="item-price-val">
+                                    Rp{{ number_format($transaction->subtotal, 0, ',', '.') }}
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- 4. Calculations & Financial Summary --}}
+            <div class="invoice-summary-container">
+                <div class="invoice-terbilang-box">
+                    <span class="terbilang-title">TERBILANG:</span>
+                    <p class="terbilang-text"># {{ terbilang_rupiah($transaction->total) }} #</p>
+                    <div class="payment-verification-badge">
+                        <x-icon name="check" />
+                        <div>
+                            <strong>Pembayaran Terverifikasi Resmi</strong>
+                            <small>ID Ref: REF-{{ strtoupper(substr(md5($transaction->invoice_code), 0, 10)) }}</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="invoice-totals-table-box">
+                    <table class="invoice-totals-table">
+                        <tr>
+                            <td class="tot-label">Subtotal Kursus</td>
+                            <td class="tot-val">Rp{{ number_format($transaction->subtotal, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="tot-label">Biaya Layanan Platform</td>
+                            <td class="tot-val">Rp{{ number_format($transaction->platform_fee, 0, ',', '.') }}</td>
+                        </tr>
+                        @if(!empty($metadata['discount']) && $metadata['discount'] > 0)
+                            <tr class="discount-row">
+                                <td class="tot-label">Diskon Promo ({{ $metadata['voucher_code'] ?? 'PROMO' }})</td>
+                                <td class="tot-val">-Rp{{ number_format($metadata['discount'], 0, ',', '.') }}</td>
+                            </tr>
+                        @endif
+                        <tr class="grand-total-row">
+                            <td class="tot-label">TOTAL PEMBAYARAN</td>
+                            <td class="tot-val">Rp{{ number_format($transaction->total, 0, ',', '.') }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            {{-- 5. Terms & Legal / Digital Stamp --}}
+            <div class="invoice-footer-section">
+                <div class="invoice-terms-notes">
+                    <h4>Ketentuan & Informasi Resmi:</h4>
+                    <ol>
+                        <li>Faktur ini adalah bukti pembayaran yang sah dan diterbitkan secara komputerisasi resmi oleh sistem PT SkillPath Edukasi Nusantara.</li>
+                        <li>Hak akses kelas, materi pembelajaran, dan reservasi jadwal mentor telah aktif secara otomatis untuk profil siswa tertera.</li>
+                        <li>Simpan atau cetak faktur ini sebagai dokumen tanda terima pembayaran Anda.</li>
+                    </ol>
+                </div>
+
+                <div class="invoice-signature-block">
+                    <p class="sig-city-date">Jakarta, {{ $transaction->paid_at ? $transaction->paid_at->format('d F Y') : $transaction->updated_at->format('d F Y') }}</p>
+                    <div class="digital-stamp-badge">
+                        <div class="stamp-inner">
+                            <span class="stamp-org">PT SKILLPATH EDUKASI NUSANTARA</span>
+                            <span class="stamp-status">LUNAS / VERIFIED</span>
+                            <span class="stamp-dept">FINANCE & BILLING</span>
+                        </div>
+                    </div>
+                    <p class="sig-name">SkillPath Billing Dept.</p>
+                    <small class="sig-sub">Dokumen Sah Komputerisasi</small>
+                </div>
+            </div>
+
+            {{-- 6. Interactive Action Buttons (Screen Only) --}}
+            <div class="invoice-bottom-actions no-print">
+                <button class="btn btn-primary btn-lg" onclick="window.print()">
+                    <x-icon name="printer" /> Cetak / Unduh PDF Invoice
+                </button>
+                <a class="btn btn-soft btn-lg" href="{{ route('parent.my-courses') }}">
+                    <x-icon name="book" /> Masuk ke Kursus Saya
                 </a>
                 <a class="btn btn-soft btn-lg" href="{{ route('parent.schedule') }}">
-                    <x-icon name="calendar" /> Cek Jadwal Kelas di Kalender
+                    <x-icon name="calendar" /> Cek Jadwal Kelas
                 </a>
             </div>
         </div>
@@ -142,220 +342,380 @@
 
     @else
         {{-- PENDING PAYMENT GATEWAY VIEW --}}
-        <div class="payment-grid">
-            <div class="payment-main-col">
-                {{-- Payment Countdown & Status Bar --}}
-                <div class="panel payment-countdown-panel">
-                    <div class="countdown-copy">
-                        <span class="status-chip pending"><x-icon name="clock" /> Menunggu Pembayaran</span>
-                        <h3>Batas Waktu Pembayaran</h3>
-                        <p>Segera selesaikan pembayaran sebelum batas waktu berakhir agar kuota jadwal anak Anda tidak terlepas.</p>
-                    </div>
-                    <div class="countdown-timer-box">
-                        <span class="timer-label">Sisa Waktu</span>
-                        <div class="timer-digits" id="countdownTimer" data-expire="{{ $expiresAt->timestamp }}">
-                            23:59:59
-                        </div>
-                        <small>Jatuh Tempo: {{ $expiresAt->format('d M Y, H:i') }} WIB</small>
+        @php
+            $rawMethod = $transaction->payment_method ?: 'bca_va';
+            $bankCode = str_replace(['_va', '_transfer'], '', $rawMethod);
+            if ($rawMethod === 'qris') $bankCode = 'qris';
+            if ($rawMethod === 'bank_transfer') $bankCode = 'manual';
+
+            $bankName = match($bankCode) {
+                'bca' => 'BCA',
+                'mandiri' => 'MANDIRI',
+                'bri' => 'BRI',
+                'bni' => 'BNI',
+                'qris' => 'QRIS',
+                default => 'BANK'
+            };
+
+            $methodTitle = match($rawMethod) {
+                'qris' => 'QRIS Standar Nasional Indonesia',
+                'bank_transfer' => 'Transfer Rekening Bank BCA',
+                default => 'Virtual Account ' . $bankName
+            };
+
+            $vaNumber = $metadata['va_number'] ?? ('80777' . str_pad($transaction->parent_id, 4, '0', STR_PAD_LEFT) . rand(100000, 999999));
+            $courseCount = isset($enrollments) && $enrollments->count() > 0 ? $enrollments->count() : (!empty($metadata['items']) ? count($metadata['items']) : 1);
+        @endphp
+
+        {{-- Full-width Payment Countdown & Status Bar --}}
+        <div class="payment-countdown-banner">
+            <div class="countdown-banner-left">
+                <div class="invoice-pill-row">
+                    <span class="status-chip pending"><x-icon name="clock" /> Menunggu Pembayaran (1x Bayar)</span>
+                    <span class="invoice-number-chip"><x-icon name="receipt" /> {{ $transaction->invoice_code }}</span>
+                    <span class="bundle-count-chip"><x-icon name="spark" /> {{ $courseCount }} Kursus Sekaligus</span>
+                </div>
+                <h2>Selesaikan Pembayaran Anda</h2>
+                <p>Transfer sebelum batas waktu berakhir agar reservasi jadwal {{ $courseCount }} kelas anak Anda langsung aktif otomatis.</p>
+            </div>
+            @php
+                $diffSec = max(0, $expiresAt->timestamp - now()->timestamp);
+                $initH = str_pad((string)floor($diffSec / 3600), 2, '0', STR_PAD_LEFT);
+                $initM = str_pad((string)floor(($diffSec % 3600) / 60), 2, '0', STR_PAD_LEFT);
+                $initS = str_pad((string)($diffSec % 60), 2, '0', STR_PAD_LEFT);
+            @endphp
+            <div class="countdown-banner-right">
+                <span class="countdown-caption"><x-icon name="clock" /> Batas Waktu Bayar</span>
+                <div class="countdown-digits-box">
+                    <div class="countdown-val" id="countdownTimer" data-expire="{{ $expiresAt->timestamp }}">
+                        {{ $initH }}:{{ $initM }}:{{ $initS }}
                     </div>
                 </div>
+                <small class="countdown-deadline">{{ $expiresAt->format('d M Y, H:i') }} WIB</small>
+            </div>
+        </div>
 
-                {{-- Payment Method Specific Instructions --}}
-                @php
-                    $method = $transaction->payment_method ?: 'bca_va';
-                    $vaNumber = $metadata['va_number'] ?? ('80777' . str_pad((string)auth()->id(), 4, '0', STR_PAD_LEFT) . '889911');
-                    $methodName = match($method) {
-                        'mandiri_va' => 'Mandiri Virtual Account',
-                        'bri_va' => 'BRI Virtual Account (BRIVA)',
-                        'bni_va' => 'BNI Virtual Account',
-                        'qris' => 'QRIS (Semua Pembayaran QR)',
-                        'bank_transfer' => 'Transfer Bank Manual BCA',
-                        'instant_demo' => 'Simulasi Pembayaran Instan',
-                        default => 'BCA Virtual Account',
-                    };
-                @endphp
-
-                <div class="panel payment-instruction-panel">
-                    <div class="payment-instruction-header">
-                        <div class="method-badge-lead">
-                            <span class="method-icon-wrap"><x-icon name="{{ $method === 'qris' ? 'qr' : ($method === 'bank_transfer' ? 'wallet' : 'bank') }}" /></span>
-                            <div>
-                                <span class="eyebrow">Metode Terpilih</span>
-                                <h2>{{ $methodName }}</h2>
+        <div class="payment-grid">
+            <div class="payment-main-col">
+                {{-- Unified Payment Method Information Container --}}
+                <div class="panel payment-box-card">
+                    @if(str_contains($rawMethod, 'va'))
+                        {{-- VIRTUAL ACCOUNT SECTION --}}
+                        <div class="method-header-bar">
+                            <div class="method-header-left">
+                                <div class="method-brand-pill {{ $bankCode }}">
+                                    {{ $bankName }}
+                                </div>
+                                <div class="method-header-info">
+                                    <span class="panel-kicker" style="font-size: 10.5px; margin-bottom: 2px;">Metode Transfer</span>
+                                    <h3>Nomor Virtual Account {{ $bankName }}</h3>
+                                    <p>Verifikasi instan otomatis 24/7 • Bebas biaya admin transaksi</p>
+                                </div>
+                            </div>
+                            <div class="verified-merchant-badge">
+                                <x-icon name="shield-check" />
+                                <span>Official Merchant</span>
                             </div>
                         </div>
-                    </div>
 
-                    @if(str_contains($method, 'va') || $method === 'instant_demo')
-                        {{-- VIRTUAL ACCOUNT BOX --}}
-                        <div class="va-copy-box">
-                            <div class="va-copy-item">
-                                <span class="va-label">Nomor Virtual Account</span>
-                                <div class="va-value-row">
-                                    <strong class="va-code" id="vaCodeText">{{ $vaNumber }}</strong>
-                                    <button class="btn btn-soft btn-sm copy-btn" onclick="copyToClipboard('{{ $vaNumber }}', 'Nomor Virtual Account')">
+                        <div class="payment-details-card">
+                            <div class="detail-row highlight-box">
+                                <div class="detail-label-group">
+                                    <span class="detail-label"><x-icon name="bank" /> NOMOR VIRTUAL ACCOUNT {{ $bankName }}</span>
+                                    <span class="detail-sub">Tujuan transfer dari ATM / Mobile Banking</span>
+                                </div>
+                                <div class="detail-value-group">
+                                    <span class="detail-code-large" id="vaNumberDisplay">{{ $vaNumber }}</span>
+                                    <button type="button" class="btn-copy-interactive" onclick="copyToClipboard('{{ $vaNumber }}', 'Nomor VA')">
                                         <x-icon name="copy" /> Salin No. VA
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="va-copy-item">
-                                <span class="va-label">Total Tagihan Pembayaran</span>
-                                <div class="va-value-row">
-                                    <strong class="va-price">Rp{{ number_format($transaction->total, 0, ',', '.') }}</strong>
-                                    <button class="btn btn-soft btn-sm copy-btn" onclick="copyToClipboard('{{ (int)$transaction->total }}', 'Total Pembayaran')">
+                            <div class="detail-row highlight-box amount-box">
+                                <div class="detail-label-group">
+                                    <span class="detail-label"><x-icon name="wallet" /> TOTAL TAGIHAN (1X BAYAR)</span>
+                                    <span class="detail-sub">Satu kali bayar untuk seluruh {{ $courseCount }} kursus</span>
+                                </div>
+                                <div class="detail-value-group">
+                                    <span class="detail-amount-large">Rp{{ number_format($transaction->total, 0, ',', '.') }}</span>
+                                    <button type="button" class="btn-copy-interactive" onclick="copyToClipboard('{{ (int)$transaction->total }}', 'Total Pembayaran')">
                                         <x-icon name="copy" /> Salin Jumlah
                                     </button>
                                 </div>
                             </div>
-                        </div>
 
-                        {{-- Payment Guides --}}
-                        <div class="payment-steps-accordion">
-                            <h3>Panduan Pembayaran Virtual Account</h3>
-
-                            <details class="guide-item" open>
-                                <summary><b>1. Pembayaran via Mobile Banking (m-Banking)</b> <x-icon name="arrow-right" /></summary>
-                                <div class="guide-content">
-                                    <ol>
-                                        <li>Buka aplikasi Mobile Banking di ponsel Anda dan login.</li>
-                                        <li>Pilih menu <b>Transfer</b> &rarr; pilih <b>Virtual Account</b>.</li>
-                                        <li>Masukkan nomor Virtual Account: <code>{{ $vaNumber }}</code>.</li>
-                                        <li>Periksa detail pembayaran: Penerima <b>PT SkillPath ({{ $child->name ?? 'Anak' }})</b> dengan nominal <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>.</li>
-                                        <li>Masukkan PIN m-Banking Anda untuk menyelesaikan transaksi.</li>
-                                    </ol>
+                            <div class="detail-row info-row">
+                                <div class="info-cell">
+                                    <small>Nama Penerima</small>
+                                    <strong>PT SkillPath Edukasi Indonesia</strong>
                                 </div>
-                            </details>
-
-                            <details class="guide-item">
-                                <summary><b>2. Pembayaran via Mesin ATM</b> <x-icon name="arrow-right" /></summary>
-                                <div class="guide-content">
-                                    <ol>
-                                        <li>Masukkan Kartu ATM dan PIN Anda di mesin ATM.</li>
-                                        <li>Pilih menu <b>Transaksi Lainnya</b> &rarr; <b>Transfer</b> &rarr; <b>Ke Rekening Virtual Account</b>.</li>
-                                        <li>Masukkan nomor Virtual Account: <code>{{ $vaNumber }}</code>.</li>
-                                        <li>Pastikan rincian tagihan sudah sesuai, lalu pilih <b>Ya / Benar</b>.</li>
-                                        <li>Simpan struk transaksi sebagai bukti pembayaran.</li>
-                                    </ol>
+                                <div class="info-cell">
+                                    <small>Nama Orang Tua</small>
+                                    <strong>{{ $transaction->parent->name ?? auth()->user()->name }}</strong>
                                 </div>
-                            </details>
-                        </div>
-
-                    @elseif($method === 'qris')
-                        {{-- QRIS CODE DISPLAY --}}
-                        <div class="qris-display-box">
-                            <div class="qris-header">
-                                <span class="qris-logo">QRIS</span>
-                                <small>Standar Pembayaran Nasional QR</small>
-                            </div>
-                            <div class="qris-frame">
-                                <div class="qris-qr-art">
-                                    <svg viewBox="0 0 160 160" width="160" height="160" fill="#20283f">
-                                        <rect width="160" height="160" fill="#ffffff"/>
-                                        <!-- QR Corner top-left -->
-                                        <rect x="12" y="12" width="36" height="36" fill="#20283f" rx="4"/>
-                                        <rect x="18" y="18" width="24" height="24" fill="#ffffff" rx="2"/>
-                                        <rect x="24" y="24" width="12" height="12" fill="#20283f" rx="1"/>
-                                        <!-- QR Corner top-right -->
-                                        <rect x="112" y="12" width="36" height="36" fill="#20283f" rx="4"/>
-                                        <rect x="118" y="18" width="24" height="24" fill="#ffffff" rx="2"/>
-                                        <rect x="124" y="24" width="12" height="12" fill="#20283f" rx="1"/>
-                                        <!-- QR Corner bottom-left -->
-                                        <rect x="12" y="112" width="36" height="36" fill="#20283f" rx="4"/>
-                                        <rect x="18" y="118" width="24" height="24" fill="#ffffff" rx="2"/>
-                                        <rect x="24" y="124" width="12" height="12" fill="#20283f" rx="1"/>
-                                        <!-- QR Matrix Pattern Data -->
-                                        <rect x="56" y="12" width="8" height="8" rx="1"/>
-                                        <rect x="72" y="12" width="16" height="8" rx="1"/>
-                                        <rect x="96" y="12" width="8" height="8" rx="1"/>
-                                        <rect x="56" y="28" width="16" height="8" rx="1"/>
-                                        <rect x="80" y="28" width="8" height="8" rx="1"/>
-                                        <rect x="96" y="28" width="8" height="8" rx="1"/>
-                                        <rect x="12" y="56" width="8" height="16" rx="1"/>
-                                        <rect x="28" y="56" width="8" height="8" rx="1"/>
-                                        <rect x="44" y="56" width="20" height="8" rx="1"/>
-                                        <rect x="72" y="44" width="16" height="20" rx="1"/>
-                                        <rect x="96" y="56" width="8" height="16" rx="1"/>
-                                        <rect x="112" y="56" width="16" height="8" rx="1"/>
-                                        <rect x="136" y="56" width="12" height="8" rx="1"/>
-                                        <!-- Center logo box -->
-                                        <circle cx="80" cy="80" r="14" fill="#6857df"/>
-                                        <path d="M76 76h8v8h-8z" fill="#ffffff"/>
-                                        <!-- Bottom patterns -->
-                                        <rect x="56" y="88" width="8" height="24" rx="1"/>
-                                        <rect x="72" y="96" width="16" height="8" rx="1"/>
-                                        <rect x="96" y="88" width="8" height="16" rx="1"/>
-                                        <rect x="112" y="80" width="8" height="16" rx="1"/>
-                                        <rect x="128" y="88" width="20" height="8" rx="1"/>
-                                        <rect x="72" y="120" width="24" height="8" rx="1"/>
-                                        <rect x="56" y="136" width="16" height="12" rx="1"/>
-                                        <rect x="88" y="136" width="16" height="12" rx="1"/>
-                                        <rect x="112" y="120" width="8" height="28" rx="1"/>
-                                        <rect x="128" y="136" width="20" height="12" rx="1"/>
-                                    </svg>
-                                </div>
-                                <div class="qris-amount">
-                                    <small>Total Tagihan</small>
-                                    <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>
+                                <div class="info-cell">
+                                    <small>Status Transaksi</small>
+                                    <span class="badge-status-pending">Menunggu Transfer</span>
                                 </div>
                             </div>
-                            <p class="qris-apps-note">Mendukung: GoPay • OVO • DANA • ShopeePay • LinkAja • BCA Mobile • BRImo • Livin by Mandiri</p>
+                        </div>
+
+                        {{-- Payment Action & Simulation --}}
+                        <div class="payment-action-card">
+                            <div class="action-card-text">
+                                <div class="action-pulse-icon">
+                                    <x-icon name="spark" />
+                                </div>
+                                <div>
+                                    <h4>Sudah Melakukan Transfer VA?</h4>
+                                    <p>Klik konfirmasi untuk verifikasi simulasi & aktifkan kelas siswa secara instan.</p>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ route('parent.payment.pay', $transaction) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary btn-lg btn-pay-now">
+                                    <x-icon name="wallet" /> Konfirmasi / Bayar Sekarang (1x Bayar)
+                                </button>
+                            </form>
+                        </div>
+
+                        {{-- How to Pay Accordion Steps --}}
+                        <div class="payment-guide-section">
+                            <h4><x-icon name="info" /> Panduan Pembayaran Virtual Account {{ $bankName }}</h4>
+                            <div class="guide-accordion-stack">
+                                <details class="guide-accordion" open>
+                                    <summary>
+                                        <span class="guide-sum-title"><x-icon name="mobile" /> Mobile Banking (M-Banking {{ $bankName }})</span>
+                                        <span class="guide-chevron"><x-icon name="arrow-right" /></span>
+                                    </summary>
+                                    <div class="guide-body">
+                                        <ol>
+                                            <li>Buka aplikasi Mobile Banking bank Anda dan lakukan login.</li>
+                                            <li>Pilih menu <b>Transfer / Pembayaran</b> lalu pilih <b>Virtual Account</b>.</li>
+                                            <li>Masukkan Nomor VA: <code class="code-badge">{{ $vaNumber }}</code>.</li>
+                                            <li>Pastikan detail tagihan muncul sebagai <b>SkillPath - {{ $transaction->parent->name ?? 'Orang Tua' }}</b> dengan total <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>.</li>
+                                            <li>Masukkan PIN m-Banking Anda untuk menyelesaikan pembayaran.</li>
+                                        </ol>
+                                    </div>
+                                </details>
+
+                                <details class="guide-accordion">
+                                    <summary>
+                                        <span class="guide-sum-title"><x-icon name="bank" /> ATM Bank</span>
+                                        <span class="guide-chevron"><x-icon name="arrow-right" /></span>
+                                    </summary>
+                                    <div class="guide-body">
+                                        <ol>
+                                            <li>Masukkan kartu ATM dan 6 digit PIN kartu Anda.</li>
+                                            <li>Pilih menu <b>Transaksi Lainnya &gt; Transfer &gt; ke Rekening Virtual Account</b>.</li>
+                                            <li>Ketik nomor VA <code class="code-badge">{{ $vaNumber }}</code> lalu tekan <b>Benar</b>.</li>
+                                            <li>Periksa rincian pembayaran di layar monitor lalu konfirmasi <b>Ya / Bayar</b>.</li>
+                                            <li>Ambil struk transaksi ATM sebagai bukti bayar sah.</li>
+                                        </ol>
+                                    </div>
+                                </details>
+
+                                <details class="guide-accordion">
+                                    <summary>
+                                        <span class="guide-sum-title"><x-icon name="globe" /> Internet Banking</span>
+                                        <span class="guide-chevron"><x-icon name="arrow-right" /></span>
+                                    </summary>
+                                    <div class="guide-body">
+                                        <ol>
+                                            <li>Login ke portal Internet Banking bank pilihan Anda.</li>
+                                            <li>Navigasi ke menu <b>Bayar Tagihan &gt; Virtual Account</b>.</li>
+                                            <li>Input kode Virtual Account <code class="code-badge">{{ $vaNumber }}</code> dan verifikasi dengan token autentikasi Anda.</li>
+                                        </ol>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                    @elseif($rawMethod === 'qris')
+                        {{-- QRIS CODE SECTION --}}
+                        <div class="method-header-bar">
+                            <div class="method-header-left">
+                                <div class="method-brand-pill qris">QRIS</div>
+                                <div class="method-header-info">
+                                    <span class="panel-kicker" style="font-size: 10.5px; margin-bottom: 2px;">Metode Transfer</span>
+                                    <h3>Scan QRIS Standar Nasional</h3>
+                                    <p>Dapat di-scan melalui GoPay, OVO, DANA, ShopeePay, BCA Mobile, Livin Mandiri, dll</p>
+                                </div>
+                            </div>
+                            <div class="verified-merchant-badge">
+                                <x-icon name="shield-check" />
+                                <span>Official Merchant</span>
+                            </div>
+                        </div>
+
+                        <div class="qris-card-center">
+                            <span class="qris-badge-tag">QRIS</span>
+                            <div class="qris-frame-box">
+                                <svg class="qris-svg" viewBox="0 0 200 200" width="200" height="200">
+                                    <rect width="200" height="200" fill="#ffffff"/>
+                                    <!-- Corner Squares -->
+                                    <rect x="15" y="15" width="45" height="45" fill="#0f172a" rx="4"/>
+                                    <rect x="23" y="23" width="29" height="29" fill="#ffffff" rx="2"/>
+                                    <rect x="29" y="29" width="17" height="17" fill="#6366f1" rx="2"/>
+
+                                    <rect x="140" y="15" width="45" height="45" fill="#0f172a" rx="4"/>
+                                    <rect x="148" y="23" width="29" height="29" fill="#ffffff" rx="2"/>
+                                    <rect x="154" y="29" width="17" height="17" fill="#6366f1" rx="2"/>
+
+                                    <rect x="15" y="140" width="45" height="45" fill="#0f172a" rx="4"/>
+                                    <rect x="23" y="148" width="29" height="29" fill="#ffffff" rx="2"/>
+                                    <rect x="29" y="154" width="17" height="17" fill="#6366f1" rx="2"/>
+
+                                    <!-- Inner QR Matrix Patterns -->
+                                    <rect x="70" y="20" width="10" height="10" fill="#0f172a"/>
+                                    <rect x="85" y="20" width="15" height="10" fill="#0f172a"/>
+                                    <rect x="110" y="20" width="10" height="10" fill="#0f172a"/>
+                                    <rect x="70" y="35" width="25" height="10" fill="#0f172a"/>
+                                    <rect x="105" y="35" width="15" height="10" fill="#0f172a"/>
+                                    <rect x="70" y="50" width="10" height="25" fill="#0f172a"/>
+                                    <rect x="90" y="50" width="20" height="10" fill="#0f172a"/>
+                                    <rect x="120" y="50" width="10" height="10" fill="#0f172a"/>
+
+                                    <rect x="20" y="70" width="15" height="10" fill="#0f172a"/>
+                                    <rect x="45" y="70" width="10" height="20" fill="#0f172a"/>
+                                    <rect x="70" y="80" width="60" height="40" fill="#0f172a" rx="6"/>
+                                    <text x="100" y="105" fill="#ffffff" font-size="11" font-weight="bold" font-family="sans-serif" text-anchor="middle">SKILLPATH</text>
+                                    
+                                    <rect x="140" y="70" width="20" height="10" fill="#0f172a"/>
+                                    <rect x="170" y="70" width="15" height="20" fill="#0f172a"/>
+                                    <rect x="140" y="90" width="15" height="15" fill="#0f172a"/>
+                                    <rect x="165" y="100" width="20" height="10" fill="#0f172a"/>
+
+                                    <rect x="70" y="130" width="20" height="10" fill="#0f172a"/>
+                                    <rect x="100" y="130" width="10" height="20" fill="#0f172a"/>
+                                    <rect x="120" y="130" width="20" height="10" fill="#0f172a"/>
+                                    <rect x="70" y="150" width="10" height="35" fill="#0f172a"/>
+                                    <rect x="90" y="160" width="20" height="10" fill="#0f172a"/>
+                                    <rect x="120" y="150" width="10" height="20" fill="#0f172a"/>
+                                    <rect x="140" y="145" width="45" height="10" fill="#0f172a"/>
+                                    <rect x="140" y="165" width="20" height="20" fill="#0f172a"/>
+                                    <rect x="170" y="165" width="15" height="20" fill="#0f172a"/>
+                                </svg>
+                            </div>
+                            <div class="qris-supported-wallets">
+                                <span>Mendukung Pembayaran Seluruh E-Wallet & Mobile Banking:</span>
+                                <div class="wallet-pills-row">
+                                    <span class="w-pill">GoPay</span>
+                                    <span class="w-pill">OVO</span>
+                                    <span class="w-pill">DANA</span>
+                                    <span class="w-pill">ShopeePay</span>
+                                    <span class="w-pill">LinkAja</span>
+                                    <span class="w-pill">BCA Mobile</span>
+                                    <span class="w-pill">Livin Mandiri</span>
+                                    <span class="w-pill">BRImo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-action-card">
+                            <div class="action-card-text">
+                                <div class="action-pulse-icon">
+                                    <x-icon name="qr" />
+                                </div>
+                                <div>
+                                    <h4>Sudah Berhasil Melakukan Scan QRIS?</h4>
+                                    <p>Klik tombol konfirmasi untuk verifikasi dan langsung aktifkan seluruh kelas anak.</p>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ route('parent.payment.pay', $transaction) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary btn-lg btn-pay-now">
+                                    <x-icon name="check" /> Saya Sudah Scan & Bayar (1x Bayar)
+                                </button>
+                            </form>
                         </div>
 
                     @else
-                        {{-- MANUAL BANK TRANSFER --}}
-                        <div class="va-copy-box">
-                            <div class="va-copy-item">
-                                <span class="va-label">Bank Penerima</span>
-                                <div class="va-value-row">
-                                    <strong>Bank BCA (PT SkillPath Edukasi Indonesia)</strong>
+                        {{-- MANUAL TRANSFER / DEFAULT VIEW --}}
+                        <div class="method-header-bar">
+                            <div class="method-header-left">
+                                <div class="method-brand-pill manual">BCA</div>
+                                <div class="method-header-info">
+                                    <span class="panel-kicker" style="font-size: 10.5px; margin-bottom: 2px;">Metode Transfer</span>
+                                    <h3>Rekening Resmi Operasional SkillPath</h3>
+                                    <p>Transfer manual ke rekening resmi PT SkillPath Edukasi Indonesia</p>
                                 </div>
                             </div>
-                            <div class="va-copy-item">
-                                <span class="va-label">Nomor Rekening Resmi</span>
-                                <div class="va-value-row">
-                                    <strong class="va-code">8801239999</strong>
-                                    <button class="btn btn-soft btn-sm copy-btn" onclick="copyToClipboard('8801239999', 'Nomor Rekening')">
+                            <div class="verified-merchant-badge">
+                                <x-icon name="shield-check" />
+                                <span>Official Merchant</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-details-card">
+                            <div class="detail-row highlight-box">
+                                <div class="detail-label-group">
+                                    <span class="detail-label"><x-icon name="bank" /> NOMOR REKENING BANK BCA</span>
+                                    <span class="detail-sub">BCA KCP Sudirman Jakarta</span>
+                                </div>
+                                <div class="detail-value-group">
+                                    <span class="detail-code-large">541-098-7721</span>
+                                    <button type="button" class="btn-copy-interactive" onclick="copyToClipboard('5410987721', 'Nomor Rekening BCA')">
                                         <x-icon name="copy" /> Salin No. Rekening
                                     </button>
                                 </div>
                             </div>
-                            <div class="va-copy-item">
-                                <span class="va-label">Total Transfer Tepat</span>
-                                <div class="va-value-row">
-                                    <strong class="va-price">Rp{{ number_format($transaction->total, 0, ',', '.') }}</strong>
-                                    <button class="btn btn-soft btn-sm copy-btn" onclick="copyToClipboard('{{ (int)$transaction->total }}', 'Jumlah Transfer')">
+
+                            <div class="detail-row highlight-box amount-box">
+                                <div class="detail-label-group">
+                                    <span class="detail-label"><x-icon name="wallet" /> TOTAL TAGIHAN (1X BAYAR)</span>
+                                    <span class="detail-sub">Satu kali bayar untuk seluruh {{ $courseCount }} kursus</span>
+                                </div>
+                                <div class="detail-value-group">
+                                    <span class="detail-amount-large">Rp{{ number_format($transaction->total, 0, ',', '.') }}</span>
+                                    <button type="button" class="btn-copy-interactive" onclick="copyToClipboard('{{ (int)$transaction->total }}', 'Total Pembayaran')">
                                         <x-icon name="copy" /> Salin Jumlah
                                     </button>
                                 </div>
                             </div>
+
+                            <div class="detail-row info-row">
+                                <div class="info-cell">
+                                    <small>Nama Penerima</small>
+                                    <strong>PT SkillPath Edukasi Indonesia</strong>
+                                </div>
+                                <div class="info-cell">
+                                    <small>Nama Orang Tua</small>
+                                    <strong>{{ $transaction->parent->name ?? auth()->user()->name }}</strong>
+                                </div>
+                                <div class="info-cell">
+                                    <small>Status Transaksi</small>
+                                    <span class="badge-status-pending">Menunggu Transfer</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-action-card">
+                            <div class="action-card-text">
+                                <div class="action-pulse-icon">
+                                    <x-icon name="check" />
+                                </div>
+                                <div>
+                                    <h4>Konfirmasi Transfer Bank</h4>
+                                    <p>Klik tombol konfirmasi untuk verifikasi transaksi dan aktifkan kelas secara instan.</p>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ route('parent.payment.pay', $transaction) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary btn-lg btn-pay-now">
+                                    <x-icon name="check" /> Konfirmasi Pembayaran (1x Bayar)
+                                </button>
+                            </form>
                         </div>
                     @endif
-                </div>
 
-                {{-- Action / Simulation Box --}}
-                <div class="panel payment-simulation-panel">
-                    <div class="sim-header">
-                        <x-icon name="shield-check" />
-                        <div>
-                            <h3>Simulasi & Konfirmasi Pembayaran</h3>
-                            <p>Untuk kemudahan pengujian, tekan tombol di bawah untuk memverifikasi pembayaran secara instan.</p>
-                        </div>
-                    </div>
-
-                    <div class="sim-actions">
-                        <form method="POST" action="{{ route('parent.transactions.pay', $transaction) }}" class="sim-form">
+                    {{-- Cancel Transaction Form --}}
+                    <div class="payment-cancel-bar">
+                        <form method="POST" action="{{ route('parent.payment.cancel', $transaction) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
                             @csrf
-                            <input type="hidden" name="payment_method" value="{{ $method }}">
-                            <button type="submit" class="btn btn-primary btn-lg btn-confirm-pay">
-                                <x-icon name="check" /> Bayar Sekarang (Konfirmasi Instan)
-                            </button>
-                        </form>
-
-                        <form method="POST" action="{{ route('parent.transactions.cancel', $transaction) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
-                            @csrf
-                            <button type="submit" class="btn btn-ghost btn-sm text-danger">
-                                <x-icon name="trash" /> Batalkan Pesanan
+                            <button type="submit" class="btn btn-ghost text-danger btn-sm">
+                                <x-icon name="recycle-bin" /> Batalkan Pesanan Ini
                             </button>
                         </form>
                     </div>
@@ -363,60 +723,123 @@
             </div>
 
             {{-- Summary Sidebar --}}
-            <aside class="panel payment-summary-aside">
-                <span class="panel-kicker">Ringkasan Tagihan</span>
-                <h2>Detail Transaksi</h2>
+            <aside class="panel payment-summary-sidebar">
+                <div class="summary-header">
+                    <div>
+                        <span class="panel-kicker" style="margin-bottom: 2px;">Ringkasan Biaya</span>
+                        <h3 style="margin: 0;"><x-icon name="receipt" /> Total Tagihan</h3>
+                    </div>
+                    <span class="order-bundle-pill"><x-icon name="spark" /> {{ $courseCount }} Kursus (1x Bayar)</span>
+                </div>
 
-                <div class="payment-summary-meta">
-                    <div class="summary-line">
-                        <span>Invoice</span>
-                        <b>{{ $transaction->invoice_code }}</b>
-                    </div>
-                    <div class="summary-line">
-                        <span>Siswa (Anak)</span>
-                        <b>{{ $child->name ?? $metadata['child_name'] ?? 'Anak' }}</b>
-                    </div>
-                    <div class="summary-line">
-                        <span>Jadwal Kelas</span>
-                        <b>Hari {{ $schedule->day_of_week ?? $metadata['schedule_day'] ?? '-' }}</b>
-                    </div>
-                    <div class="summary-line">
-                        <span>Jam Sesi</span>
-                        <b>{{ $metadata['schedule_time'] ?? '-' }}</b>
+                {{-- Selected Payment Method Mini Banner --}}
+                <div class="summary-method-banner">
+                    <div class="method-mini-pill {{ $bankCode }}">{{ $bankName }}</div>
+                    <div class="method-mini-info">
+                        <strong>{{ $methodTitle }}</strong>
+                        <span>Verifikasi otomatis 24/7 tanpa antre</span>
                     </div>
                 </div>
 
-                <hr class="summary-divider">
-
-                <div class="payment-course-brief">
-                    <h4>{{ $course->title ?? $metadata['course_title'] ?? 'Course' }}</h4>
-                    <small>{{ $course->category->name ?? 'Kategori' }} • {{ $course->location_name ?? $metadata['location'] ?? 'Offline' }}</small>
+                <div class="payment-courses-stack">
+                    @if(isset($enrollments) && $enrollments->count() > 0)
+                        @foreach($enrollments as $enr)
+                            <div class="summary-course-card">
+                                <div class="summary-course-thumb">
+                                    <x-course-art :course="$enr->course ?? null" />
+                                </div>
+                                <div class="summary-course-body">
+                                    <div class="summary-course-title-row">
+                                        <h4 title="{{ $enr->course->title }}">{{ $enr->course->title }}</h4>
+                                        <span class="course-item-price">Rp{{ number_format($enr->package_info['price'] ?? 0, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="summary-course-chips">
+                                        <span class="summary-chip child"><x-icon name="child" /> {{ $enr->child->name ?? '-' }}</span>
+                                        <span class="summary-chip package"><x-icon name="spark" /> {{ $enr->package_info['title'] ?? 'Paket' }} ({{ $enr->package_info['sessions'] ?? $enr->total_sessions }} Sesi)</span>
+                                        <span class="summary-chip schedule"><x-icon name="calendar" /> {{ $enr->schedule->day_name ?? '-' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @elseif(!empty($metadata['items']))
+                        @foreach($metadata['items'] as $itemMeta)
+                            <div class="summary-course-card">
+                                <div class="summary-course-thumb">
+                                    <div class="course-art">
+                                        <div class="art-icon"><x-icon name="book" /></div>
+                                    </div>
+                                </div>
+                                <div class="summary-course-body">
+                                    <div class="summary-course-title-row">
+                                        <h4 title="{{ $itemMeta['course_title'] ?? 'Kursus' }}">{{ $itemMeta['course_title'] ?? 'Kursus' }}</h4>
+                                        <span class="course-item-price">Rp{{ number_format($itemMeta['price'] ?? 0, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="summary-course-chips">
+                                        <span class="summary-chip child"><x-icon name="child" /> {{ $itemMeta['child_name'] ?? '-' }}</span>
+                                        <span class="summary-chip package"><x-icon name="spark" /> {{ $itemMeta['package_title'] ?? 'Paket' }} ({{ $itemMeta['package_sessions'] ?? 12 }} Sesi)</span>
+                                        <span class="summary-chip schedule"><x-icon name="calendar" /> {{ $itemMeta['schedule_day'] ?? '-' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="summary-course-card">
+                            <div class="summary-course-thumb">
+                                <x-course-art :course="$course ?? null" />
+                            </div>
+                            <div class="summary-course-body">
+                                <div class="summary-course-title-row">
+                                    <h4 title="{{ $course->title ?? $metadata['course_title'] ?? 'Course' }}">{{ $course->title ?? $metadata['course_title'] ?? 'Course' }}</h4>
+                                    <span class="course-item-price">Rp{{ number_format($transaction->subtotal, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="summary-course-chips">
+                                    <span class="summary-chip child"><x-icon name="child" /> {{ $child->name ?? $metadata['child_name'] ?? 'Anak' }}</span>
+                                    <span class="summary-chip package"><x-icon name="spark" /> {{ $course->category->name ?? 'Kategori' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
-                <hr class="summary-divider">
+                <div class="summary-calc-box">
+                    <div class="summary-line">
+                        <span>Subtotal Kursus ({{ $courseCount }} Kursus)</span>
+                        <strong>Rp{{ number_format($transaction->subtotal, 0, ',', '.') }}</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Biaya Layanan Platform</span>
+                        <strong>Rp{{ number_format($transaction->platform_fee, 0, ',', '.') }}</strong>
+                    </div>
+                    @if(!empty($metadata['discount']) && $metadata['discount'] > 0)
+                        <div class="summary-line discount-line">
+                            <span>Diskon Voucher</span>
+                            <strong>-Rp{{ number_format($metadata['discount'], 0, ',', '.') }}</strong>
+                        </div>
+                    @endif
+                    <div class="summary-divider"></div>
+                    <div class="summary-total-row">
+                        <div>
+                            <span class="total-label">Total 1x Bayar</span>
+                            <small class="total-sub">Termasuk seluruh kursus & PPN</small>
+                        </div>
+                        <strong class="total-price-large">Rp{{ number_format($transaction->total, 0, ',', '.') }}</strong>
+                    </div>
+                </div>
 
-                <div class="summary-line">
-                    <span>Harga Kursus</span>
-                    <span>Rp{{ number_format($transaction->subtotal, 0, ',', '.') }}</span>
-                </div>
-                <div class="summary-line">
-                    <span>Biaya Platform</span>
-                    <span>Rp{{ number_format($transaction->platform_fee, 0, ',', '.') }}</span>
-                </div>
-                @if(!empty($metadata['discount']) && $metadata['discount'] > 0)
-                <div class="summary-line discount-line">
-                    <span>Diskon Voucher</span>
-                    <span>-Rp{{ number_format($metadata['discount'], 0, ',', '.') }}</span>
-                </div>
-                @endif
-                <div class="summary-total">
-                    <span>Total Harus Dibayar</span>
-                    <b>Rp{{ number_format($transaction->total, 0, ',', '.') }}</b>
-                </div>
-
-                <div class="payment-security-pill">
+                <div class="payment-trust-badge">
                     <x-icon name="shield-check" />
-                    <span>Pembayaran Terproteksi & Terenkripsi 256-bit</span>
+                    <div>
+                        <strong>Pembayaran Terproteksi & Terenkripsi SSL</strong>
+                        <span>Verifikasi instan • Akses langsung terbuka</span>
+                    </div>
+                </div>
+
+                <div class="payment-help-box">
+                    <x-icon name="spark" />
+                    <div>
+                        <strong>Butuh bantuan pembayaran?</strong>
+                        <div>CS kami siap membantu Anda melalui WhatsApp Support</div>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -428,7 +851,7 @@
 function copyToClipboard(text, label) {
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast(label + ' berhasil disalin ke clipboard!');
+            showToast(label + ' berhasil disalin!');
         }).catch(() => {
             fallbackCopy(text, label);
         });
@@ -466,24 +889,26 @@ function showToast(msg) {
     toast.classList.add('show');
     setTimeout(() => {
         toast.classList.remove('show');
-    }, 3200);
+    }, 3000);
 }
 
-// Live Countdown Timer
+// Live Real-Time Countdown Timer
 document.addEventListener('DOMContentLoaded', () => {
     const timerEl = document.getElementById('countdownTimer');
     if (timerEl) {
         const expireTs = parseInt(timerEl.getAttribute('data-expire'), 10) * 1000;
         function updateTimer() {
-            const now = new Date().getTime();
+            const now = Date.now();
             const distance = expireTs - now;
             if (distance <= 0) {
-                timerEl.textContent = '00:00:00 (Kadaluarsa)';
+                timerEl.textContent = '00:00:00';
+                timerEl.style.color = '#f87171';
                 return;
             }
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const totalSeconds = Math.floor(distance / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
 
             timerEl.textContent =
                 String(hours).padStart(2, '0') + ':' +

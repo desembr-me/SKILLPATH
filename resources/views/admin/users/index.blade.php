@@ -42,7 +42,7 @@
                 <x-icon name="search" />
                 <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama, email, no. HP...">
                 @if($search)
-                    <a href="{{ route('admin.users.index', ['role' => $currentRole]) }}" style="color:#8a84ab; font-size:11px; font-weight:800;">Reset</a>
+                    <a href="{{ route('admin.users.index', ['role' => $currentRole]) }}" style="color:#8a84ab; font-size:11px; font-weight:600;">Reset</a>
                 @endif
             </form>
         </div>

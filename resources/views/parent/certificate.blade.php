@@ -31,9 +31,19 @@
             <p>Diterbitkan untuk <b>{{ $child->name }}</b> atas keberhasilan menyelesaikan program <b>{{ $course->title }}</b>.</p>
         </div>
         <div class="dash-actions">
-            <a class="btn btn-soft" href="{{ route('parent.exams') }}">
-                <x-icon name="arrow-left" /> Kembali ke Ujian & Sertifikat
-            </a>
+            @if(auth()->check() && auth()->user()->isAdmin())
+                <a class="btn btn-soft" href="{{ route('admin.certificates.index') }}">
+                    <x-icon name="arrow-left" /> Kembali ke Manajemen Sertifikat
+                </a>
+            @elseif(auth()->check() && auth()->user()->isMentor())
+                <a class="btn btn-soft" href="{{ route('mentor.dashboard') }}">
+                    <x-icon name="arrow-left" /> Kembali ke Dashboard
+                </a>
+            @else
+                <a class="btn btn-soft" href="{{ route('parent.exams') }}">
+                    <x-icon name="arrow-left" /> Kembali ke Ujian & Sertifikat
+                </a>
+            @endif
             <button class="btn btn-primary" onclick="window.print()">
                 <x-icon name="certificate" /> Cetak / Simpan PDF (A4)
             </button>

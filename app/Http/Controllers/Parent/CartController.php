@@ -22,7 +22,7 @@ class CartController extends Controller
         ->latest()
         ->get();
 
-        $subtotal = $items->sum(fn ($i) => (float) $i->schedule->course->price);
+        $subtotal = $items->sum(fn ($i) => (float) $i->calculated_price);
         $platformFee = $items->count() * 15000;
         $total = $subtotal + $platformFee;
 
@@ -43,18 +43,39 @@ class CartController extends Controller
         $data = $request->validate([
             'child_id' => ['required', 'exists:children,id'],
             'schedule_id' => ['required', 'exists:course_schedules,id'],
+            'package_duration' => ['nullable', 'integer', 'in:3,6,12'],
         ]);
 
         Child::where('parent_id', $request->user()->id)->findOrFail($data['child_id']);
         CourseSchedule::findOrFail($data['schedule_id']);
 
-        $item = CartItem::firstOrCreate([
-            'parent_id' => $request->user()->id,
-            'child_id' => $data['child_id'],
-            'schedule_id' => $data['schedule_id'],
+        $duration = (int) ($data['package_duration'] ?? 3);
+
+        $item = CartItem::updateOrCreate(
+            [
+                'parent_id' => $request->user()->id,
+                'child_id' => $data['child_id'],
+                'schedule_id' => $data['schedule_id'],
+            ],
+            [
+                'package_duration' => $duration,
+            ]
+        );
+
+        return redirect()->route('parent.cart')->with('success', 'Course dan paket berhasil ditambahkan ke keranjang.');
+    }
+
+    public function update(Request $request, CartItem $cartItem)
+    {
+        abort_unless($cartItem->parent_id === $request->user()->id, 403);
+
+        $data = $request->validate([
+            'package_duration' => ['required', 'integer', 'in:3,6,12'],
         ]);
 
-        return redirect()->route('parent.cart')->with('success', 'Course berhasil ditambahkan ke keranjang booking.');
+        $cartItem->update(['package_duration' => (int) $data['package_duration']]);
+
+        return back()->with('success', 'Pilihan paket kursus berhasil diperbarui.');
     }
 
     public function destroy(Request $request, CartItem $cartItem)

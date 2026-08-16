@@ -59,7 +59,13 @@
             </div>
 
             <div class="cart-items-list">
+                @php
+                    $totalSavings = $items->sum(fn ($i) => (float) ($i->package_info['savings'] ?? 0));
+                @endphp
                 @forelse($items as $item)
+                    @php
+                        $pkg = $item->package_info;
+                    @endphp
                     <article class="cart-item-card {{ !empty($item->conflicts) ? 'item-conflict' : '' }}">
                         <div class="cart-item-thumb-box">
                             <x-course-art :course="$item->schedule->course" />
@@ -67,21 +73,55 @@
                         <div class="cart-item-details">
                             <div class="cart-item-head">
                                 <div>
-                                    <span class="category-pill">{{ $item->schedule->course->category->name }}</span>
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">
+                                        <span class="category-pill">{{ $item->schedule->course->category->name }}</span>
+                                        <span class="status-chip {{ $pkg['badge_type'] === 'popular' ? 'recommended' : ($pkg['badge_type'] === 'best_value' ? 'confirmed' : 'soft') }}" style="font-size: 10px;">
+                                            {{ $pkg['title'] }} • {{ $pkg['sessions'] }} Sesi
+                                        </span>
+                                    </div>
                                     <h3>{{ $item->schedule->course->title }}</h3>
                                 </div>
-                                <div class="cart-item-price">
-                                    Rp{{ number_format($item->schedule->course->price, 0, ',', '.') }}
+                                <div class="cart-item-price" style="text-align: right;">
+                                    @if($pkg['discount_percent'] > 0)
+                                        <small style="text-decoration: line-through; color: var(--muted); font-size: 11px; display: block;">
+                                            Rp{{ number_format($pkg['original_price'], 0, ',', '.') }}
+                                        </small>
+                                    @endif
+                                    <b>Rp{{ number_format($item->calculated_price, 0, ',', '.') }}</b>
+                                    @if($pkg['savings'] > 0)
+                                        <small style="color: #059669; font-weight: 600; font-size: 10.5px; display: block;">
+                                            Hemat Rp{{ number_format($pkg['savings'], 0, ',', '.') }}
+                                        </small>
+                                    @endif
                                 </div>
                             </div>
 
                             <div class="cart-item-meta">
                                 <span class="meta-pill child-pill"><x-icon name="child" /> Siswa: <b>{{ $item->child->name }}</b></span>
-                                <span class="meta-pill"><x-icon name="calendar" /> Hari {{ $item->schedule->day_of_week }}, {{ substr($item->schedule->start_time, 0, 5) }} - {{ substr($item->schedule->end_time, 0, 5) }} WIB</span>
+                                <span class="meta-pill"><x-icon name="calendar" /> Hari {{ $item->schedule->day_name }}, {{ substr($item->schedule->start_time, 0, 5) }} - {{ substr($item->schedule->end_time, 0, 5) }} WIB</span>
                                 <span class="meta-pill"><x-icon name="location" /> {{ $item->schedule->course->location_name }}</span>
                                 @if($item->schedule->course->instructor)
                                     <span class="meta-pill"><x-icon name="user" /> {{ $item->schedule->course->instructor->name }}</span>
                                 @endif
+                            </div>
+
+                            {{-- Pilihan Paket Switcher di Keranjang --}}
+                            <div style="background: #f8fafc; border: 1px solid #eef2f6; border-radius: 12px; padding: 10px 14px; margin-top: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: #475569;">
+                                    <x-icon name="spark" />
+                                    <span>Pilihan Durasi Paket:</span>
+                                </div>
+                                <form method="POST" action="{{ route('parent.cart.update', $item) }}" style="display: flex; align-items: center; gap: 8px;">
+                                    @csrf
+                                    @method('PUT')
+                                    <select name="package_duration" onchange="this.form.submit()" style="font-size: 11px; padding: 5px 10px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: var(--ink); font-weight: 600; cursor: pointer;">
+                                        @foreach($item->schedule->course->packages as $m => $p)
+                                            <option value="{{ $m }}" {{ ($item->package_duration ?: 3) == $m ? 'selected' : '' }}>
+                                                {{ $p['title'] }} ({{ $p['sessions'] }} Sesi) - Rp{{ number_format($p['price'], 0, ',', '.') }} {{ $p['discount_percent'] > 0 ? '(Hemat ' . $p['discount_percent'] . '%)' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
                             </div>
 
                             @if(!empty($item->conflicts))
@@ -129,9 +169,15 @@
                     <h2>Estimasi Tagihan</h2>
 
                     <div class="summary-line">
-                        <span>Subtotal ({{ $items->count() }} kursus)</span>
+                        <span>Subtotal Paket ({{ $items->count() }} kursus)</span>
                         <b>Rp{{ number_format($subtotal, 0, ',', '.') }}</b>
                     </div>
+                    @if($totalSavings > 0)
+                        <div class="summary-line" style="color: #059669;">
+                            <span>Total Hemat Paket</span>
+                            <b>-Rp{{ number_format($totalSavings, 0, ',', '.') }}</b>
+                        </div>
+                    @endif
                     <div class="summary-line">
                         <span>Biaya Platform (Rp15.000/kursus)</span>
                         <b>Rp{{ number_format($platformFee, 0, ',', '.') }}</b>

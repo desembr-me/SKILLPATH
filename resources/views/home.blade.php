@@ -81,7 +81,18 @@
     <div class="course-grid">
         @foreach($courses as $course)
         <article class="course-card">
-            <div class="course-cover"><x-course-art :course="$course" /><span class="course-category">{{ $course->category->name }}</span></div>
+            <div class="course-cover">
+                <x-course-art :course="$course" />
+                <span class="course-category">{{ $course->category->name }}</span>
+                @php
+                    $levelClass = match(strtolower($course->level ?? 'beginner')) {
+                        'expert' => 'badge-expert',
+                        'intermediate' => 'badge-intermediate',
+                        default => 'badge-beginner'
+                    };
+                @endphp
+                <span class="course-level-badge {{ $levelClass }}">{{ $course->level ?? 'Beginner' }}</span>
+            </div>
             <div class="course-body">
                 <div class="mentor-row"><span>Mentor {{ $course->instructor->name }}</span><span class="rating"><x-icon name="star" /> 4.9</span></div>
                 <h3>{{ $course->title }}</h3>
@@ -91,7 +102,7 @@
                     <span><x-icon name="location" /> {{ $course->city }}</span>
                     <span><x-icon name="sessions" /> {{ $course->sessions_count }} sesi</span>
                 </div>
-                <div class="price-row"><div><b>Rp{{ number_format($course->price,0,',','.') }}</b><small>/ paket</small></div><a href="{{ route('courses.show',$course) }}">Lihat detail <x-icon name="arrow-right" /></a></div>
+                <div class="price-row"><div><b>Rp{{ number_format($course->price,0,',','.') }}</b><small>/ 3 bln</small></div><a href="{{ route('courses.show',$course) }}">Pilih Paket <x-icon name="arrow-right" /></a></div>
             </div>
         </article>
         @endforeach

@@ -16,7 +16,7 @@
         @forelse($children as $child)
             <article class="panel child-profile-card">
                 <div class="child-profile-heading">
-                    <div class="profile-photo" id="childAvatarContainer_{{ $child->id }}" style="overflow:hidden; display:flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:50%; background:#f1efff; color:var(--purple); font-size:20px; font-weight:800; border:2px solid #ddd6fe; flex-shrink:0;">
+                    <div class="profile-photo" id="childAvatarContainer_{{ $child->id }}" style="overflow:hidden; display:flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:50%; background:#f1efff; color:var(--purple); font-size:20px; font-weight:600; border:2px solid #ddd6fe; flex-shrink:0;">
                         @if($child->avatar_url)
                             <img id="childPreviewImg_{{ $child->id }}" src="{{ $child->avatar_url }}" alt="Foto {{ $child->name }}" style="width:100%; height:100%; object-fit:cover;">
                         @elseif($child->avatar && !str_starts_with($child->avatar, 'avatars/'))

@@ -9,12 +9,38 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
+    public function index(Request $request)
+    {
+        $pendingTx = Transaction::where('parent_id', $request->user()->id)
+            ->where('status', 'pending')
+            ->latest()
+            ->first();
+
+        if ($pendingTx) {
+            return redirect()->route('parent.payment.show', $pendingTx);
+        }
+
+        $latestTx = Transaction::where('parent_id', $request->user()->id)
+            ->latest()
+            ->first();
+
+        if ($latestTx) {
+            return redirect()->route('parent.payment.show', $latestTx);
+        }
+
+        return redirect()->route('parent.orders')->with('info', 'Belum ada transaksi pembayaran aktif.');
+    }
+
     public function show(Request $request, Transaction $transaction)
     {
         abort_unless($transaction->parent_id === $request->user()->id, 403);
 
         $transaction->load([
             'parent',
+            'enrollments.child',
+            'enrollments.course.category',
+            'enrollments.course.instructor',
+            'enrollments.schedule',
             'enrollment.child',
             'enrollment.course.category',
             'enrollment.course.instructor',
@@ -39,12 +65,17 @@ class PaymentController extends Controller
             $transaction->update(['metadata' => $metadata]);
         }
 
+        $allEnrollments = $transaction->all_enrollments;
+        $primaryEnrollment = $allEnrollments->first() ?: $transaction->enrollment;
+
         return view('parent.payment', [
             'transaction' => $transaction,
-            'enrollment' => $transaction->enrollment,
-            'course' => $transaction->enrollment?->course,
-            'child' => $transaction->enrollment?->child,
-            'schedule' => $transaction->enrollment?->schedule,
+            'enrollments' => $allEnrollments,
+            'isMultiCourse' => $allEnrollments->count() > 1,
+            'enrollment' => $primaryEnrollment,
+            'course' => $primaryEnrollment?->course,
+            'child' => $primaryEnrollment?->child,
+            'schedule' => $primaryEnrollment?->schedule,
             'expiresAt' => $expiresAt,
             'isExpired' => $isExpired,
             'metadata' => $metadata,
@@ -72,15 +103,21 @@ class PaymentController extends Controller
                 'paid_at' => now(),
             ]);
 
-            if ($transaction->enrollment) {
-                $transaction->enrollment->update([
+            // Activate all enrollments for this transaction
+            foreach ($transaction->all_enrollments as $enr) {
+                $enr->update([
                     'status' => 'active',
-                    'enrolled_at' => now(),
+                    'enrolled_at' => $enr->enrolled_at ?: now(),
                 ]);
             }
         });
 
-        return back()->with('success', 'Pembayaran berhasil diverifikasi! Kelas telah aktif dan anak Anda siap mulai belajar.');
+        $count = $transaction->all_enrollments->count();
+        $msg = $count > 1
+            ? "Pembayaran berhasil diverifikasi! Seluruh {$count} kelas telah aktif dan anak Anda siap mulai belajar."
+            : "Pembayaran berhasil diverifikasi! Kelas telah aktif dan anak Anda siap mulai belajar.";
+
+        return back()->with('success', $msg);
     }
 
     public function cancel(Request $request, Transaction $transaction)
@@ -96,8 +133,9 @@ class PaymentController extends Controller
                 'status' => 'cancelled',
             ]);
 
-            if ($transaction->enrollment) {
-                $transaction->enrollment->update([
+            // Cancel all enrollments for this transaction
+            foreach ($transaction->all_enrollments as $enr) {
+                $enr->update([
                     'status' => 'cancelled',
                 ]);
             }
