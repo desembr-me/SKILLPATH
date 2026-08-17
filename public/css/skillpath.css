@@ -8345,75 +8345,111 @@ body.admin-sidebar-locked {
 }
 
 /* Mentor detail */
+.mentor-show-section {
+  padding-top: 36px !important;
+  padding-bottom: 72px !important;
+}
+
 .mentor-hero {
   display: flex;
   align-items: center;
-  gap: 32px;
-  padding: 36px;
-  border-radius: 28px;
+  gap: 28px;
+  padding: 32px;
+  border-radius: 24px;
   background: linear-gradient(135deg, var(--mentor-accent, #EAE5FF), #fff 80%);
-  border: 1px solid rgba(0, 0, 0, .05)
+  border: 1px solid rgba(0, 0, 0, .06);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+  margin-bottom: 44px;
 }
 
 .mentor-hero-photo {
-  width: 170px;
-  height: 170px;
-  border-radius: 22px;
+  width: 156px;
+  height: 156px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, .5);
   display: grid;
   place-items: center;
   overflow: hidden;
-  flex: 0 0 auto
+  flex: 0 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .mentor-hero-photo img {
   width: 100%;
   height: 100%;
-  object-fit: cover
+  object-fit: cover;
 }
 
 .mentor-hero-photo .ui-icon {
   width: 44%;
   height: 44%;
-  color: rgba(44, 39, 67, .4)
+  color: rgba(44, 39, 67, .4);
 }
 
+.mentor-hero-copy {
+  flex: 1;
+}
+
+.mentor-hero-copy .eyebrow {
+  margin-bottom: 2px;
+}
+
+.mentor-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 4px 0 6px;
+}
+
+.mentor-name-row h1,
 .mentor-hero-copy h1 {
   font-family: "Fredoka";
-  font-size: 36px;
-  margin: 8px 0 6px;
-  color: #2c2743
+  font-size: 32px;
+  margin: 0;
+  color: #2c2743;
+  line-height: 1.2;
 }
 
 .mentor-hero-headline {
   color: #4b4567;
   font-size: 13px;
   font-weight: 600;
-  margin: 0 0 10px
+  margin: 0 0 8px;
 }
 
 .mentor-bio {
   color: #5b6274;
-  font-size: 12px;
-  line-height: 1.7;
+  font-size: 12.5px;
+  line-height: 1.65;
   margin: 0 0 14px;
-  max-width: 580px
+  max-width: 620px;
+}
+
+.mentor-courses-section {
+  margin-top: 0;
 }
 
 @media(max-width:700px) {
   .mentor-hero {
     flex-direction: column;
     text-align: center;
-    padding: 28px
+    padding: 24px;
+    gap: 20px;
+    margin-bottom: 32px;
   }
 
   .mentor-hero-photo {
-    width: 140px;
-    height: 140px
+    width: 130px;
+    height: 130px;
+  }
+
+  .mentor-name-row {
+    justify-content: center;
   }
 
   .mentor-hero .mini-tags {
-    justify-content: center
+    justify-content: center;
   }
 }
 
